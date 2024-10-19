@@ -1,0 +1,49 @@
+# Flutter-specific files
+flutter/marapp/.flutter-plugins
+flutter/marapp/.flutter-plugins-dependencies
+flutter/marapp/.dart_tool/
+flutter/marapp/.packages
+flutter/marapp/build/
+flutter/marapp/.pub-cache/
+flutter/marapp/.metadata
+
+# Android-specific files
+flutter/marapp/*.keystore
+flutter/marapp/android/**/key.properties
+flutter/marapp/android/**/signing-config.json
+flutter/marapp/android/**/proguard-rules.pro
+flutter/marapp/android/**/gradle-wrapper.properties
+flutter/marapp/android/**/build/
+flutter/marapp/android/**/outputs/
+
+# iOS-specific files
+flutter/marapp/ios/Pods
+flutter/marapp/ios/Runner.xcworkspace
+flutter/marapp/ios/Flutter/App.framework
+flutter/marapp/ios/Flutter/Flutter.framework
+flutter/marapp/ios/Flutter/Generated.xcconfig
+flutter/marapp/ios/Flutter/app.flx
+flutter/marapp/ios/Flutter/app.zip
+flutter/marapp/ios/Flutter/flutter_assets/
+
+# macOS-specific files
+flutter/marapp/macos/Flutter/Flutter.framework
+flutter/marapp/macos/Flutter/Generated.xcconfig
+flutter/marapp/macos/Flutter/app.flx
+flutter/marapp/macos/Flutter/app.zip
+flutter/marapp/macos/Flutter/flutter_assets/
+
+# Web-specific files
+flutter/marapp/web/
+
+# Firebase-specific files
+flutter/marapp/lib/firebase_options.dart
+
+# IDE-specific files
+flutter/marapp/.idea/
+flutter/marapp/*.iml
+flutter/marapp/.vscode/
+
+# Other files
+flutter/marapp/*.log
+flutter/marapp/*.DS_Store
