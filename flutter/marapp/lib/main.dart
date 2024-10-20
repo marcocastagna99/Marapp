@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth; // Usa alias per FirebaseAuth
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
-import 'views/home_page.dart';
-import 'views/login_signup_view.dart';
+import 'views/homeScreen.dart';
+import 'views/registration_flow.dart';
 import 'providers/auth_provider.dart';
 import 'utils/theme.dart';
 
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()), // Il tuo AuthProvider
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
       child: MaterialApp(
         title: 'Mara’s Sweets and Savory',
@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
         home: AuthWrapper(),
         routes: {
           '/home': (context) => HomeScreen(),
-          '/login': (context) => LoginSignupView(),
+          '/login': (context) => RegistrationFlow(),
         },
       ),
     );
@@ -45,9 +45,9 @@ class AuthWrapper extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         } else if (snapshot.hasData) {
-          return HomeScreen(); // Se l'utente è autenticato, vai alla Home
+          return HomeScreen(); // User is logged in
         } else {
-          return LoginSignupView(); // Se non è autenticato, vai al Login
+          return RegistrationFlow(); // User needs to register or log in
         }
       },
     );

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';  // Assicurati di importare Firebase
+import 'package:cloud_firestore/cloud_firestore.dart';  // Importa Firestore per recuperare i dati utente
 import 'login_signup_view.dart';  // Importa la vista di login/signup
-
+import 'profile_view.dart';  // Importa la vista del profilo
+//import 'products_view.dart';  // Importa la vista dei prodotti
+//import 'cart_view.dart';      // Importa la vista del carrello
+//import 'settings_view.dart';  // Importa la vista delle impostazioni
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -14,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
     ProductsView(),
     CartView(),
-    ProfileView(),  // Qui si trova il pulsante di logout
+    ProfileView(),  // Qui si trova il profilo dell'utente
     SettingsView(),
   ];
 
@@ -59,6 +63,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+// Definizione delle varie viste
+
 class ProductsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -82,37 +88,6 @@ class CartView extends StatelessWidget {
       ),
       body: Center(
         child: Text('Qui verranno visualizzati gli articoli nel carrello'),
-      ),
-    );
-  }
-}
-
-class ProfileView extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Profile'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Profile'),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Logica per il logout
-                FirebaseAuth.instance.signOut();  // Disconnette l'utente
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginSignupView()),  // Reindirizza alla schermata di login
-                );
-              },
-              child: Text('Logout'),
-            ),
-          ],
-        ),
       ),
     );
   }

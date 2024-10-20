@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Importa Firestore
 import 'package:provider/provider.dart';
-import 'home_page.dart';
+import 'homeScreen.dart';
 import '../providers/auth_provider.dart' as local_auth;
 import 'package:flutter_signin_button/flutter_signin_button.dart';
+import '../utils/auth_utils.dart';
 
 class LoginSignupView extends StatefulWidget {
   @override
@@ -12,9 +14,12 @@ class LoginSignupView extends StatefulWidget {
 
 class _LoginSignupViewState extends State<LoginSignupView> {
   bool isLogin = true;
-  bool isLoading = false; // Variabile di stato per il caricamento
+  bool isLoading = false; // Variabile di stato per lo spinner di caricamento
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  // Controllers
+  TextEditingController firstNameController = TextEditingController(); // First Name
+  TextEditingController lastNameController = TextEditingController();  // Last Name
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -27,32 +32,47 @@ class _LoginSignupViewState extends State<LoginSignupView> {
   Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
-        isLoading = true; // Mostra la rotella di caricamento
+        isLoading = true; // Mostra lo spinner di caricamento
       });
 
       try {
         if (isLogin) {
-          // Perform login
+          // Esegui login
           UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
             email: emailController.text,
             password: passwordController.text,
           );
-          // Redirect to home
+          // Reindirizza a Home
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => HomeScreen()),
           );
         } else {
-          // Perform registration
+          // Esegui registrazione
           UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
             email: emailController.text,
             password: passwordController.text,
           );
-          // Redirect to home
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-          );
+
+          // Recupera l'ID dell'utente
+          User? user = userCredential.user;
+
+          if (user != null) {
+            // Salva i dati dell'utente su Firestore
+            await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+              'firstName': firstNameController.text,
+              'lastName': lastNameController.text,
+              'email': emailController.text,
+              'uid': user.uid,
+              'createdAt': FieldValue.serverTimestamp(),
+            });
+
+            // Reindirizza a Home
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+            );
+          }
         }
       } on FirebaseAuthException catch (e) {
         String message;
@@ -61,7 +81,7 @@ class _LoginSignupViewState extends State<LoginSignupView> {
         } else {
           message = e.message ?? 'An error occurred. Please try again.';
         }
-        // Show an error message
+        // Mostra messaggio di errore
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -77,43 +97,17 @@ class _LoginSignupViewState extends State<LoginSignupView> {
         );
       } finally {
         setState(() {
-          isLoading = false; // Nascondi la rotella di caricamento
+          isLoading = false; // Nascondi lo spinner di caricamento
         });
       }
     }
   }
 
   Future<void> _signInWithGoogle() async {
-    setState(() {
-      isLoading = true; // Mostra la rotella di caricamento
-    });
-
-    final authProvider = Provider.of<local_auth.AuthProvider>(context, listen: false);
-    User? user = await authProvider.signInWithGoogle();
-
-    if (user != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-      );
-    } else {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Error'),
-          content: Text('An error occurred during Google login.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('OK'),
-            ),
-          ],
-        ),
-      );
-    }
-
-    setState(() {
-      isLoading = false; // Nascondi la rotella di caricamento
+    await signInWithGoogle(context, (loading) {
+      setState(() {
+        isLoading = loading;
+      });
     });
   }
 
@@ -123,17 +117,38 @@ class _LoginSignupViewState extends State<LoginSignupView> {
       appBar: AppBar(
         title: Text(isLogin ? 'Login' : 'Sign Up'),
       ),
-      body: Center( // Usa Center per centrare il contenuto
+      body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: isLoading ? MainAxisAlignment.center : MainAxisAlignment.start, // Allinea al centro se in caricamento
+            mainAxisAlignment: isLoading ? MainAxisAlignment.center : MainAxisAlignment.start,
             children: [
-              if (!isLoading) // Mostra il form solo se non stai caricando
+              if (!isLoading) // Mostra il modulo se non in caricamento
                 Form(
                   key: _formKey,
                   child: Column(
                     children: [
+                      if (!isLogin) // Mostra questi campi solo nel modulo di registrazione
+                        Column(
+                          children: [
+                            TextFormField(
+                              controller: firstNameController,
+                              decoration: InputDecoration(labelText: 'First Name'),
+                              validator: (value) {
+                                if (value!.isEmpty) return 'Please enter your first name';
+                                return null;
+                              },
+                            ),
+                            TextFormField(
+                              controller: lastNameController,
+                              decoration: InputDecoration(labelText: 'Last Name'),
+                              validator: (value) {
+                                if (value!.isEmpty) return 'Please enter your last name';
+                                return null;
+                              },
+                            ),
+                          ],
+                        ),
                       TextFormField(
                         controller: emailController,
                         decoration: InputDecoration(labelText: 'Email'),
@@ -171,7 +186,7 @@ class _LoginSignupViewState extends State<LoginSignupView> {
                     ],
                   ),
                 ),
-              if (isLoading) // Mostra la rotella di caricamento
+              if (isLoading) // Mostra lo spinner di caricamento
                 Center(
                   child: CircularProgressIndicator(),
                 ),
