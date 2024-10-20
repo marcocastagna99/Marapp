@@ -56,7 +56,6 @@ class _ProfileViewState extends State<ProfileView> {
 
   Future<void> _logout() async {
     await _auth.signOut();
-    Navigator.pushReplacementNamed(context, '/login'); // Sostituisci '/login' con il tuo percorso di login
   }
 
   @override

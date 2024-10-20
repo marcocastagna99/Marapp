@@ -27,9 +27,36 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
   String email = '';
   String phoneNumber = '';
   String address = '';
-  String password = ''; // Aggiungi il campo per la password
+  String password = '';
 
   ValueNotifier<bool> isLoading = ValueNotifier<bool>(false); // Spinner di caricamento
+
+  // Variabili per la validazione
+  bool _emailValid = true;
+  bool _passwordValid = true;
+  bool _passwordVisible = false; // Stato di visibilità della password
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _emailFocusNode.addListener(() {
+      if (!_emailFocusNode.hasFocus) {
+        setState(() {
+          _emailValid = RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(_emailController.text);
+        });
+      }
+    });
+
+    _passwordFocusNode.addListener(() {
+      if (!_passwordFocusNode.hasFocus) {
+        setState(() {
+          _passwordValid = _passwordController.text.length >= 6; // Verifica lunghezza minima
+        });
+      }
+    });
+  }
 
   void _nextPage() {
     _pageController.nextPage(
@@ -66,7 +93,7 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
             physics: NeverScrollableScrollPhysics(),
             children: [
               _buildNamePage(),
-              _buildEmailPasswordPage(), // Aggiungi la password qui
+              _buildEmailPasswordPage(),
               _buildPhoneNumberPage(),
               _buildAddressPage(),
             ],
@@ -129,14 +156,53 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
         children: [
           TextField(
             controller: _emailController,
-            decoration: InputDecoration(labelText: 'Email'),
-            onChanged: (value) => email = value,
+            focusNode: _emailFocusNode,
+            decoration: InputDecoration(
+              labelText: 'Email',
+              errorText: !_emailValid ? 'Email format error' : null,
+              border: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: !_emailValid ? Colors.red : Colors.grey,
+                ),
+              ),
+            ),
+            onChanged: (value) {
+              setState(() {
+                email = value;
+                _emailValid = RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value);
+              });
+            },
           ),
+          SizedBox(height: 16),
           TextField(
             controller: _passwordController,
-            decoration: InputDecoration(labelText: 'Password'),
-            obscureText: true, // Nasconde il testo della password
-            onChanged: (value) => password = value,
+            focusNode: _passwordFocusNode,
+            decoration: InputDecoration(
+              labelText: 'Password',
+              errorText: !_passwordValid ? 'Password must be at least 6 characters' : null,
+              border: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: !_passwordValid ? Colors.red : Colors.grey,
+                ),
+              ),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _passwordVisible = !_passwordVisible; // Cambia lo stato della visibilità
+                  });
+                },
+              ),
+            ),
+            obscureText: !_passwordVisible, // Nasconde il testo della password
+            onChanged: (value) {
+              setState(() {
+                password = value;
+                _passwordValid = password.length >= 6; // Controllo della lunghezza
+              });
+            },
           ),
           SizedBox(height: 20),
           ElevatedButton(
@@ -209,7 +275,7 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
           ),
           TextButton(
             onPressed: _skipToLogin, // Pulsante per saltare al login
-            child: Text('Skip to Login'),
+            child: Text('If you have an account skip to Login'),
           ),
         ],
       ),
@@ -218,41 +284,74 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
 
   // Metodo per completare la registrazione
   void _completeRegistration() async {
-    // Validazione email e password
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+    final email = _emailController.text;
+    final password = _passwordController.text;
+
+    // Verifica che l'email sia valida
+    final emailValid = RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email);
+    if (!emailValid) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Email e password sono obbligatorie')),
+        SnackBar(content: Text('Email format error')),
+      );
+      return;
+    }
+
+    // Verifica che la password soddisfi i requisiti
+    if (password.isEmpty || password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('The password must be at least 6 characters long')),
       );
       return;
     }
 
     isLoading.value = true; // Mostra lo spinner di caricamento
     try {
-      // Creazione utente con Firebase Auth
+      // Registrazione dell'utente
       UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
+        email: email,
+        password: password,
       );
 
-      // Salva i dati aggiuntivi su Firestore
-      await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
+      // Salvataggio dei dettagli dell'utente nel Firestore
+      await FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid).set({
         'firstName': _firstNameController.text,
         'lastName': _lastNameController.text,
-        'email': _emailController.text,
+        'email': email,
         'phoneNumber': _phoneNumberController.text,
         'address': _addressController.text,
-        'createdAt': Timestamp.now(),
       });
 
-      // Reindirizza alla home dopo la registrazione
+      // Naviga alla HomeScreen o alla schermata desiderata
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomeScreen()),
       );
     } on FirebaseAuthException catch (e) {
-      print('Errore durante la registrazione: $e');
+      // Gestione errori
+      String errorMessage = 'An error occurred';
+      if (e.code == 'weak-password') {
+        errorMessage = 'The password provided is too weak.';
+      } else if (e.code == 'email-already-in-use') {
+        errorMessage = 'The account already exists for that email.';
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
     } finally {
       isLoading.value = false; // Nascondi lo spinner di caricamento
     }
+  }
+
+  @override
+  void dispose() {
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _emailController.dispose();
+    _phoneNumberController.dispose();
+    _addressController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 }

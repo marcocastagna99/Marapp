@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Importa Firestore
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'homeScreen.dart';
 import '../providers/auth_provider.dart' as local_auth;
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import '../utils/auth_utils.dart';
+import 'registration_flow.dart'; // Assicurati di importare il flusso di registrazione
 
 class LoginSignupView extends StatefulWidget {
   @override
@@ -13,21 +14,12 @@ class LoginSignupView extends StatefulWidget {
 }
 
 class _LoginSignupViewState extends State<LoginSignupView> {
-  bool isLogin = true;
   bool isLoading = false; // Variabile di stato per lo spinner di caricamento
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // Controllers
-  TextEditingController firstNameController = TextEditingController(); // First Name
-  TextEditingController lastNameController = TextEditingController();  // Last Name
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
-  void toggleFormType() {
-    setState(() {
-      isLogin = !isLogin;
-    });
-  }
 
   Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
@@ -36,48 +28,22 @@ class _LoginSignupViewState extends State<LoginSignupView> {
       });
 
       try {
-        if (isLogin) {
-          // Esegui login
-          UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-            email: emailController.text,
-            password: passwordController.text,
-          );
-          // Reindirizza a Home
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-          );
-        } else {
-          // Esegui registrazione
-          UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: emailController.text,
-            password: passwordController.text,
-          );
+        // Esegui login
+        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailController.text,
+          password: passwordController.text,
+        );
 
-          // Recupera l'ID dell'utente
-          User? user = userCredential.user;
+        // Reindirizza a Home
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
 
-          if (user != null) {
-            // Salva i dati dell'utente su Firestore
-            await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-              'firstName': firstNameController.text,
-              'lastName': lastNameController.text,
-              'email': emailController.text,
-              'uid': user.uid,
-              'createdAt': FieldValue.serverTimestamp(),
-            });
-
-            // Reindirizza a Home
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => HomeScreen()),
-            );
-          }
-        }
       } on FirebaseAuthException catch (e) {
         String message;
-        if (e.code == 'email-already-in-use') {
-          message = 'This email is already registered. Please use another email.';
+        if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+          message = 'Invalid email or password. Please try again.';
         } else {
           message = e.message ?? 'An error occurred. Please try again.';
         }
@@ -115,7 +81,7 @@ class _LoginSignupViewState extends State<LoginSignupView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(isLogin ? 'Login' : 'Sign Up'),
+        title: Text('Login'),
       ),
       body: Center(
         child: Padding(
@@ -128,27 +94,6 @@ class _LoginSignupViewState extends State<LoginSignupView> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      if (!isLogin) // Mostra questi campi solo nel modulo di registrazione
-                        Column(
-                          children: [
-                            TextFormField(
-                              controller: firstNameController,
-                              decoration: InputDecoration(labelText: 'First Name'),
-                              validator: (value) {
-                                if (value!.isEmpty) return 'Please enter your first name';
-                                return null;
-                              },
-                            ),
-                            TextFormField(
-                              controller: lastNameController,
-                              decoration: InputDecoration(labelText: 'Last Name'),
-                              validator: (value) {
-                                if (value!.isEmpty) return 'Please enter your last name';
-                                return null;
-                              },
-                            ),
-                          ],
-                        ),
                       TextFormField(
                         controller: emailController,
                         decoration: InputDecoration(labelText: 'Email'),
@@ -170,7 +115,7 @@ class _LoginSignupViewState extends State<LoginSignupView> {
                       SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: _submit,
-                        child: Text(isLogin ? 'Login' : 'Sign Up'),
+                        child: Text('Login'),
                       ),
                       SizedBox(height: 10),
                       SignInButton(
@@ -178,10 +123,13 @@ class _LoginSignupViewState extends State<LoginSignupView> {
                         onPressed: _signInWithGoogle,
                       ),
                       TextButton(
-                        onPressed: toggleFormType,
-                        child: Text(isLogin
-                            ? "Don't have an account? Sign up"
-                            : "Already have an account? Login"),
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => RegistrationFlow()), // Naviga al flusso di registrazione
+                          );
+                        },
+                        child: Text("Don't have an account? Sign up"),
                       ),
                     ],
                   ),
