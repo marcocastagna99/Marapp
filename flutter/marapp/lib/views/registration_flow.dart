@@ -1,11 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'homeScreen.dart';
 import 'login_signup_view.dart'; // Aggiungi import del login
-import '../providers/auth_provider.dart' as local_auth;
-import '../utils/auth_utils.dart'; // Importa il file di utilità
+import '../providers/auth_provider.dart'; // Usa AuthProvider
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 
 class RegistrationFlow extends StatefulWidget {
@@ -29,12 +27,9 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
   String address = '';
   String password = '';
 
-  ValueNotifier<bool> isLoading = ValueNotifier<bool>(false); // Spinner di caricamento
-
-  // Variabili per la validazione
   bool _emailValid = true;
   bool _passwordValid = true;
-  bool _passwordVisible = false; // Stato di visibilità della password
+  bool _passwordVisible = false;
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
 
@@ -52,7 +47,7 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
     _passwordFocusNode.addListener(() {
       if (!_passwordFocusNode.hasFocus) {
         setState(() {
-          _passwordValid = _passwordController.text.length >= 6; // Verifica lunghezza minima
+          _passwordValid = _passwordController.text.length >= 6;
         });
       }
     });
@@ -81,24 +76,21 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context); // Usa il provider
+
     return Scaffold(
       appBar: AppBar(title: Text("Registration")),
-      body: ValueListenableBuilder<bool>(
-        valueListenable: isLoading,
-        builder: (context, loading, child) {
-          return loading
-              ? Center(child: CircularProgressIndicator())
-              : PageView(
-            controller: _pageController,
-            physics: NeverScrollableScrollPhysics(),
-            children: [
-              _buildNamePage(),
-              _buildEmailPasswordPage(),
-              _buildPhoneNumberPage(),
-              _buildAddressPage(),
-            ],
-          );
-        },
+      body: authProvider.isLoading
+          ? Center(child: CircularProgressIndicator())
+          : PageView(
+        controller: _pageController,
+        physics: NeverScrollableScrollPhysics(),
+        children: [
+          _buildNamePage(),
+          _buildEmailPasswordPage(),
+          _buildPhoneNumberPage(),
+          _buildAddressPage(),
+        ],
       ),
     );
   }
@@ -136,9 +128,7 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
                 Buttons.Google,
                 text: "Sign up with Google",
                 onPressed: () {
-                  signInWithGoogle(context, (loading) {
-                    isLoading.value = loading; // Aggiorna il valore di isLoading
-                  });
+                  Provider.of<AuthProvider>(context, listen: false).signInWithGoogle();
                 },
               ),
             ],
@@ -191,16 +181,16 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
                 ),
                 onPressed: () {
                   setState(() {
-                    _passwordVisible = !_passwordVisible; // Cambia lo stato della visibilità
+                    _passwordVisible = !_passwordVisible;
                   });
                 },
               ),
             ),
-            obscureText: !_passwordVisible, // Nasconde il testo della password
+            obscureText: !_passwordVisible,
             onChanged: (value) {
               setState(() {
                 password = value;
-                _passwordValid = password.length >= 6; // Controllo della lunghezza
+                _passwordValid = password.length >= 6;
               });
             },
           ),
@@ -214,7 +204,7 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
             child: Text('Back'),
           ),
           TextButton(
-            onPressed: _skipToLogin, // Pulsante per saltare al login
+            onPressed: _skipToLogin,
             child: Text('Skip to Login'),
           ),
         ],
@@ -243,7 +233,7 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
             child: Text('Back'),
           ),
           TextButton(
-            onPressed: _skipToLogin, // Pulsante per saltare al login
+            onPressed: _skipToLogin,
             child: Text('Skip to Login'),
           ),
         ],
@@ -264,9 +254,7 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
           ),
           SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () {
-              _completeRegistration();
-            },
+            onPressed: _completeRegistration,
             child: Text('Complete Registration'),
           ),
           TextButton(
@@ -274,7 +262,7 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
             child: Text('Back'),
           ),
           TextButton(
-            onPressed: _skipToLogin, // Pulsante per saltare al login
+            onPressed: _skipToLogin,
             child: Text('If you have an account skip to Login'),
           ),
         ],
@@ -282,21 +270,19 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
     );
   }
 
-  // Metodo per completare la registrazione
   void _completeRegistration() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final email = _emailController.text;
     final password = _passwordController.text;
 
-    // Verifica che l'email sia valida
-    final emailValid = RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email);
-    if (!emailValid) {
+    // Validazione dell'email e della password
+    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Email format error')),
       );
       return;
     }
 
-    // Verifica che la password soddisfi i requisiti
     if (password.isEmpty || password.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('The password must be at least 6 characters long')),
@@ -304,54 +290,26 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
       return;
     }
 
-    isLoading.value = true; // Mostra lo spinner di caricamento
-    try {
-      // Registrazione dell'utente
-      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+    // Invia la richiesta di registrazione tramite il provider
+    final success = await authProvider.signUp(
+      email,
+      password,
+      _firstNameController.text,
+      _lastNameController.text,
+      _phoneNumberController.text,
+      _addressController.text,
+    );
 
-      // Salvataggio dei dettagli dell'utente nel Firestore
-      await FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid).set({
-        'firstName': _firstNameController.text,
-        'lastName': _lastNameController.text,
-        'email': email,
-        'phoneNumber': _phoneNumberController.text,
-        'address': _addressController.text,
-      });
-
-      // Naviga alla HomeScreen o alla schermata desiderata
+    if (success) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomeScreen()),
       );
-    } on FirebaseAuthException catch (e) {
-      // Gestione errori
-      String errorMessage = 'An error occurred';
-      if (e.code == 'weak-password') {
-        errorMessage = 'The password provided is too weak.';
-      } else if (e.code == 'email-already-in-use') {
-        errorMessage = 'The account already exists for that email.';
-      }
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
+        SnackBar(content: Text('Registration failed')),
       );
-    } finally {
-      isLoading.value = false; // Nascondi lo spinner di caricamento
     }
   }
 
-  @override
-  void dispose() {
-    _emailFocusNode.dispose();
-    _passwordFocusNode.dispose();
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _emailController.dispose();
-    _phoneNumberController.dispose();
-    _addressController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
 }

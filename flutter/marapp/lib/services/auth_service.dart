@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -20,12 +21,21 @@ class AuthService {
   }
 
   // Sign Up
-  Future<User?> signUp(String email, String password) async {
+  Future<User?> signUp(String email, String password, String firstName, String lastName, String phoneNumber, String address) async {
     try {
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+
+      // Salva i dettagli dell'utente in Firestore
+      await FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid).set({
+        'firstName': firstName,
+        'lastName': lastName,
+        'phoneNumber': phoneNumber,
+        'address': address,
+      });
+
       return userCredential.user;
     } catch (e) {
       print(e.toString());

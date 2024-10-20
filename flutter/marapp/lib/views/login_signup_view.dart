@@ -3,10 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'homeScreen.dart';
-import '../providers/auth_provider.dart' as local_auth;
+import '../providers/auth_provider.dart' as local_auth; // Rinominato per evitare conflitti
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import '../utils/auth_utils.dart';
-import 'registration_flow.dart'; // Assicurati di importare il flusso di registrazione
+import 'registration_flow.dart'; // Importa il flusso di registrazione
 
 class LoginSignupView extends StatefulWidget {
   @override
@@ -28,10 +28,10 @@ class _LoginSignupViewState extends State<LoginSignupView> {
       });
 
       try {
-        // Esegui login
-        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailController.text,
-          password: passwordController.text,
+        // Utilizza local_auth.AuthProvider per eseguire il login
+        await Provider.of<local_auth.AuthProvider>(context, listen: false).login(
+          emailController.text,
+          passwordController.text,
         );
 
         // Reindirizza a Home
@@ -39,7 +39,6 @@ class _LoginSignupViewState extends State<LoginSignupView> {
           context,
           MaterialPageRoute(builder: (context) => HomeScreen()),
         );
-
       } on FirebaseAuthException catch (e) {
         String message;
         if (e.code == 'user-not-found' || e.code == 'wrong-password') {
@@ -70,11 +69,7 @@ class _LoginSignupViewState extends State<LoginSignupView> {
   }
 
   Future<void> _signInWithGoogle() async {
-    await signInWithGoogle(context, (loading) {
-      setState(() {
-        isLoading = loading;
-      });
-    });
+    await Provider.of<local_auth.AuthProvider>(context, listen: false).signInWithGoogle();
   }
 
   @override
