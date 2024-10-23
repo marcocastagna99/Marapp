@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+
 import '../services/auth_service.dart';
 
 class AuthProvider with ChangeNotifier {
@@ -20,18 +21,13 @@ class AuthProvider with ChangeNotifier {
 
   // Sign Up
   // Sign Up
-  Future<bool> signUp(String email, String password, String firstName, String lastName, String phoneNumber, String address) async {
+  Future<bool> signUp(String email, String password, String name,
+      String phoneNumber, String address) async {
     _setLoading(true);
     try {
       // Passa tutti gli argomenti richiesti a signUp
       _user = await _authService.signUp(
-        email,
-        password,
-        firstName,
-        lastName,
-        phoneNumber,
-        address,
-      ); // Call the service
+          email, password, name, phoneNumber, address); // Call the service
       return _user != null; // Return true if user is registered successfully
     } catch (e) {
       print(e.toString()); // Log any errors for debugging
@@ -41,7 +37,6 @@ class AuthProvider with ChangeNotifier {
       notifyListeners();
     }
   }
-
 
   Future<User?> signInWithGoogle() async {
     _setLoading(true);
