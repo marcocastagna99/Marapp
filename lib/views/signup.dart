@@ -10,7 +10,7 @@ class RegistrationFlow extends StatefulWidget {
   const RegistrationFlow({super.key});
 
   @override
-  _RegistrationFlowState createState() => _RegistrationFlowState();
+  State<RegistrationFlow> createState() => _RegistrationFlowState();
 }
 
 class _RegistrationFlowState extends State<RegistrationFlow> {
