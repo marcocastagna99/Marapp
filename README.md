@@ -6,7 +6,7 @@ Mara’s sweets and savory -> flutter app for a pastry e-commerce developed for 
 - [ ] check if users exists in login page
 - [ ] add forgotten password mechanism
 - [ ] change bottom bar icons
-- [ ] create app icon 
+- [x] create app icon 
 - [ ] move food photos in the right folder
 - [ ] finish this readme in function of our project proposal pdf
 - [ ] add login/signup with button of facebook
