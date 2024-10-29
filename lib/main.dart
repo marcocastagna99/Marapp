@@ -14,10 +14,10 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(MyApp());
+  runApp(Marapp());
 }
 
-class MyApp extends StatelessWidget {
+class Marapp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(

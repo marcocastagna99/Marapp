@@ -22,7 +22,7 @@ Future<void> signInWithGoogle(BuildContext context, Function setLoading) async {
     if (!docSnapshot.exists) {
       // Creiamo un nuovo documento con i dati base dell'utente Google
       await userDoc.set({
-        'name': user.displayName?.split(' ').name ?? '',
+        'name': user.displayName?.split(' ').first ?? '',
         'email': user.email,
         'createdAt': Timestamp.now(),
       });
