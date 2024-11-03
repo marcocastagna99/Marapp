@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:logger/logger.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final logger = Logger();
 
   // Login
   Future<User?> login(String email, String password) async {
@@ -15,7 +17,7 @@ class AuthService {
       );
       return userCredential.user;
     } catch (e) {
-      print(e.toString());
+      logger.e('Authentication error:', error: e);
       return null;
     }
   }
@@ -42,7 +44,7 @@ class AuthService {
 
       return userCredential.user;
     } catch (e) {
-      print(e.toString());
+      logger.e('Authentication error:', error: e);
       return null;
     }
   }
@@ -63,7 +65,7 @@ class AuthService {
           await _auth.signInWithCredential(credential);
       return userCredential.user;
     } catch (e) {
-      print(e.toString());
+      logger.e('Authentication error:', error: e);
       return null;
     }
   }

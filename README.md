@@ -1,3 +1,5 @@
+![Marapp](icon.png)
+
 # Marapp - Mara’s sweets and savory 🍰🥨
 Mara’s sweets and savory -> flutter app for a pastry e-commerce developed for the Mobile Development exam
 
@@ -7,6 +9,9 @@ Mara’s sweets and savory -> flutter app for a pastry e-commerce developed for 
 - [ ] add forgotten password mechanism
 - [ ] change bottom bar icons
 - [x] create app icon 
+- [x] change theme colors
+- [ ] add dark mode
+- [x] add splash screen
 - [ ] move food photos in the right folder
 - [ ] finish this readme in function of our project proposal pdf
 - [ ] add login/signup with button of facebook

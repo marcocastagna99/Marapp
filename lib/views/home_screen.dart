@@ -6,6 +6,8 @@ import 'profile.dart'; // Importa la vista del profilo
 //import 'settings_view.dart';  // Importa la vista delle impostazioni
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -68,6 +70,8 @@ class _HomeScreenState extends State<HomeScreen> {
 // Definizione delle varie viste
 
 class ProductsView extends StatelessWidget {
+  const ProductsView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,6 +86,8 @@ class ProductsView extends StatelessWidget {
 }
 
 class CartView extends StatelessWidget {
+  const CartView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,6 +102,8 @@ class CartView extends StatelessWidget {
 }
 
 class SettingsView extends StatelessWidget {
+  const SettingsView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

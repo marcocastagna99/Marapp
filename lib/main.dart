@@ -8,6 +8,7 @@ import 'providers/auth_provider.dart';
 import 'utils/theme.dart';
 import 'views/home_screen.dart';
 import 'views/signup.dart';
+import 'views/splash.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +19,8 @@ void main() async {
 }
 
 class Marapp extends StatelessWidget {
+  const Marapp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -25,11 +28,12 @@ class Marapp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
       child: MaterialApp(
-        title: 'Mara’s Sweets and Savory',
-        theme: appTheme,
-        home: AuthWrapper(),
+        title: 'Marapp',
+        theme: lightTheme,
+        // darkTheme: darkTheme,
+        home: SplashScreen(),
         routes: {
-          '/home': (context) => HomeScreen(),
+          '/home': (context) => AuthWrapper(),
           '/login': (context) => RegistrationFlow(),
         },
       ),
@@ -38,6 +42,8 @@ class Marapp extends StatelessWidget {
 }
 
 class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<firebase_auth.User?>(

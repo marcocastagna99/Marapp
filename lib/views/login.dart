@@ -8,6 +8,8 @@ import 'home_screen.dart';
 import 'signup.dart';
 
 class LoginSignupView extends StatefulWidget {
+  const LoginSignupView({super.key});
+
   @override
   _LoginSignupViewState createState() => _LoginSignupViewState();
 }

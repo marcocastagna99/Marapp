@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 import '../services/auth_service.dart';
 
@@ -30,7 +31,7 @@ class AuthProvider with ChangeNotifier {
           email, password, name, phoneNumber, address); // Call the service
       return _user != null; // Return true if user is registered successfully
     } catch (e) {
-      print(e.toString()); // Log any errors for debugging
+      Logger().e('Sign up error: ${e.toString()}');  // logger instead of print
       return false; // Return false if registration failed
     } finally {
       _setLoading(false);
