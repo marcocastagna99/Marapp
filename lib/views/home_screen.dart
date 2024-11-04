@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Products',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.dining,
+            icon: Icon(Icons.shopping_cart,
                 color: _currentIndex == 1 ? Colors.blue : Colors.grey),
             label: 'Cart',
           ),
