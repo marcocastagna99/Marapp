@@ -173,7 +173,7 @@ class _LoginSignupViewState extends State<LoginSignupView> {
                       SizedBox(height: 10),
 
                       SignInButton(
-                        Buttons.Google,
+                        Theme.of(context).brightness == Brightness.dark ? Buttons.GoogleDark : Buttons.Google,
                         onPressed: _signInWithGoogle,
                       ),
                       TextButton(

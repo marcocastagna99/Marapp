@@ -29,8 +29,9 @@ class Marapp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Marapp',
-        theme: lightTheme,
-        // darkTheme: darkTheme,
+        theme: getTheme(false),
+        darkTheme: getTheme(true),
+        themeMode: ThemeMode.system,
         home: SplashScreen(),
         routes: {
           '/home': (context) => AuthWrapper(),

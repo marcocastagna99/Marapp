@@ -3,68 +3,81 @@
 import 'package:flutter/material.dart';
 
 // Define constant colors
-const Color primary = Colors.cyan;
+const Color primaryCyan = Colors.cyan;
 const Color primaryWhite = Colors.white;
 const Color primaryBlack = Colors.black;
 
-// Define constant text styles for light theme
-const TextStyle lightAppBarTextStyle = TextStyle(
-  color: primaryWhite,
+// Define constant text styles
+const TextStyle appBarTextStyle = TextStyle(
   fontSize: 20,
   fontWeight: FontWeight.bold,
 );
 
-// Define constant text styles for dark theme
-const TextStyle darkAppBarTextStyle = TextStyle(
-  color: primaryBlack,
-  fontSize: 20,
-  fontWeight: FontWeight.bold,
-);
+// bool isDarkMode = true;
 
-bool isDarkMode = false; // TODO: add dark mode
-
-final ThemeData lightTheme = ThemeData(
-  brightness: Brightness.light,
-  primaryColor: primary,
-  hintColor: Colors.orange[50],
-  scaffoldBackgroundColor: primaryWhite,
-  
-  appBarTheme: const AppBarTheme(
-    backgroundColor: primary,
-    iconTheme: IconThemeData(color: primaryWhite),
-    titleTextStyle: lightAppBarTextStyle,
+ThemeData getTheme(bool isDarkMode) => ThemeData(
+  brightness: isDarkMode ? Brightness.dark : Brightness.light,
+  primaryColor: primaryCyan,
+  hintColor: Colors.grey,
+  scaffoldBackgroundColor: isDarkMode ? primaryBlack : primaryWhite,
+  appBarTheme: AppBarTheme(
+    backgroundColor: primaryCyan,
+    iconTheme:
+        IconThemeData(color: isDarkMode ? primaryBlack : primaryWhite),
+    titleTextStyle: appBarTextStyle.copyWith(
+        color: isDarkMode ? primaryBlack : primaryWhite),
   ),
-
+  
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: primary,
-      foregroundColor: primaryWhite,
+      backgroundColor: primaryCyan,
+      foregroundColor: isDarkMode ? primaryBlack : primaryWhite,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
     ),
   ),
-
+  
   textButtonTheme: TextButtonThemeData(
     style: TextButton.styleFrom(
       backgroundColor: Colors.transparent,
-      foregroundColor: Colors.blue[900],
+      foregroundColor: isDarkMode ? Colors.blue[100] : Colors.blue[900],
       splashFactory: NoSplash.splashFactory,
     ),
   ),
-
-  outlinedButtonTheme: const OutlinedButtonThemeData(
+  
+  outlinedButtonTheme: OutlinedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: MaterialStatePropertyAll<Color>(primary),
+      backgroundColor: WidgetStatePropertyAll<Color>(primaryCyan),
     ),
   ),
-
-  textTheme: const TextTheme(
-    bodyLarge: TextStyle(color: Colors.black87, fontSize: 16),
-    bodyMedium: TextStyle(color: Colors.black54, fontSize: 14),
+  
+  textTheme: TextTheme(
+    bodyLarge: TextStyle(
+        color: isDarkMode ? primaryWhite : primaryBlack, fontSize: 16),
+    bodyMedium: TextStyle(
+        color: isDarkMode ? primaryWhite : primaryBlack, fontSize: 14),
     displayLarge: TextStyle(
       fontSize: 24,
       fontWeight: FontWeight.bold,
-      color: primaryBlack,
+      color: isDarkMode ? primaryWhite : primaryBlack,
     ),
-    titleMedium: TextStyle(fontSize: 18, color: Colors.grey),
+    titleMedium: TextStyle(
+        fontSize: 18, color: isDarkMode ? Colors.grey : Colors.grey),
+  ),
+  
+  textSelectionTheme: TextSelectionThemeData(
+    cursorColor: primaryCyan,
+    selectionColor: Colors.cyan[100],
+    selectionHandleColor: Colors.cyan[900], // flutter bug, handles remain purple
+  ),
+  
+  inputDecorationTheme: InputDecorationTheme(
+    labelStyle: TextStyle(
+      color: Colors.grey,
+    ),
+    floatingLabelStyle: TextStyle(
+      color: Colors.grey,
+    ),
   ),
 );
+// Sign-in button theme customization
+

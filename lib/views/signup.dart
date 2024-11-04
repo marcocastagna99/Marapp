@@ -215,7 +215,9 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SignInButton(
-                        Buttons.Google,
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Buttons.GoogleDark
+                            : Buttons.Google,
                         text: "Sign up with Google",
                         onPressed: () {
                           Provider.of<AuthProvider>(context, listen: false)
@@ -245,7 +247,7 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
     Widget? suffixIcon,
     required Function(String) onChanged,
     bool enabled = true,
-    Color? borderColor, // Added borderColor parameter
+    Color? borderColor, TextStyle? labelColor,
   }) {
     return Container(
       decoration: BoxDecoration(

@@ -4,15 +4,14 @@
 Mara’s sweets and savory -> flutter app for a pastry e-commerce developed for the Mobile Development exam
 
 ### TODO
-- [ ] logo loading when opening the app (image + "mara's sweets and savoury")
 - [ ] check if users exists in login page
 - [ ] add forgotten password mechanism
 - [ ] change bottom bar icons
 - [x] create app icon 
 - [x] change theme colors
-- [ ] add dark mode
+- [x] add dark mode
 - [x] add splash screen
-- [ ] move food photos in the right folder
+- [x] move food photos in the right folder
 - [ ] finish this readme in function of our project proposal pdf
 - [ ] add login/signup with button of facebook
 - [ ] add login/signup with button of instagram 

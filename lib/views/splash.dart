@@ -36,11 +36,12 @@ class _SplashScreenState extends State<SplashScreen> {
             const SizedBox(height: 20),
             // App name text
             Text(
-              "Marapp",
+              "Marapp\nMara's sweets and savory",
               style: TextStyle(
                 fontSize: 32,  // Fixed size that works well across devices
                 fontWeight: FontWeight.bold,
-                color: isDarkMode ? Colors.white : primary,
+                // color: Theme.of(context).brightness == Brightness.dark ? Colors.white : primary,
+                color: primaryCyan,
               ),
             ),
           ],
