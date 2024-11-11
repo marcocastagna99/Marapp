@@ -1,9 +1,10 @@
-![Marapp](icon.png)
+![Marapp](assets/icon.png)
 
 # Marapp - Mara’s sweets and savory 🍰🥨
 Mara’s sweets and savory -> flutter app for a pastry e-commerce developed for the Mobile Development exam
 
 ### TODO
+- [ ] remove api key from main.dart
 - [ ] check if users exists in login page
 - [ ] add forgotten password mechanism
 - [x] change bottom bar icons

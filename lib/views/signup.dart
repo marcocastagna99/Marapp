@@ -247,7 +247,7 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
     Widget? suffixIcon,
     required Function(String) onChanged,
     bool enabled = true,
-    Color? borderColor, TextStyle? labelColor,
+    Color? borderColor,
   }) {
     return Container(
       decoration: BoxDecoration(

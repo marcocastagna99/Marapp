@@ -28,6 +28,3 @@ doc/api/
 
 .idea/
 **.DS_Store
-
-ios/
-android/

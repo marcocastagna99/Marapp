@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:marapp/utils/theme.dart';
 
-import 'profile.dart'; // Importa la vista del profilo
-//import 'products_view.dart';  // Importa la vista dei prodotti
-//import 'cart_view.dart';      // Importa la vista del carrello
-//import 'settings_view.dart';  // Importa la vista delle impostazioni
+import 'products.dart';
+import 'profile.dart';
+// import 'cart.dart';
+import 'settings.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
     ProductsView(),
     CartView(),
-    ProfileView(), // Qui si trova il profilo dell'utente
+    ProfileView(),
     SettingsView(),
   ];
 
@@ -40,26 +41,26 @@ class _HomeScreenState extends State<HomeScreen> {
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.cookie,
-                color: _currentIndex == 0 ? Colors.blue : Colors.grey),
+                color: _currentIndex == 0 ? primaryCyan : Colors.grey),
             label: 'Products',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_cart,
-                color: _currentIndex == 1 ? Colors.blue : Colors.grey),
+                color: _currentIndex == 1 ? primaryCyan : Colors.grey),
             label: 'Cart',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person,
-                color: _currentIndex == 2 ? Colors.blue : Colors.grey),
+                color: _currentIndex == 2 ? primaryCyan : Colors.grey),
             label: 'Profile',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings,
-                color: _currentIndex == 3 ? Colors.blue : Colors.grey),
+                color: _currentIndex == 3 ? primaryCyan : Colors.grey),
             label: 'Settings',
           ),
         ],
-        selectedItemColor: Colors.blue,
+        selectedItemColor: primaryCyan,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
       ),
@@ -67,23 +68,21 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// Definizione delle varie viste
+// class ProductsView extends StatelessWidget {
+//   const ProductsView({super.key});
 
-class ProductsView extends StatelessWidget {
-  const ProductsView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Products'),
-      ),
-      body: Center(
-        child: Text('Qui verranno visualizzati i prodotti'),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Products'),
+//       ),
+//       body: Center(
+//         child: Text('test 1'),
+//       ),
+//     );
+//   }
+// }
 
 class CartView extends StatelessWidget {
   const CartView({super.key});
