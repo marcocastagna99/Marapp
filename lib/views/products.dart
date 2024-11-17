@@ -5,10 +5,10 @@ class ProductsView extends StatefulWidget {
   const ProductsView({super.key});
 
   @override
-  _ProductsViewState createState() => _ProductsViewState();
+  ProductsViewState createState() => ProductsViewState();
 }
 
-class _ProductsViewState extends State<ProductsView> {
+class ProductsViewState extends State<ProductsView> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override

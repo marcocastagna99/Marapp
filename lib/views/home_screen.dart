@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../utils/theme.dart';
 import 'products.dart';
 import 'profile.dart';
+import 'cart.dart';
+import 'settings.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

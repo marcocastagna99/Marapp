@@ -7,7 +7,7 @@ import 'package:mockito/mockito.dart';
 
 class MockFirebaseApp extends Mock implements FirebaseApp {}
 
-class MockFirebaseOptions extends Mock implements FirebaseOptions {}
+class MockFirebaseOptions extends Fake implements FirebaseOptions {}
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
