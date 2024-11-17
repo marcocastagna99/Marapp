@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:marapp/utils/theme.dart';
 
+import '../utils/theme.dart';
 import 'products.dart';
 import 'profile.dart';
-// import 'cart.dart';
-import 'settings.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  HomeScreenState createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [

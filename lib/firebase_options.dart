@@ -25,10 +25,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macOS;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -63,6 +60,15 @@ class DefaultFirebaseOptions {
     iosBundleId: 'com.example.marapp',
   );
 
+  static const FirebaseOptions macOS = FirebaseOptions(
+    apiKey: 'AIzaSyAtW9waTd10NtID9TryzMK9CNOh6p1ZOcE',
+    appId: '1:645919336241:ios:d671d503b08c147ef6b210',
+    messagingSenderId: '645919336241',
+    projectId: 'marapp-2041e',
+    storageBucket: 'marapp-2041e.appspot.com',
+    iosBundleId: 'com.example.marapp',
+  );
+
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyB7wZb2tO1-Fs6GbDADUSTs2Qs3w08Hovw',
     appId: '1:406099696497:web:87e25e51afe982cd3574d0',
@@ -70,5 +76,4 @@ class DefaultFirebaseOptions {
     projectId: 'marapp-2041e',
     storageBucket: 'marapp-2041e.appspot.com',
   );
-
 }

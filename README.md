@@ -1,10 +1,13 @@
+<!-- sudo gem install -n /usr/local/bin cocoapods -->
 ![Marapp](assets/icon.png)
 
 # Marapp - Mara’s sweets and savory 🍰🥨
 Mara’s sweets and savory -> flutter app for a pastry e-commerce developed for the Mobile Development exam
 
 ### TODO
-- [ ] remove api key from main.dart
+- [ ] remove api key from .dart files (https://github.com/enriicola/Marapp/security/secret-scanning)
+- [ ] implement tests
+- [ ] implement github actions for tests
 - [ ] check if users exists in login page
 - [ ] add forgotten password mechanism
 - [x] change bottom bar icons
@@ -34,3 +37,15 @@ Mara’s sweets and savory -> flutter app for a pastry e-commerce developed for 
 - [ ] add technical support
 - [ ] add a maximun order per day system (for my mom side, because she's still a human and not a robot)
 - [ ] possibility to ask something or leave notes for Mara when ordering any food
+
+
+
+## test
+## Project proposal for the professor:
+![Marapp](Pezzano_Castagna-ProjectProposal.pdf)
+
+<image src="Pezzano_Castagna-ProjectProposal.pdf"/>
+
+<iframe width="100%" height="800" src="Pezzano_Castagna-ProjectProposal.pdf">
+
+![ProjectProposal](Pezzano_Castagna-ProjectProposal-merged.jpg)

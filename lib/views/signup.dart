@@ -64,7 +64,7 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
   void _skipToLogin() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => LoginSignupView()),
+      MaterialPageRoute(builder: (context) => LoginView()),
     );
   }
 
@@ -73,7 +73,7 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
     final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text("Sign Up")),
+      appBar: AppBar(title: Text("Signup")),
       body: authProvider.isLoading
           ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(

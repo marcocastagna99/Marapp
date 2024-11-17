@@ -7,14 +7,16 @@ import '../providers/auth_provider.dart' as local_auth;
 import 'home_screen.dart';
 import 'signup.dart';
 
-class LoginSignupView extends StatefulWidget {
-  const LoginSignupView({super.key});
+class LoginView extends StatefulWidget {
+  final FirebaseAuth? auth;
+
+  const LoginView({super.key, this.auth});
 
   @override
-  _LoginSignupViewState createState() => _LoginSignupViewState();
+  LoginViewState createState() => LoginViewState();
 }
 
-class _LoginSignupViewState extends State<LoginSignupView> {
+class LoginViewState extends State<LoginView> {
   bool isLoading = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
