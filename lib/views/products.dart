@@ -44,4 +44,3 @@ class ProductsViewState extends State<ProductsView> {
     );
   }
 }
-

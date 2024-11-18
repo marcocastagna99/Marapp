@@ -10,6 +10,7 @@ Mara’s sweets and savory -> flutter app for a pastry e-commerce developed for 
 - [x] implement github actions for tests
 - [ ] check if users exists in login page
 - [ ] add forgotten password mechanism
+- [ ] add actual info inside the labels of profile.dart text boxes
 - [x] change bottom bar icons
 - [x] create app icon 
 - [x] change theme colors
@@ -40,12 +41,5 @@ Mara’s sweets and savory -> flutter app for a pastry e-commerce developed for 
 
 
 
-## test
 ## Project proposal for the professor:
-![Marapp](Pezzano_Castagna-ProjectProposal.pdf)
-
-<image src="Pezzano_Castagna-ProjectProposal.pdf"/>
-
-<iframe width="100%" height="800" src="Pezzano_Castagna-ProjectProposal.pdf">
-
 ![ProjectProposal](Pezzano_Castagna-ProjectProposal-merged.jpg)

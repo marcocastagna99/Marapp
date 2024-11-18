@@ -15,11 +15,32 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(Marapp());
+
+  // Initialize themeNotifier with the device's current theme mode
+  final Brightness brightness = WidgetsBinding.instance.window.platformBrightness;
+  final ThemeMode initialThemeMode = brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light;
+
+  runApp(Marapp(initialThemeMode: initialThemeMode));
 }
 
-class Marapp extends StatelessWidget {
-  const Marapp({super.key});
+class Marapp extends StatefulWidget {
+  const Marapp({super.key, required this.initialThemeMode});
+
+  final ThemeMode initialThemeMode;
+
+  @override
+  MarappState createState() => MarappState();
+}
+
+class MarappState extends State<Marapp> {
+  // Create a ValueNotifier to manage the theme state
+  static late final ValueNotifier<ThemeMode> themeNotifier;
+
+  @override
+  void initState() {
+    super.initState();
+    themeNotifier = ValueNotifier(widget.initialThemeMode);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,15 +48,20 @@ class Marapp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
-      child: MaterialApp(
-        title: 'Marapp',
-        theme: getTheme(false),
-        darkTheme: getTheme(true),
-        themeMode: ThemeMode.system,
-        home: SplashScreen(),
-        routes: {
-          '/home': (context) => AuthWrapper(),
-          '/login': (context) => RegistrationFlow(),
+      child: ValueListenableBuilder<ThemeMode>(
+        valueListenable: themeNotifier,
+        builder: (context, ThemeMode currentMode, child) {
+          return MaterialApp(
+            title: 'Marapp',
+            theme: getTheme(false),
+            darkTheme: getTheme(true),
+            themeMode: currentMode, // Use the current theme mode
+            home: SplashScreen(),
+            routes: {
+              '/home': (context) => AuthWrapper(),
+              '/login': (context) => RegistrationFlow(),
+            },
+          );
         },
       ),
     );

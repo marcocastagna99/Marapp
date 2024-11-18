@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'dart:io';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -315,27 +317,44 @@ class ProfileViewState extends State<ProfileView> {
     void Function(String)? onChanged,
     Color? borderColor,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: borderColor ?? Colors.grey),
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: TextField(
-        controller: controller,
-        focusNode: focusNode,
-        obscureText: obscureText,
-        decoration: InputDecoration(
-          labelText: label,
-          errorText: errorText,
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(
-            vertical: 8.0,
-            horizontal: 16.0,
-          ),
-          suffixIcon: suffixIcon,
-        ),
-        onChanged: onChanged,
-      ),
-    );
+    return Platform.isIOS || Platform.isMacOS
+        ? CupertinoTextField(
+            controller: controller,
+            focusNode: focusNode,
+            obscureText: obscureText,
+            placeholder: label,
+            suffix: suffixIcon,
+            onChanged: onChanged,
+            decoration: BoxDecoration(
+              border: Border.all(color: borderColor ?? CupertinoColors.systemGrey),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            padding: EdgeInsets.symmetric(
+              vertical: 8.0,
+              horizontal: 16.0,
+            ),
+          )
+        : Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: borderColor ?? Colors.grey),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: TextField(
+              controller: controller,
+              focusNode: focusNode,
+              obscureText: obscureText,
+              decoration: InputDecoration(
+                labelText: label,
+                errorText: errorText,
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: 8.0,
+                  horizontal: 16.0,
+                ),
+                suffixIcon: suffixIcon,
+              ),
+              onChanged: onChanged,
+            ),
+          );
   }
 }

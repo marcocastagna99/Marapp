@@ -1,5 +1,7 @@
 {
    "files.associations": {
       "bitset": "cpp"
-   }
+   },
+   "todo-tree.tree.showBadges": false,
+   "todo-tree.tree.showCountsInTree": false
 }
