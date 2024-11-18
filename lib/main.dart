@@ -69,7 +69,7 @@ class MarappState extends State<Marapp> {
             title: 'Marapp',
             theme: getTheme(false),
             darkTheme: getTheme(true),
-            themeMode: currentMode, // Use the current theme mode
+            themeMode: currentMode,
             home: SplashScreen(),
             routes: {
               '/home': (context) => AuthWrapper(),

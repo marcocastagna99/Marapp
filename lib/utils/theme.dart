@@ -13,6 +13,8 @@ const TextStyle appBarTextStyle = TextStyle(
   fontWeight: FontWeight.bold,
 );
 
+// bool isDarkMode = true;
+
 ThemeData getTheme(bool isDarkMode) => ThemeData(
   brightness: isDarkMode ? Brightness.dark : Brightness.light,
   primaryColor: primaryCyan,
@@ -20,10 +22,12 @@ ThemeData getTheme(bool isDarkMode) => ThemeData(
   scaffoldBackgroundColor: isDarkMode ? primaryBlack : primaryWhite,
   appBarTheme: AppBarTheme(
     backgroundColor: primaryCyan,
-    iconTheme: IconThemeData(color: isDarkMode ? primaryBlack : primaryWhite),
+    iconTheme:
+        IconThemeData(color: isDarkMode ? primaryBlack : primaryWhite),
     titleTextStyle: appBarTextStyle.copyWith(
         color: isDarkMode ? primaryBlack : primaryWhite),
   ),
+  
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: primaryCyan,
@@ -31,6 +35,7 @@ ThemeData getTheme(bool isDarkMode) => ThemeData(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
     ),
   ),
+  
   textButtonTheme: TextButtonThemeData(
     style: TextButton.styleFrom(
       backgroundColor: Colors.transparent,
@@ -38,11 +43,13 @@ ThemeData getTheme(bool isDarkMode) => ThemeData(
       splashFactory: NoSplash.splashFactory,
     ),
   ),
+  
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: WidgetStateProperty.all<Color>(primaryCyan),
+      backgroundColor: WidgetStatePropertyAll<Color>(primaryCyan),
     ),
   ),
+  
   textTheme: TextTheme(
     bodyLarge: TextStyle(
         color: isDarkMode ? primaryWhite : primaryBlack, fontSize: 16),
@@ -56,54 +63,21 @@ ThemeData getTheme(bool isDarkMode) => ThemeData(
     titleMedium: TextStyle(
         fontSize: 18, color: isDarkMode ? Colors.grey : Colors.grey),
   ),
+  
   textSelectionTheme: TextSelectionThemeData(
     cursorColor: primaryCyan,
+    selectionColor: Colors.cyan[100],
+    selectionHandleColor: Colors.cyan[900], // flutter bug, handles remain purple
+  ),
+  
+  inputDecorationTheme: InputDecorationTheme(
+    labelStyle: TextStyle(
+      color: Colors.grey,
+    ),
+    floatingLabelStyle: TextStyle(
+      color: Colors.grey,
+    ),
   ),
 );
-
-class RoundedTextField extends StatelessWidget {
-  final TextEditingController controller;
-  final String label;
-  final FocusNode? focusNode;
-  final bool obscureText;
-  final String? errorText;
-  final Widget? suffixIcon;
-  final void Function(String)? onChanged;
-  final Color? borderColor;
-
-  const RoundedTextField({
-    super.key,
-    required this.controller,
-    required this.label,
-    this.focusNode,
-    this.obscureText = false,
-    this.errorText,
-    this.suffixIcon,
-    this.onChanged,
-    this.borderColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: borderColor ?? Colors.grey),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: TextField(
-        controller: controller,
-        focusNode: focusNode,
-        obscureText: obscureText,
-        onChanged: onChanged,
-        decoration: InputDecoration(
-          labelText: label,
-          errorText: errorText,
-          suffixIcon: suffixIcon,
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        ),
-      ),
-    );
-  }
-}
+// Sign-in button theme customization
 

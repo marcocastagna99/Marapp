@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:provider/provider.dart';
+import 'dart:io' show Platform;
 
 import '../providers/auth_provider.dart' as local_auth;
 import 'home_screen.dart';
@@ -213,26 +215,55 @@ class LoginViewState extends State<LoginView> {
     bool enabled = true,
     Color? borderColor,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(
-            color: borderColor ?? Colors.grey), // Use provided border color
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: TextField(
-        controller: controller,
-        focusNode: focusNode,
-        obscureText: obscureText,
-        enabled: enabled,
-        decoration: InputDecoration(
-          labelText: label,
-          errorText: errorText,
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          suffixIcon: suffixIcon,
+    if (Platform.isIOS || Platform.isMacOS) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CupertinoTextField(
+            controller: controller,
+            focusNode: focusNode,
+            obscureText: obscureText,
+            enabled: enabled,
+            placeholder: label,
+            suffix: suffixIcon,
+            onChanged: onChanged,
+            decoration: BoxDecoration(
+              border: Border.all(color: borderColor ?? Colors.grey),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          ),
+          if (errorText != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 5.0),
+              child: Text(
+                errorText,
+                style: TextStyle(color: Colors.red, fontSize: 12),
+              ),
+            ),
+        ],
+      );
+    } else {
+      return Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: borderColor ?? Colors.grey),
+          borderRadius: BorderRadius.circular(10.0),
         ),
-        onChanged: onChanged,
-      ),
-    );
+        child: TextField(
+          controller: controller,
+          focusNode: focusNode,
+          obscureText: obscureText,
+          enabled: enabled,
+          decoration: InputDecoration(
+            labelText: label,
+            errorText: errorText,
+            border: InputBorder.none,
+            contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            suffixIcon: suffixIcon,
+          ),
+          onChanged: onChanged,
+        ),
+      );
+    }
   }
 }

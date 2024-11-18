@@ -271,6 +271,8 @@ class ProfileViewState extends State<ProfileView> {
                           ? Colors.green
                           : Colors.red,
             ),
+            SizedBox(height: 10), // Add space here
+            
             if (_showConfirmPassword)
               _buildRoundedTextField(
                 controller: _confirmPasswordController,
@@ -317,8 +319,11 @@ class ProfileViewState extends State<ProfileView> {
     void Function(String)? onChanged,
     Color? borderColor,
   }) {
-    return Platform.isIOS || Platform.isMacOS
-        ? CupertinoTextField(
+    if (Platform.isIOS || Platform.isMacOS) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CupertinoTextField(
             controller: controller,
             focusNode: focusNode,
             obscureText: obscureText,
@@ -333,28 +338,40 @@ class ProfileViewState extends State<ProfileView> {
               vertical: 8.0,
               horizontal: 16.0,
             ),
-          )
-        : Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: borderColor ?? Colors.grey),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: TextField(
-              controller: controller,
-              focusNode: focusNode,
-              obscureText: obscureText,
-              decoration: InputDecoration(
-                labelText: label,
-                errorText: errorText,
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: 8.0,
-                  horizontal: 16.0,
-                ),
-                suffixIcon: suffixIcon,
+          ),
+          if (errorText != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 5.0),
+              child: Text(
+                errorText,
+                style: TextStyle(color: Colors.red, fontSize: 12),
               ),
-              onChanged: onChanged,
             ),
-          );
+        ],
+      );
+    } else {
+      return Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: borderColor ?? Colors.grey),
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: TextField(
+          controller: controller,
+          focusNode: focusNode,
+          obscureText: obscureText,
+          decoration: InputDecoration(
+            labelText: label,
+            errorText: errorText,
+            border: InputBorder.none,
+            contentPadding: EdgeInsets.symmetric(
+              vertical: 8.0,
+              horizontal: 16.0,
+            ),
+            suffixIcon: suffixIcon,
+          ),
+          onChanged: onChanged,
+        ),
+      );
+    }
   }
 }
