@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CartView extends StatefulWidget {
+  const CartView({super.key});
+
   @override
   CartViewState createState() => CartViewState();
 }

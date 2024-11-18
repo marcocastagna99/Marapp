@@ -1,7 +1,10 @@
+import 'dart:ui';
+
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'firebase_options.dart';
 import 'providers/auth_provider.dart';
@@ -16,9 +19,20 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Initialize themeNotifier with the device's current theme mode
-  final Brightness brightness = WidgetsBinding.instance.window.platformBrightness;
-  final ThemeMode initialThemeMode = brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light;
+  // Initialize themeNotifier with the device's current theme mode, if there are no saved preferences
+  final prefs = await SharedPreferences.getInstance();
+  final Brightness deviceBrightnessMode =
+      PlatformDispatcher.instance.platformBrightness;
+  final ThemeMode initialThemeMode;
+
+  if (prefs.containsKey('darkMode')) {
+    initialThemeMode =
+        prefs.getBool('darkMode')! ? ThemeMode.dark : ThemeMode.light;
+  } else {
+    initialThemeMode = deviceBrightnessMode == Brightness.dark
+        ? ThemeMode.dark
+        : ThemeMode.light;
+  }
 
   runApp(Marapp(initialThemeMode: initialThemeMode));
 }

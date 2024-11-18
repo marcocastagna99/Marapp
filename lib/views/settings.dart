@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import '../main.dart'; // Import the main.dart file to access the themeNotifier
+import 'package:shared_preferences/shared_preferences.dart';
+import '../main.dart';
 
 class SettingsView extends StatefulWidget {
   const SettingsView({super.key});
@@ -11,33 +12,54 @@ class SettingsView extends StatefulWidget {
 }
 
 class SettingsViewState extends State<SettingsView> {
-  bool _darkMode = false;
+  bool _darkMode = ThemeMode.dark == MarappState.themeNotifier.value;
   bool _notifications = false;
 
   @override
   void initState() {
     super.initState();
-    // Remove _darkMode initialization from here
+    _loadSettings();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _darkMode = Theme.of(context).brightness == Brightness.dark;
+  void _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _darkMode = prefs.getBool('darkMode') ?? false;
+      _notifications = prefs.getBool('notifications') ?? false;
+    });
+  }
+
+  void _saveDarkModeSetting(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('darkMode', value);
+  }
+
+  void _saveNotificationSetting(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('notifications', value);
   }
 
   void _toggleDarkMode(bool value) {
     setState(() {
       _darkMode = value;
-      MarappState.themeNotifier.value = _darkMode ? ThemeMode.dark : ThemeMode.light;
+      MarappState.themeNotifier.value =
+          _darkMode ? ThemeMode.dark : ThemeMode.light;
     });
+    _saveDarkModeSetting(value);
+  }
+
+  void _toggleNotifications(bool value) {
+    setState(() {
+      _notifications = value;
+    });
+    _saveNotificationSetting(value);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings'),
+        title: const Text('Settings'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -46,39 +68,31 @@ class SettingsViewState extends State<SettingsView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Dark Mode'),
+                const Text('Dark Mode'),
                 Platform.isIOS || Platform.isMacOS
-                  ? CupertinoSwitch(
-                    value: _darkMode,
-                    onChanged: _toggleDarkMode,
-                    )
-                  : Switch(
-                    value: _darkMode,
-                    onChanged: _toggleDarkMode,
-                    ),
+                    ? CupertinoSwitch(
+                        value: _darkMode,
+                        onChanged: _toggleDarkMode,
+                      )
+                    : Switch(
+                        value: _darkMode,
+                        onChanged: _toggleDarkMode,
+                      ),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Notifications'),
+                const Text('Notifications'),
                 Platform.isIOS || Platform.isMacOS
-                  ? CupertinoSwitch(
-                    value: _notifications,
-                    onChanged: (value) {
-                      setState(() {
-                      _notifications = value;
-                      });
-                    },
-                    )
-                  : Switch(
-                    value: _notifications,
-                    onChanged: (value) {
-                      setState(() {
-                      _notifications = value;
-                      });
-                    },
-                    ),
+                    ? CupertinoSwitch(
+                        value: _notifications,
+                        onChanged: _toggleNotifications,
+                      )
+                    : Switch(
+                        value: _notifications,
+                        onChanged: _toggleNotifications,
+                      ),
               ],
             ),
           ],
