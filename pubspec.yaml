@@ -61,14 +61,20 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
-  flutter_launcher_icons: ^0.14.1
+  flutter_launcher_icons: any
 
 flutter_launcher_icons:
   image_path: "assets/icon.png"
   android: true
   ios: true
-  macos: true
-  web: true
+  web:
+    generate: true
+    image_path: "assets/icon.png"
+    # background_color: "#hexcode"
+    # theme_color: "#hexcode"
+  macos:
+    generate: true
+    image_path: "assets/icon.png"
   
 
 # flutter_launcher_icons:
