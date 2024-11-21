@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  firebase_messaging: any
   cloud_firestore: ^5.4.2
   firebase_core: any
   firebase_auth: ^5.3.1
@@ -37,6 +38,7 @@ dependencies:
   provider: ^6.0.5
   google_sign_in: ^6.0.1
   flutter_signin_button: ^2.0.0
+  flutter_local_notifications: any
   logger: ^2.0.2+1
 
 
@@ -51,7 +53,6 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  firebase_messaging: any
   mockito: any
 
 
