@@ -1444,11 +1444,11 @@ SPEC CHECKSUMS:
   abseil: d121da9ef7e2ff4cab7666e76c5a3e0915ae08c3
   AppAuth: 501c04eda8a8d11f179dbe8637b7a91bb7e5d2fa
   BoringSSL-GRPC: ca6a8e5d04812fce8ffd6437810c2d46f925eaeb
-  cloud_firestore: d85fe469d0b8d5238ea3eb7729e13bf34217a037
+  cloud_firestore: 608e115b3a006d753319002db65b23035f87ad23
   Firebase: 7fd5466678d964be78fbf536d8a3385da19c4828
-  firebase_auth: 85ed6c80b24da60af13391f9cdc0e566440b1963
-  firebase_core: d95c4a2225d7b6ed46bc31fb2a6f421fc7c8285b
-  firebase_messaging: 821b4f05a071d54d6ed826923a48c9101b93d443
+  firebase_auth: b2053dbf68fe28ed702bf9fa969643ff5491c64f
+  firebase_core: 5235a039bae1d526520162a2e5e3e57e872f0b39
+  firebase_messaging: 786f2f7fd952820abe23a32eecf4ddc0f6fb692d
   FirebaseAppCheckInterop: d265d9f4484e7ec1c591086408840fdd383d1213
   FirebaseAuth: c359af98bd703cbf4293eec107a40de08ede6ce6
   FirebaseAuthInterop: 1219bee9b23e6ebe84c256a0d95adab53d11c331
@@ -1461,7 +1461,7 @@ SPEC CHECKSUMS:
   FirebaseMessaging: f8a160d99c2c2e5babbbcc90c4a3e15db036aee2
   FirebaseSharedSwift: 302ac5967857ad7e7388b15382d705b8c8d892aa
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
-  google_sign_in_ios: 07375bfbf2620bc93a602c0e27160d6afc6ead38
+  google_sign_in_ios: 0ab078e60da6dfe23cbc55c83502b52bba1aad63
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleSignIn: d4281ab6cf21542b1cfaff85c191f230b399d2db
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
@@ -1472,7 +1472,7 @@ SPEC CHECKSUMS:
   leveldb-library: cc8b8f8e013647a295ad3f8cd2ddf49a6f19be19
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
-  shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
+  shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
 
 PODFILE CHECKSUM: 73d0feaa9ca8c9b13bc5b5e21fbe09c71472f86f
 

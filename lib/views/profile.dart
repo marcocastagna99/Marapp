@@ -62,6 +62,11 @@ class ProfileViewState extends State<ProfileView> {
     });
   }
 
+  Future<void> _logout() async {
+    await _auth.signOut();
+    Navigator.pushReplacementNamed(context, '/login');
+  }
+
   Future<void> _fetchUserProfile() async {
     User? user = _auth.currentUser;
 
@@ -178,6 +183,12 @@ class ProfileViewState extends State<ProfileView> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Profile'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: _logout,
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
