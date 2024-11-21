@@ -14,7 +14,7 @@
                "configurations": {
                   "android": "1:645919336241:android:52ed4137f6cd012ff6b210",
                   "ios": "1:645919336241:ios:d671d503b08c147ef6b210",
-                  "macos": "1:645919336241:ios:d671d503b08c147ef6b210",
+                  "macos": "1:645919336241:macos:d671d503b08c147ef6b210",
                   "web": "1:645919336241:web:7d0b0c3e2e3e0f6ab6b210"
                }
             }

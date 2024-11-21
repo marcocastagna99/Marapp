@@ -1,5 +1,3 @@
-// https://www.flaticon.com
-
 import 'package:flutter/material.dart';
 
 // Define constant colors
@@ -13,8 +11,6 @@ const TextStyle appBarTextStyle = TextStyle(
   fontWeight: FontWeight.bold,
 );
 
-// bool isDarkMode = true;
-
 ThemeData getTheme(bool isDarkMode) => ThemeData(
   brightness: isDarkMode ? Brightness.dark : Brightness.light,
   primaryColor: primaryCyan,
@@ -22,12 +18,10 @@ ThemeData getTheme(bool isDarkMode) => ThemeData(
   scaffoldBackgroundColor: isDarkMode ? primaryBlack : primaryWhite,
   appBarTheme: AppBarTheme(
     backgroundColor: primaryCyan,
-    iconTheme:
-        IconThemeData(color: isDarkMode ? primaryBlack : primaryWhite),
+    iconTheme: IconThemeData(color: isDarkMode ? primaryBlack : primaryWhite),
     titleTextStyle: appBarTextStyle.copyWith(
         color: isDarkMode ? primaryBlack : primaryWhite),
   ),
-  
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: primaryCyan,
@@ -35,7 +29,6 @@ ThemeData getTheme(bool isDarkMode) => ThemeData(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
     ),
   ),
-  
   textButtonTheme: TextButtonThemeData(
     style: TextButton.styleFrom(
       backgroundColor: Colors.transparent,
@@ -43,13 +36,11 @@ ThemeData getTheme(bool isDarkMode) => ThemeData(
       splashFactory: NoSplash.splashFactory,
     ),
   ),
-  
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: WidgetStatePropertyAll<Color>(primaryCyan),
+      backgroundColor: MaterialStateProperty.all<Color>(primaryCyan),
     ),
   ),
-  
   textTheme: TextTheme(
     bodyLarge: TextStyle(
         color: isDarkMode ? primaryWhite : primaryBlack, fontSize: 16),
@@ -63,13 +54,11 @@ ThemeData getTheme(bool isDarkMode) => ThemeData(
     titleMedium: TextStyle(
         fontSize: 18, color: isDarkMode ? Colors.grey : Colors.grey),
   ),
-  
   textSelectionTheme: TextSelectionThemeData(
     cursorColor: primaryCyan,
     selectionColor: Colors.cyan[100],
     selectionHandleColor: Colors.cyan[900], // flutter bug, handles remain purple
   ),
-  
   inputDecorationTheme: InputDecorationTheme(
     labelStyle: TextStyle(
       color: Colors.grey,
@@ -78,6 +67,23 @@ ThemeData getTheme(bool isDarkMode) => ThemeData(
       color: Colors.grey,
     ),
   ),
+  iconButtonTheme: IconButtonThemeData(
+    style: ButtonStyle(
+      iconColor: MaterialStateProperty.all<Color>(
+          isDarkMode ? primaryWhite : primaryBlack),
+      backgroundColor: MaterialStateProperty.all<Color>(primaryCyan),
+      padding: MaterialStateProperty.all<EdgeInsets>(
+          const EdgeInsets.all(8.0)),
+      shape: MaterialStateProperty.all<OutlinedBorder>(
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+      ),
+    ),
+  ),
+  floatingActionButtonTheme: FloatingActionButtonThemeData(
+    backgroundColor: primaryCyan,
+    foregroundColor: isDarkMode ? primaryBlack : primaryWhite,
+  ),
 );
-// Sign-in button theme customization
 
