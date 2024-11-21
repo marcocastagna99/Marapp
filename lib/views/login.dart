@@ -215,6 +215,9 @@ class LoginViewState extends State<LoginView> {
     bool enabled = true,
     Color? borderColor,
   }) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkMode ? Colors.white : Colors.black;
+
     if (Platform.isIOS || Platform.isMacOS) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -227,6 +230,7 @@ class LoginViewState extends State<LoginView> {
             placeholder: label,
             suffix: suffixIcon,
             onChanged: onChanged,
+            style: TextStyle(color: textColor),
             decoration: BoxDecoration(
               border: Border.all(color: borderColor ?? Colors.grey),
               borderRadius: BorderRadius.circular(10.0),
@@ -261,6 +265,7 @@ class LoginViewState extends State<LoginView> {
             contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             suffixIcon: suffixIcon,
           ),
+          style: TextStyle(color: textColor),
           onChanged: onChanged,
         ),
       );

@@ -251,6 +251,9 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
     bool enabled = true,
     Color? borderColor,
   }) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkMode ? Colors.white : Colors.black;
+
     if (Platform.isIOS || Platform.isMacOS) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -263,6 +266,7 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
             placeholder: label,
             suffix: suffixIcon,
             onChanged: onChanged,
+            style: TextStyle(color: textColor),
             decoration: BoxDecoration(
               border: Border.all(color: borderColor ?? Colors.grey),
               borderRadius: BorderRadius.circular(10.0),
@@ -297,6 +301,7 @@ class _RegistrationFlowState extends State<RegistrationFlow> {
             contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             suffixIcon: suffixIcon,
           ),
+          style: TextStyle(color: textColor),
           onChanged: onChanged,
         ),
       );
