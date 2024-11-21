@@ -330,6 +330,9 @@ class ProfileViewState extends State<ProfileView> {
     void Function(String)? onChanged,
     Color? borderColor,
   }) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkMode ? Colors.white : Colors.black;
+
     if (Platform.isIOS || Platform.isMacOS) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -339,6 +342,7 @@ class ProfileViewState extends State<ProfileView> {
             focusNode: focusNode,
             obscureText: obscureText,
             placeholder: label,
+            style: TextStyle(color: textColor),
             suffix: suffixIcon,
             onChanged: onChanged,
             decoration: BoxDecoration(

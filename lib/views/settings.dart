@@ -55,6 +55,11 @@ class SettingsViewState extends State<SettingsView> {
     _saveNotificationSetting(value);
   }
 
+  void _sendTestNotification() {
+    // Code to send a push notification
+    print('Test push notification sent');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,6 +99,11 @@ class SettingsViewState extends State<SettingsView> {
                         onChanged: _toggleNotifications,
                       ),
               ],
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _sendTestNotification,
+              child: const Text('Test Push Notification'),
             ),
           ],
         ),

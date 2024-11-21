@@ -4,24 +4,22 @@ import 'package:integration_test/integration_test.dart';
 import 'package:marapp/main.dart' as app;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:mockito/mockito.dart';
-
-class MockFirebaseApp extends Mock implements FirebaseApp {}
-
-class MockFirebaseOptions extends Fake implements FirebaseOptions {}
+import 'package:firebase_core_platform_interface/firebase_core_platform_interface.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() async {
-    final mockApp = MockFirebaseApp();
-    final mockOptions = MockFirebaseOptions();
-    when(mockApp.name).thenReturn('test');
-    when(mockApp.options).thenReturn(mockOptions);
-    when(mockOptions.apiKey).thenReturn('test');
-    when(mockOptions.appId).thenReturn('test');
-    when(mockOptions.messagingSenderId).thenReturn('test');
-    when(mockOptions.projectId).thenReturn('test');
-    await Firebase.initializeApp(name: 'test', options: mockOptions);
+    // prepare FirebaseOptions from the JSON file
+    
+
+    final options = FirebaseOptions(
+      apiKey: 'your-api-key',
+      appId: 'your-app-id',
+      messagingSenderId: 'your-messaging-sender-id',
+      projectId: 'your-project-id',
+    );
+    await Firebase.initializeApp(name: 'test', options: options);
   });
 
   testWidgets('Splash screen has Marapp text', (WidgetTester tester) async {

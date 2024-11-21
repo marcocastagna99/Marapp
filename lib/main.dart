@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
@@ -13,10 +15,26 @@ import 'views/home_screen.dart';
 import 'views/signup.dart';
 import 'views/splash.dart';
 
+Future<FirebaseOptions> _loadFirebaseOptions() async {
+  final file = File('firebase.json');
+  final jsonString = await file.readAsString();
+  final jsonMap = json.decode(jsonString) as Map<String, dynamic>;
+  final platforms = jsonMap['flutter']['platforms'] as Map<String, dynamic>;
+  final android = platforms['android']['default'] as Map<String, dynamic>;
+
+  return FirebaseOptions(
+    apiKey: android['apiKey'],
+    appId: android['appId'],
+    messagingSenderId: android['messagingSenderId'],
+    projectId: android['projectId'],
+  );
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final options = await _loadFirebaseOptions();
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+    options: options,
   );
 
   // Initialize themeNotifier with the device's current theme mode, if there are no saved preferences
