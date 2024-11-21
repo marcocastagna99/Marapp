@@ -74,6 +74,9 @@ class LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkMode ? Colors.white : Colors.black;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Login'),
@@ -89,12 +92,27 @@ class LoginViewState extends State<LoginView> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 // Email Field
-                TextFormField(
+                Platform.isIOS || Platform.isMacOS
+                    ? CupertinoTextField(
+                  controller: emailController,
+                  placeholder: 'Email',
+                  style: TextStyle(color: textColor),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  onChanged: (value) {
+                    _formKey.currentState!.validate();
+                  },
+                )
+                    : TextFormField(
                   controller: emailController,
                   decoration: InputDecoration(
                     labelText: 'Email',
                     border: OutlineInputBorder(),
                   ),
+                  style: TextStyle(color: textColor),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
@@ -109,7 +127,32 @@ class LoginViewState extends State<LoginView> {
                 SizedBox(height: 20),
 
                 // Password Field
-                TextFormField(
+                Platform.isIOS || Platform.isMacOS
+                    ? CupertinoTextField(
+                  controller: passwordController,
+                  placeholder: 'Password',
+                  obscureText: !_passwordVisible,
+                  style: TextStyle(color: textColor),
+                  suffix: IconButton(
+                    icon: Icon(
+                      _passwordVisible ? Icons.visibility_off : Icons.visibility,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _passwordVisible = !_passwordVisible;
+                      });
+                    },
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  onChanged: (value) {
+                    _formKey.currentState!.validate();
+                  },
+                )
+                    : TextFormField(
                   controller: passwordController,
                   obscureText: !_passwordVisible,
                   decoration: InputDecoration(
@@ -117,9 +160,7 @@ class LoginViewState extends State<LoginView> {
                     border: OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _passwordVisible
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+                        _passwordVisible ? Icons.visibility_off : Icons.visibility,
                       ),
                       onPressed: () {
                         setState(() {
@@ -128,6 +169,7 @@ class LoginViewState extends State<LoginView> {
                       },
                     ),
                   ),
+                  style: TextStyle(color: textColor),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your password';
