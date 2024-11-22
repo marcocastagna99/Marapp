@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -10,15 +12,19 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() async {
-    // prepare FirebaseOptions from the JSON file
-    
+    // Read the JSON file
+    final file = File('firebase.json');
+    final jsonString = await file.readAsString();
+    final jsonMap = json.decode(jsonString);
 
+    // Extract Firebase options from the JSON map
     final options = FirebaseOptions(
-      apiKey: 'your-api-key',
-      appId: 'your-app-id',
-      messagingSenderId: 'your-messaging-sender-id',
-      projectId: 'your-project-id',
+      apiKey: jsonMap['flutter']['platforms']['android']['default']['apiKey'],
+      appId: jsonMap['flutter']['platforms']['android']['default']['appId'],
+      messagingSenderId: jsonMap['flutter']['platforms']['android']['default']['messagingSenderId'],
+      projectId: jsonMap['flutter']['platforms']['android']['default']['projectId'],
     );
+
     await Firebase.initializeApp(name: 'test', options: options);
   });
 
