@@ -30,31 +30,71 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  firebase_messaging: any
+  cloud_firestore: ^5.4.2
   firebase_core: any
-  firebase_auth: any # Per l'autenticazione
-  cloud_firestore: any # Per Firestore (database)
-  provider: ^6.0.1
+  firebase_auth: ^5.3.1
+  collection: ^1.18.0
+  provider: ^6.0.5
   google_sign_in: ^6.0.1
   flutter_signin_button: ^2.0.0
+  flutter_local_notifications: any
   logger: ^2.0.2+1
-  #flat_icons_flutter: ^1.0.1
 
 
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  shared_preferences: ^2.3.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
+  mockito: any
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: any
+
+flutter_launcher_icons:
+  image_path: "assets/icon.png"
+  android: true
+  ios: true
+  web:
+    generate: true
+    image_path: "assets/icon.png"
+    # background_color: "#hexcode"
+    # theme_color: "#hexcode"
+  macos:
+    generate: true
+    image_path: "assets/icon.png"
+  
+
+# flutter_launcher_icons:
+#   android: "launcher_icon"
+#   ios: true
+#   image_path: "assets/images/icon.png"
+#   min_sdk_android: 21 # android min sdk min:16, default 21
+#   web:
+#     generate: true
+#     image_path: "assets/images/icon.png"
+#     background_color: "#hexcode"
+#     theme_color: "#hexcode"
+#   windows:
+#     generate: true
+#     image_path: "assets/images/icon.png"
+#     icon_size: 48 # min:48, max:256, default: 48
+#   macos:
+#     generate: true
+#     image_path: "assets/images/icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
