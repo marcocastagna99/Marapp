@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:marapp/providers/auth_provider.dart';
 import 'package:marapp/views/HomeScreen.dart';
+import 'package:marapp/views/login_view.dart';
 
 class RegistrationScreen extends StatefulWidget {
   @override
@@ -150,6 +151,23 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     : ElevatedButton(
                   onPressed: () => _register(context),
                   child: Text('Registrati'),
+                ),
+                SizedBox(height: 20),
+                // Link per la pagina di login
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginScreen()), // Cambia con la tua LoginScreen
+                    );
+                  },
+                  child: Text(
+                    "Hai già un account? Accedi",
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               ],
             ),
