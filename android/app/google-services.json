@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "272906049482",
-    "project_id": "marapp-37d35",
-    "storage_bucket": "marapp-37d35.firebasestorage.app"
+    "project_number": "776061981443",
+    "project_id": "marapp-38546",
+    "storage_bucket": "marapp-38546.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:272906049482:android:35b33f241567ac3fa3e133",
+        "mobilesdk_app_id": "1:776061981443:android:812a59a58c60b8e2e24f36",
         "android_client_info": {
-          "package_name": "com.marapp.app"
+          "package_name": "com.example.marapp"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAQ9VGIg6hFOJxfD_wI3ttmKUgNniBV6ks"
+          "current_key": "AIzaSyBchfymgPESmGSqzg8G2zq4zCLPoqTiA4g"
         }
       ],
       "services": {

@@ -44,38 +44,39 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyB_3Dn83SppP1g41vMZKhhsVnNKtuEnrDo',
-    appId: '1:272906049482:web:bf6531a66ecb83eda3e133',
-    messagingSenderId: '272906049482',
-    projectId: 'marapp-37d35',
-    authDomain: 'marapp-37d35.firebaseapp.com',
-    storageBucket: 'marapp-37d35.firebasestorage.app',
-    measurementId: 'G-Y5H7RBPWFR',
+    apiKey: 'AIzaSyAe9JJND4gv8UpHsdu95Qmu4To6AKNSe-c',
+    appId: '1:776061981443:web:e0e56496e530cd2ee24f36',
+    messagingSenderId: '776061981443',
+    projectId: 'marapp-38546',
+    authDomain: 'marapp-38546.firebaseapp.com',
+    storageBucket: 'marapp-38546.firebasestorage.app',
+    measurementId: 'G-VNBEGNF3TX',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAQ9VGIg6hFOJxfD_wI3ttmKUgNniBV6ks',
-    appId: '1:272906049482:android:35b33f241567ac3fa3e133',
-    messagingSenderId: '272906049482',
-    projectId: 'marapp-37d35',
-    storageBucket: 'marapp-37d35.firebasestorage.app',
+    apiKey: 'AIzaSyBchfymgPESmGSqzg8G2zq4zCLPoqTiA4g',
+    appId: '1:776061981443:android:812a59a58c60b8e2e24f36',
+    messagingSenderId: '776061981443',
+    projectId: 'marapp-38546',
+    storageBucket: 'marapp-38546.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyB9Y6ztP3wRPJsnHI-b_3wbEWeO7BcThBQ',
-    appId: '1:272906049482:ios:07dd3f212bc42c18a3e133',
-    messagingSenderId: '272906049482',
-    projectId: 'marapp-37d35',
-    storageBucket: 'marapp-37d35.firebasestorage.app',
+    apiKey: 'AIzaSyDLIhBnV-3O3lOUJGp6UsuAwsmwwZj7XnQ',
+    appId: '1:776061981443:ios:2d08ee091f7a01bde24f36',
+    messagingSenderId: '776061981443',
+    projectId: 'marapp-38546',
+    storageBucket: 'marapp-38546.firebasestorage.app',
     iosBundleId: 'com.example.marapp',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyB9Y6ztP3wRPJsnHI-b_3wbEWeO7BcThBQ',
-    appId: '1:272906049482:ios:07dd3f212bc42c18a3e133',
-    messagingSenderId: '272906049482',
-    projectId: 'marapp-37d35',
-    storageBucket: 'marapp-37d35.firebasestorage.app',
+    apiKey: 'AIzaSyDLIhBnV-3O3lOUJGp6UsuAwsmwwZj7XnQ',
+    appId: '1:776061981443:ios:2d08ee091f7a01bde24f36',
+    messagingSenderId: '776061981443',
+    projectId: 'marapp-38546',
+    storageBucket: 'marapp-38546.firebasestorage.app',
     iosBundleId: 'com.example.marapp',
   );
+
 }
