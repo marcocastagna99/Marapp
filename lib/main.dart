@@ -4,10 +4,13 @@ import 'package:provider/provider.dart';
 import '/providers/auth_provider.dart';
 import 'package:marapp/views/HomeScreen.dart';
 import 'package:marapp/views/registration_view.dart';
+import 'firebase_options.dart'; // Importa il file di configurazione
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(); // Inizializza Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform, // Passa le opzioni di configurazione
+  );
   runApp(MyApp());
 }
 
