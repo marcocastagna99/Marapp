@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart'; // Add this import
 import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
 
@@ -74,7 +75,8 @@ class SettingsViewState extends State<SettingsView> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text('Dark Mode'),
-                Platform.isIOS || Platform.isMacOS
+                defaultTargetPlatform == TargetPlatform.iOS ||
+                        defaultTargetPlatform == TargetPlatform.macOS
                     ? CupertinoSwitch(
                         value: _darkMode,
                         onChanged: _toggleDarkMode,
@@ -89,7 +91,8 @@ class SettingsViewState extends State<SettingsView> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text('Notifications'),
-                Platform.isIOS || Platform.isMacOS
+                defaultTargetPlatform == TargetPlatform.iOS ||
+                        defaultTargetPlatform == TargetPlatform.macOS
                     ? CupertinoSwitch(
                         value: _notifications,
                         onChanged: _toggleNotifications,

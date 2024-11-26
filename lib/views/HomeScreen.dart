@@ -1,38 +1,68 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:marapp/providers/auth_provider.dart';
 
-class HomeScreen extends StatelessWidget {
+import '../utils/theme.dart';
+import 'products.dart';
+import 'profile.dart';
+import 'cart.dart';
+import 'settings.dart';
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  HomeScreenState createState() => HomeScreenState();
+}
+
+class HomeScreenState extends State<HomeScreen> {
+  int _currentIndex = 0;
+
+  final List<Widget> _screens = [
+    const ProductsView(),
+    const CartView(),
+    const ProfileView(),
+    const SettingsView(),
+  ];
+
+  void _onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Ottieni l'utente attualmente autenticato dal provider
-    final authProvider = Provider.of<AuthProvider>(context);
-    final user = authProvider.user; // Supponiamo che 'user' contenga i dettagli dell'utente
-
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Home'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () {
-              // Esegui il logout e reindirizza alla pagina di login
-              authProvider.logout();
-              Navigator.of(context).pushReplacementNamed('/register');
-            },
+      body: _screens[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: _onTabTapped,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.cookie,
+                color: _currentIndex == 0 ? primaryCyan : Colors.grey),
+            label: 'Products',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart,
+                color: _currentIndex == 1 ? primaryCyan : Colors.grey),
+            label: 'Cart',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person,
+                color: _currentIndex == 2 ? primaryCyan : Colors.grey),
+            label: 'Profile',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings,
+                color: _currentIndex == 3 ? primaryCyan : Colors.grey),
+            label: 'Settings',
           ),
         ],
-      ),
-      body: Center(
-        child: user != null
-            ? Text(
-          'Ciao ${user.displayName ?? user.email}!', // Mostra il nome utente o l'email
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        )
-            : Text(
-          'Ciao!',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
+        selectedItemColor: primaryCyan,
+        unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }

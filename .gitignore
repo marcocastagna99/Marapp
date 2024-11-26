@@ -9,4 +9,8 @@ pubspec.lock
 **.DS_Store
 
 .flutter-plugins
+/flutter-plugins-dependencies
 .flutter-plugins-dependencies
+**.flutter-plugins-dependencies
+.dart_tool/package_config.json
+**.flutter*

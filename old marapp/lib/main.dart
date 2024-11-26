@@ -10,10 +10,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'firebase_options.dart';
 import 'providers/auth_provider.dart';
-import 'utils/theme.dart';
+import '../../lib/utils/theme.dart';
 import 'views/home_screen.dart';
 import 'views/signup.dart';
-import 'views/splash.dart';
+import '../../lib/views/splash.dart';
 
 Future<FirebaseOptions> _loadFirebaseOptions() async {
   final file = File('firebase.json');

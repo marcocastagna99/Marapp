@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart'; // Add this import
 import 'dart:io';
 
 class ProfileView extends StatefulWidget {
@@ -105,14 +106,14 @@ class ProfileViewState extends State<ProfileView> {
       try {
         if (!_emailValid) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Email format error')),
+            const SnackBar(content: Text('Email format error')),
           );
           return;
         }
 
         if (!_passwordValid) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
                 content: Text('Password must be at least 6 characters long')),
           );
           return;
@@ -120,16 +121,14 @@ class ProfileViewState extends State<ProfileView> {
 
         if (_passwordController.text.isNotEmpty && !_passwordsMatch) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Passwords do not match')),
+            const SnackBar(content: Text('Passwords do not match')),
           );
           return;
         }
 
         if (_passwordsMatchError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content:
-                    Text('New password cannot be the same as old password')),
+            const SnackBar(content: Text('New password cannot be the same as old password')),
           );
           return;
         }
@@ -144,7 +143,7 @@ class ProfileViewState extends State<ProfileView> {
             await user.reauthenticateWithCredential(credential);
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Old password is incorrect')),
+              const SnackBar(content: Text('Old password is incorrect')),
             );
             return;
           }
@@ -168,7 +167,7 @@ class ProfileViewState extends State<ProfileView> {
         }
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Profile updated successfully!')),
+          const SnackBar(content: Text('Profile updated successfully!')),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -182,10 +181,10 @@ class ProfileViewState extends State<ProfileView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: const Text('Profile'),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: const Icon(Icons.logout),
             onPressed: _logout,
           ),
         ],
@@ -198,17 +197,17 @@ class ProfileViewState extends State<ProfileView> {
               controller: _nameController,
               label: 'Update Name',
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             _buildRoundedTextField(
               controller: _phoneNumberController,
               label: 'Update Phone Number',
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             _buildRoundedTextField(
               controller: _addressController,
               label: 'Update Address',
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             _buildRoundedTextField(
               controller: _emailController,
               label: 'Update Email',
@@ -225,7 +224,7 @@ class ProfileViewState extends State<ProfileView> {
                       ? Colors.green
                       : Colors.red,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
 
             // Old password text field
             _buildRoundedTextField(
@@ -243,7 +242,7 @@ class ProfileViewState extends State<ProfileView> {
                 },
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
 
             // New password text field
             _buildRoundedTextField(
@@ -282,7 +281,7 @@ class ProfileViewState extends State<ProfileView> {
                           ? Colors.green
                           : Colors.red,
             ),
-            SizedBox(height: 10), // Add space here
+            const SizedBox(height: 10), // Add space here
             
             if (_showConfirmPassword)
               _buildRoundedTextField(
@@ -309,10 +308,10 @@ class ProfileViewState extends State<ProfileView> {
                 },
                 borderColor: _passwordsMatch ? Colors.green : Colors.red,
               ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _updateProfile,
-              child: Text('Update Profile'),
+              child: const Text('Update Profile'),
             ),
           ],
         ),
@@ -333,7 +332,7 @@ class ProfileViewState extends State<ProfileView> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDarkMode ? Colors.white : Colors.black;
 
-    if (Platform.isIOS || Platform.isMacOS) {
+    if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS) { // Use defaultTargetPlatform
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -349,7 +348,7 @@ class ProfileViewState extends State<ProfileView> {
               border: Border.all(color: borderColor ?? CupertinoColors.systemGrey),
               borderRadius: BorderRadius.circular(10.0),
             ),
-            padding: EdgeInsets.symmetric(
+            padding: const EdgeInsets.symmetric(
               vertical: 8.0,
               horizontal: 16.0,
             ),
@@ -359,7 +358,7 @@ class ProfileViewState extends State<ProfileView> {
               padding: const EdgeInsets.only(top: 5.0),
               child: Text(
                 errorText,
-                style: TextStyle(color: Colors.red, fontSize: 12),
+                style: const TextStyle(color: Colors.red, fontSize: 12),
               ),
             ),
         ],
@@ -378,7 +377,7 @@ class ProfileViewState extends State<ProfileView> {
             labelText: label,
             errorText: errorText,
             border: InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(
+            contentPadding: const EdgeInsets.symmetric(
               vertical: 8.0,
               horizontal: 16.0,
             ),
