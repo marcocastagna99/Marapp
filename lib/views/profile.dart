@@ -3,7 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart'; // Add this import
+
 import 'dart:io';
+import 'login_view.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -64,8 +66,13 @@ class ProfileViewState extends State<ProfileView> {
   }
 
   Future<void> _logout() async {
-    await _auth.signOut();
-    Navigator.pushReplacementNamed(context, '/login');
+    await _auth.signOut().then((_) {
+       Navigator.pushReplacement( context ,MaterialPageRoute( builder: (context) => LoginScreen() ));
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error signing out: $error')),
+      );
+    });
   }
 
   Future<void> _fetchUserProfile() async {
