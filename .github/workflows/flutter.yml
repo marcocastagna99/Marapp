@@ -1,4 +1,4 @@
-name: Flutter CI
+name: Flutter
 
 on:
   push:
@@ -11,22 +11,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout the repository
       - uses: actions/checkout@v4
 
-      # Install Flutter SDK
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
+      # Set up Flutter using subosito/flutter-action
+      - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.5.4'
+          flutter-version: '3.5.4' # Explicitly specify the Flutter version
+
+      # Flutter Clean - Optional (Clears cache and builds fresh artifacts)
+      - name: Flutter Clean
+        run: flutter clean
 
       # Install dependencies
       - name: Install dependencies
         run: flutter pub get
 
-      # Analyze the project source
+      # Analyze the Flutter project source
       - name: Analyze project source
         run: flutter analyze
 
-      # Run tests
+      # Run Flutter tests
       - name: Run tests
         run: flutter test
