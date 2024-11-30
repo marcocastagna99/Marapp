@@ -4,6 +4,8 @@
 # Marapp - Mara’s sweets and savory 🍰🥨
 Mara’s sweets and savory -> flutter app for a pastry e-commerce developed for the Mobile Development exam
 
+<a href=”https://github.com/[USER_NAME]/[REPO_NAME]/actions"><img src=”https://github.com/[USER_NAME]/[REPO_NAME]/workflows/test-my-app/badge.svg" alt=”Build Status”></a>
+
 ### TODO
 - [ ] remove api key from .dart files (https://github.com/enriicola/Marapp/security/secret-scanning)
 - [ ] implement tests
