@@ -1,4 +1,4 @@
-<a href=”https://github.com/enriicola/Marapp/actions"><img src=”https://github.com/enriicola/Marapp/workflows/flutter/badge.svg" alt=”Build Status”></a>
+<a href="https://github.com/enriicola/Marapp/actions"><img src="https://github.com/enriicola/Marapp/workflows/flutter/badge.svg" alt="Build Status"></a>
 
 <!-- sudo gem install -n /usr/local/bin cocoapods -->
 ![Marapp](assets/icon.png)
