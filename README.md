@@ -1,10 +1,10 @@
+<a href=”https://github.com/enriicola/Marapp/actions"><img src=”https://github.com/enriicola/Marapp/workflows/flutter/badge.svg" alt=”Build Status”></a>
+
 <!-- sudo gem install -n /usr/local/bin cocoapods -->
 ![Marapp](assets/icon.png)
 
 # Marapp - Mara’s sweets and savory 🍰🥨
 Mara’s sweets and savory -> flutter app for a pastry e-commerce developed for the Mobile Development exam
-
-<a href=”https://github.com/[USER_NAME]/[REPO_NAME]/actions"><img src=”https://github.com/[USER_NAME]/[REPO_NAME]/workflows/test-my-app/badge.svg" alt=”Build Status”></a>
 
 ### TODO
 - [ ] remove api key from .dart files (https://github.com/enriicola/Marapp/security/secret-scanning)
