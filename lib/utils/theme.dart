@@ -38,7 +38,7 @@ ThemeData getTheme(bool isDarkMode) => ThemeData(
   ),
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: MaterialStateProperty.all<Color>(primaryCyan),
+      backgroundColor: WidgetStateProperty.all<Color>(primaryCyan),
     ),
   ),
   textTheme: TextTheme(
@@ -69,12 +69,12 @@ ThemeData getTheme(bool isDarkMode) => ThemeData(
   ),
   iconButtonTheme: IconButtonThemeData(
     style: ButtonStyle(
-      iconColor: MaterialStateProperty.all<Color>(
+      iconColor: WidgetStateProperty.all<Color>(
           isDarkMode ? primaryWhite : primaryBlack),
-      backgroundColor: MaterialStateProperty.all<Color>(primaryCyan),
-      padding: MaterialStateProperty.all<EdgeInsets>(
+      backgroundColor: WidgetStateProperty.all<Color>(primaryCyan),
+      padding: WidgetStateProperty.all<EdgeInsets>(
           const EdgeInsets.all(8.0)),
-      shape: MaterialStateProperty.all<OutlinedBorder>(
+      shape: WidgetStateProperty.all<OutlinedBorder>(
         RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),

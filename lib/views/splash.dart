@@ -1,21 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../utils/theme.dart';
+import '../providers/auth_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  Splash createState() => Splash();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class Splash extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
     // Navigate to main screen after 3 seconds
     Future.delayed(const Duration(seconds: 1), () {
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/home');
+        final authProvider = Provider.of<AuthProvider>(context, listen: false);
+        if (authProvider.isAuthenticated) {
+          Navigator.pushReplacementNamed(context, '/home');
+        } else {
+          Navigator.pushReplacementNamed(context, '/register');
+        }
       }
     });
   }
@@ -35,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 20),
             // App name text
-            Text(
+            const Text(
               "Marapp",
               style: TextStyle(
                 fontSize: 32,  // Fixed size that works well across devices
@@ -44,7 +51,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 color: primaryCyan,
               ),
             ),
-            Text(
+            const Text(
               "Mara's sweets and savory",
               style: TextStyle(
                 fontSize: 16,

@@ -2,9 +2,10 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:marapp/views/splash.dart';
 import 'package:provider/provider.dart';
 import '/providers/auth_provider.dart';
-import 'package:marapp/views/HomeScreen.dart';
+import 'package:marapp/views/home.dart';
 import 'package:marapp/views/registration_view.dart';
 import 'firebase_options.dart'; // Importa il file di configurazione
 
@@ -23,11 +24,10 @@ void main() async {
 }
 
 class Marapp extends StatefulWidget {
-  const Marapp({Key? key, required this.initialThemeMode}) : super(key: key);
+  const Marapp({super.key, required this.initialThemeMode});
 
   final ThemeMode initialThemeMode;
 
-  @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
@@ -35,12 +35,13 @@ class Marapp extends StatefulWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Firebase Auth',
+        title: 'Marapp',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        initialRoute: '/register',
+        initialRoute: '/splash',
         routes: {
+          '/splash': (context) => SplashScreen(),
           '/register': (context) => RegistrationScreen(),
           '/home': (context) => HomeScreen(),
         },
@@ -69,12 +70,13 @@ class MarappState extends State<Marapp> {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Firebase Auth',
+        title: 'Marapp',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        initialRoute: '/register',
+        initialRoute: '/splash',
         routes: {
+          '/splash': (context) => SplashScreen(),
           '/register': (context) => RegistrationScreen(),
           '/home': (context) => HomeScreen(),
         },

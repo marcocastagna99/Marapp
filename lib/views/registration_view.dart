@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:marapp/providers/auth_provider.dart';
-import 'package:marapp/views/HomeScreen.dart';
+import 'package:marapp/views/home.dart';
 import 'package:marapp/views/login_view.dart';
 
 class RegistrationScreen extends StatefulWidget {
+  const RegistrationScreen({super.key});
+
   @override
   _RegistrationScreenState createState() => _RegistrationScreenState();
 }

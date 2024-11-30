@@ -50,7 +50,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: any
-
+  flutter_lints: any
 
 flutter_launcher_icons:
   image_path: "assets/icon.png"

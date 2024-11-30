@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart'; // Add this import
@@ -58,7 +57,9 @@ class SettingsViewState extends State<SettingsView> {
 
   void _sendTestNotification() {
     // Code to send a push notification
-    print('Test push notification sent');
+    if (kDebugMode) {
+      print('Test push notification sent');
+    }
   }
 
   @override
