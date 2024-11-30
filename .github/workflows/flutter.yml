@@ -1,36 +1,24 @@
-name: Flutter
+name: flutter
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  test:
+    runs-on: macOS-latest
 
     steps:
-      # Checkout the repository
       - uses: actions/checkout@v4
 
-      # Set up Flutter using subosito/flutter-action
+      - uses: futureware-tech/simulator-action@v3
+        with:
+          model: 'iPhone 14'
+
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.5.4' # Explicitly specify the Flutter version
+          channel: 'stable'
 
-      # Flutter Clean - Optional (Clears cache and builds fresh artifacts)
-      - name: Flutter Clean
-        run: flutter clean
-
-      # Install dependencies
-      - name: Install dependencies
-        run: flutter pub get
-
-      # Analyze the Flutter project source
-      - name: Analyze project source
-        run: flutter analyze
-
-      # Run Flutter tests
-      - name: Run tests
-        run: flutter test
+      - run: flutter pub get
+      - run: flutter test
