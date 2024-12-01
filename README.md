@@ -8,7 +8,7 @@ Mara’s sweets and savory -> flutter app for a pastry e-commerce developed for 
 
 ### TODO
 - [ ] remove api key from .dart files (https://github.com/enriicola/Marapp/security/secret-scanning)
-- [ ] implement tests
+- [x] implement tests
 - [x] implement github actions for tests
 - [ ] check if users exists in login page
 - [ ] add forgotten password mechanism
