@@ -68,17 +68,21 @@ class MarappState extends State<Marapp> {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Marapp',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        initialRoute: '/splash',
-        routes: {
-          '/splash': (context) => SplashScreen(),
-          '/register': (context) => RegistrationScreen(),
-          '/home': (context) => HomeScreen(),
+      child: Consumer<AuthProvider>(
+        builder: (context, authProvider, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Marapp',
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+            ),
+            initialRoute: '/splash',
+            routes: {
+              '/splash': (context) => SplashScreen(),
+              '/register': (context) => RegistrationScreen(),
+              '/home': (context) => HomeScreen(),
+            },
+          );
         },
       ),
     );

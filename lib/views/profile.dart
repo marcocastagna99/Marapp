@@ -14,6 +14,7 @@ class ProfileView extends StatefulWidget {
 }
 
 class ProfileViewState extends State<ProfileView> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -197,129 +198,172 @@ class ProfileViewState extends State<ProfileView> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            _buildRoundedTextField(
-              controller: _nameController,
-              label: 'Update Name',
-            ),
-            const SizedBox(height: 10),
-            _buildRoundedTextField(
-              controller: _phoneNumberController,
-              label: 'Update Phone Number',
-            ),
-            const SizedBox(height: 10),
-            _buildRoundedTextField(
-              controller: _addressController,
-              label: 'Update Address',
-            ),
-            const SizedBox(height: 10),
-            _buildRoundedTextField(
-              controller: _emailController,
-              label: 'Update Email',
-              focusNode: _emailFocusNode,
-              errorText: !_emailValid ? 'Email format error' : null,
-              onChanged: (value) {
-                setState(() {
-                  _emailValid = RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value);
-                });
-              },
-              borderColor: _emailController.text.isEmpty
-                  ? Colors.grey
-                  : _emailValid
-                      ? Colors.green
-                      : Colors.red,
-            ),
-            const SizedBox(height: 10),
-
-            // Old password text field
-            _buildRoundedTextField(
-              controller: _oldPasswordController,
-              label: 'Old Password',
-              obscureText: !_oldPasswordVisible,
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _oldPasswordVisible ? Icons.visibility_off : Icons.visibility,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _oldPasswordVisible = !_oldPasswordVisible;
-                  });
-                },
-              ),
-            ),
-            const SizedBox(height: 10),
-
-            // New password text field
-            _buildRoundedTextField(
-              controller: _passwordController,
-              label: 'New Password',
-              focusNode: _passwordFocusNode,
-              obscureText: !_passwordVisible,
-              errorText: _passwordsMatchError
-                  ? 'New password cannot be the same as old password'
-                  : (!_passwordValid
-                      ? 'Password must be at least 6 characters'
-                      : null),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _passwordVisible ? Icons.visibility_off : Icons.visibility,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _passwordVisible = !_passwordVisible;
-                  });
-                },
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _passwordValid = value.length >= 6;
-                  _showConfirmPassword = value.isNotEmpty;
-                  _checkPasswordMatch();
-                  _checkPasswordEquality(); // Check new password against old password
-                });
-              },
-              borderColor: _passwordsMatchError
-                  ? Colors.red
-                  : _passwordController.text.isEmpty
-                      ? Colors.grey
-                      : _passwordValid
-                          ? Colors.green
-                          : Colors.red,
-            ),
-            const SizedBox(height: 10), // Add space here
-            
-            if (_showConfirmPassword)
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
               _buildRoundedTextField(
-                controller: _confirmPasswordController,
-                label: 'Confirm New Password',
-                obscureText: !_confirmPasswordVisible,
-                errorText: !_passwordsMatch ? 'Passwords do not match' : null,
+                controller: _nameController,
+                label: 'Update Name',
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your name';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 10),
+              _buildRoundedTextField(
+                controller: _phoneNumberController,
+                label: 'Update Phone Number',
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your phone number';
+                  } else if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+                    return 'Please enter a valid phone number';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 10),
+              _buildRoundedTextField(
+                controller: _addressController,
+                label: 'Update Address',
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your address';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 10),
+              _buildRoundedTextField(
+                controller: _emailController,
+                label: 'Update Email',
+                focusNode: _emailFocusNode,
+                errorText: !_emailValid ? 'Email format error' : null,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your email';
+                  } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                    return 'Please enter a valid email';
+                  }
+                  return null;
+                },
+                onChanged: (value) {
+                  setState(() {
+                    _emailValid = RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value);
+                  });
+                },
+                borderColor: _emailController.text.isEmpty
+                    ? Colors.grey
+                    : _emailValid
+                        ? Colors.green
+                        : Colors.red,
+              ),
+              const SizedBox(height: 10),
+
+              // Old password text field
+              _buildRoundedTextField(
+                controller: _oldPasswordController,
+                label: 'Old Password',
+                obscureText: !_oldPasswordVisible,
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _confirmPasswordVisible
-                        ? Icons.visibility_off
-                        : Icons.visibility,
+                    _oldPasswordVisible ? Icons.visibility_off : Icons.visibility,
                   ),
                   onPressed: () {
                     setState(() {
-                      _confirmPasswordVisible = !_confirmPasswordVisible;
+                      _oldPasswordVisible = !_oldPasswordVisible;
+                    });
+                  },
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // New password text field
+              _buildRoundedTextField(
+                controller: _passwordController,
+                label: 'New Password',
+                focusNode: _passwordFocusNode,
+                obscureText: !_passwordVisible,
+                errorText: _passwordsMatchError
+                    ? 'New password cannot be the same as old password'
+                    : (!_passwordValid
+                        ? 'Password must be at least 6 characters'
+                        : null),
+                validator: (value) {
+                  if (value != null && value.isNotEmpty && value.length < 6) {
+                    return 'Password must be at least 6 characters';
+                  }
+                  return null;
+                },
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _passwordVisible ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _passwordVisible = !_passwordVisible;
                     });
                   },
                 ),
                 onChanged: (value) {
                   setState(() {
+                    _passwordValid = value.length >= 6;
+                    _showConfirmPassword = value.isNotEmpty;
                     _checkPasswordMatch();
+                    _checkPasswordEquality(); // Check new password against old password
                   });
                 },
-                borderColor: _passwordsMatch ? Colors.green : Colors.red,
+                borderColor: _passwordsMatchError
+                    ? Colors.red
+                    : _passwordController.text.isEmpty
+                        ? Colors.grey
+                        : _passwordValid
+                            ? Colors.green
+                            : Colors.red,
               ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _updateProfile,
-              child: const Text('Update Profile'),
-            ),
-          ],
+              const SizedBox(height: 10), // Add space here
+              
+              if (_showConfirmPassword)
+                _buildRoundedTextField(
+                  controller: _confirmPasswordController,
+                  label: 'Confirm New Password',
+                  obscureText: !_confirmPasswordVisible,
+                  errorText: !_passwordsMatch ? 'Passwords do not match' : null,
+                  validator: (value) {
+                    if (value != null && value.isNotEmpty && value != _passwordController.text) {
+                      return 'Passwords do not match';
+                    }
+                    return null;
+                  },
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _confirmPasswordVisible
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _confirmPasswordVisible = !_confirmPasswordVisible;
+                      });
+                    },
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      _checkPasswordMatch();
+                    });
+                  },
+                  borderColor: _passwordsMatch ? Colors.green : Colors.red,
+                ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _updateProfile,
+                child: const Text('Update Profile'),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -334,6 +378,7 @@ class ProfileViewState extends State<ProfileView> {
     Widget? suffixIcon,
     void Function(String)? onChanged,
     Color? borderColor,
+    String? Function(String?)? validator,
   }) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDarkMode ? Colors.white : Colors.black;

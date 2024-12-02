@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:marapp/providers/auth_provider.dart' as auth;
@@ -28,7 +31,13 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       // Se il login è andato a buon fine, reindirizza alla home
-      Navigator.pushReplacementNamed(context, '/home');
+      if (authProvider.isAuthenticated) {
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        setState(() {
+          _errorMessage = 'Invalid email or password';
+        });
+      }
     } catch (error) {
       setState(() {
         _errorMessage = error.toString();
@@ -49,25 +58,39 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextFormField(
+              _buildRoundedTextFormField(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                label: 'Email',
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter an email';
+                    return 'Please enter your email';
+                  } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                    return 'Please enter a valid email';
                   }
                   return null;
                 },
+                onChanged: (value) {
+                  setState(() {
+                    _errorMessage = null;
+                  });
+                },
               ),
-              TextFormField(
+              _buildRoundedTextFormField(
                 controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
+                label: 'Password',
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a password';
+                    return 'Please enter your password';
+                  } else if (value.length < 6) {
+                    return 'Password must be at least 6 characters';
                   }
                   return null;
+                },
+                onChanged: (value) {
+                  setState(() {
+                    _errorMessage = null;
+                  });
                 },
               ),
               if (_errorMessage != null)
@@ -91,12 +114,89 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: () {
                   Navigator.pushReplacementNamed(context, '/register');
                 },
-                child: Text("Don't have an account? Register"),
+                child: Text(
+                  "Don't have an account? Register",
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontSize: 14,
+                  ),
+                ),
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Widget _buildRoundedTextFormField({
+    required TextEditingController controller,
+    required String label,
+    FocusNode? focusNode,
+    bool obscureText = false,
+    String? errorText,
+    Widget? suffixIcon,
+    required Function(String) onChanged,
+    bool enabled = true,
+    Color? borderColor,
+    String? Function(String?)? validator,
+  }) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkMode ? Colors.white : Colors.black;
+
+    if (Platform.isIOS || Platform.isMacOS) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CupertinoTextFormFieldRow(
+            controller: controller,
+            focusNode: focusNode,
+            obscureText: obscureText,
+            enabled: enabled,
+            placeholder: label,
+            validator: validator,
+            onChanged: onChanged,
+            style: TextStyle(color: textColor),
+            decoration: BoxDecoration(
+              border: Border.all(color: borderColor ?? Colors.grey),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          ),
+          if (errorText != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 5.0),
+              child: Text(
+                errorText,
+                style: TextStyle(color: Colors.red, fontSize: 12),
+              ),
+            ),
+        ],
+      );
+    } else {
+      return Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: borderColor ?? Colors.grey),
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: TextFormField(
+          controller: controller,
+          validator: validator,
+          focusNode: focusNode,
+          obscureText: obscureText,
+          enabled: enabled,
+          decoration: InputDecoration(
+            labelText: label,
+            errorText: errorText,
+            border: InputBorder.none,
+            contentPadding:
+                EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            suffixIcon: suffixIcon,
+          ),
+          style: TextStyle(color: textColor),
+          onChanged: onChanged,
+        ),
+      );
+    }
   }
 }

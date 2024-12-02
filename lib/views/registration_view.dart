@@ -50,20 +50,26 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       });
       try {
         final authProvider = Provider.of<AuthProvider>(context, listen: false);
-        await authProvider.signUp(
+        final success = await authProvider.signUp(
           _emailController.text.trim(),
           _passwordController.text.trim(),
           _nameController.text.trim(),
           _phoneController.text.trim(),
           _addressController.text.trim(),
         );
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registrazione completata!')),
-        );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
-        );
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Registrazione completata!')),
+          );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Errore nella registrazione')),
+          );
+        }
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Errore: ${error.toString()}')),
@@ -90,20 +96,30 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildRoundedTextField( // Name
+                _buildRoundedTextFormField( // Name
                   controller: _nameController,
                   label: 'Nome Completo',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Inserisci il tuo nome';
+                    }
+                    return null;
+                  },
                   onChanged: (value) => name = value,
-                  errorText: _formKey.currentState?.validate() == false &&
-                          _nameController.text.isEmpty
-                      ? 'Inserisci il tuo nome'
-                      : null,
                 ),
                 SizedBox(height: 10),
 
-                _buildRoundedTextField( // Phone Number
+                _buildRoundedTextFormField( // Phone Number
                   controller: _phoneController,
                   label: 'Numero di Telefono',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Inserisci un numero di telefono valido';
+                    } else if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+                      return 'Inserisci un numero di telefono valido';
+                    }
+                    return null;
+                  },
                   onChanged: (value) {
                     setState(() {
                       phoneNumber = value;
@@ -123,7 +139,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 SizedBox(height: 10),
 
-                _buildRoundedTextField( // Address
+                _buildRoundedTextFormField( // Address
                   controller: _addressController,
                   label: 'Indirizzo',
                   onChanged: (value) {},
@@ -134,10 +150,18 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 SizedBox(height: 10),
 
-                _buildRoundedTextField( // Email
+                _buildRoundedTextFormField( // Email
                   controller: _emailController,
                   focusNode: _emailFocusNode,
                   label: 'Email',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Inserisci un\'email valida';
+                    } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                      return 'Inserisci un\'email valida';
+                    }
+                    return null;
+                  },
                   onChanged: (value) {
                     setState(() {
                       email = value;
@@ -158,10 +182,18 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 SizedBox(height: 10),
 
                 // Password
-                _buildRoundedTextField(
+                _buildRoundedTextFormField(
                   controller: _passwordController,
                   focusNode: _passwordFocusNode,
                   label: 'Password',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Password must be at least 6 characters';
+                    } else if (value.length < 6) {
+                      return 'Password must be at least 6 characters';
+                    }
+                    return null;
+                  },
                   errorText: !_passwordValid
                       ? 'Password must be at least 6 characters'
                       : null,
@@ -196,7 +228,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
                 // Confirm Password
                 if (_showConfirmPassword)
-                  _buildRoundedTextField(
+                  _buildRoundedTextFormField(
                     controller: _confirmPasswordController,
                     label: 'Confirm Password',
                     errorText:
@@ -245,7 +277,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     "Hai già un account? Accedi",
                     style: TextStyle(
                       color: Colors.blue,
-                      fontSize: 16,
+                      fontSize: 14,
                     ),
                   ),
                 ),
@@ -268,7 +300,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     super.dispose();
   }
 
-  Widget _buildRoundedTextField({
+  Widget _buildRoundedTextFormField({
     required TextEditingController controller,
     required String label,
     FocusNode? focusNode,
@@ -278,6 +310,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     required Function(String) onChanged,
     bool enabled = true,
     Color? borderColor,
+    String? Function(String?)? validator,
   }) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDarkMode ? Colors.white : Colors.black;
@@ -286,13 +319,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CupertinoTextField(
+          CupertinoTextFormFieldRow(
             controller: controller,
             focusNode: focusNode,
             obscureText: obscureText,
             enabled: enabled,
             placeholder: label,
-            suffix: suffixIcon,
+            validator: validator,
             onChanged: onChanged,
             style: TextStyle(color: textColor),
             decoration: BoxDecoration(
@@ -317,8 +350,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           border: Border.all(color: borderColor ?? Colors.grey),
           borderRadius: BorderRadius.circular(10.0),
         ),
-        child: TextField(
+        child: TextFormField(
           controller: controller,
+          validator: validator,
           focusNode: focusNode,
           obscureText: obscureText,
           enabled: enabled,

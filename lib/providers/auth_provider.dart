@@ -21,7 +21,6 @@ class AuthProvider with ChangeNotifier {
   }
 
   // Sign Up
-  // Sign Up
   Future<bool> signUp(String email, String password, String name,
       String phoneNumber, String address) async {
     _setLoading(true);
@@ -29,13 +28,13 @@ class AuthProvider with ChangeNotifier {
       // Passa tutti gli argomenti richiesti a signUp
       _user = await _authService.signUp(
           email, password, name, phoneNumber, address); // Call the service
+      notifyListeners(); // Notify listeners after updating user
       return _user != null; // Return true if user is registered successfully
     } catch (e) {
       Logger().e('Sign up error: ${e.toString()}');  // logger instead of print
       return false; // Return false if registration failed
     } finally {
       _setLoading(false);
-      notifyListeners();
     }
   }
 
