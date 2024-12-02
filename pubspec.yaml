@@ -1,5 +1,5 @@
 name: marapp
-description: "A new Flutter project."
+description: "Mara's sweets and savories app"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -31,8 +31,8 @@ dependencies:
   flutter:
     sdk: flutter
   firebase_core: any
-  firebase_auth: any # Per l'autenticazione
-  cloud_firestore: any # Per Firestore (database)
+  firebase_auth: any
+  cloud_firestore: any
   provider: ^6.0.1
   google_sign_in: ^6.0.1
   flutter_signin_button: ^2.0.0
