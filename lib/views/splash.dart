@@ -15,7 +15,7 @@ class Splash extends State<SplashScreen> {
   void initState() {
     super.initState();
     // Navigate to main screen after 3 seconds
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(milliseconds: 700), () {
       if (mounted) {
         final authProvider = Provider.of<AuthProvider>(context, listen: false);
         if (authProvider.isAuthenticated) {

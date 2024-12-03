@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:universal_io/io.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +22,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  
+
   bool _isLoading = false;
 
   String name = '';
@@ -82,6 +82,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     }
   }
 
+  void _checkPasswordMatch() {
+    setState(() {
+      _passwordsMatch =
+          _passwordController.text == _confirmPasswordController.text;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,7 +103,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildRoundedTextFormField( // Name
+                _buildRoundedTextFormField(
                   controller: _nameController,
                   label: 'Nome Completo',
                   validator: (value) {
@@ -108,8 +115,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   onChanged: (value) => name = value,
                 ),
                 SizedBox(height: 10),
-
-                _buildRoundedTextFormField( // Phone Number
+                _buildRoundedTextFormField(
                   controller: _phoneController,
                   label: 'Numero di Telefono',
                   validator: (value) {
@@ -123,34 +129,27 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   onChanged: (value) {
                     setState(() {
                       phoneNumber = value;
-                      _phoneValid = RegExp(r'^\d{10}$')
-                          .hasMatch(_phoneController.text);
                     });
                   },
-                  errorText: _formKey.currentState?.validate() == false &&
-                          (_phoneController.text.isEmpty || !_phoneValid)
-                      ? 'Inserisci un numero di telefono valido'
-                      : null,
-                  borderColor: _phoneController.text.isEmpty
-                      ? Colors.grey 
-                      : RegExp(r'^\d{10}$').hasMatch(_phoneController.text)
-                          ? Colors.green 
-                          : Colors.red, 
+                  errorText: null, // Non usare il `errorText` personalizzato per la validazione immediata
+                  borderColor: _phoneController.text.isEmpty || !RegExp(r'^\d{10}$').hasMatch(_phoneController.text)
+                      ? Colors.red  // Il bordo sarà rosso solo quando il campo è vuoto o non valido
+                      : Colors.green,  // Il bordo sarà verde quando il numero è valido
                 ),
                 SizedBox(height: 10),
-
-                _buildRoundedTextFormField( // Address
+                _buildRoundedTextFormField(
                   controller: _addressController,
                   label: 'Indirizzo',
-                  onChanged: (value) {},
-                  errorText: _formKey.currentState?.validate() == false &&
-                          _addressController.text.isEmpty
-                      ? 'Inserisci il tuo indirizzo'
-                      : null,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Inserisci il tuo indirizzo';
+                    }
+                    return null;
+                  },
+                  onChanged: (value) => address = value,
                 ),
                 SizedBox(height: 10),
-
-                _buildRoundedTextFormField( // Email
+                _buildRoundedTextFormField(
                   controller: _emailController,
                   focusNode: _emailFocusNode,
                   label: 'Email',
@@ -169,35 +168,27 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           .hasMatch(_emailController.text);
                     });
                   },
-                  errorText: _formKey.currentState?.validate() == false &&
-                          (_emailController.text.isEmpty || !_emailValid)
+                  errorText: !_emailValid
                       ? 'Inserisci un\'email valida'
                       : null,
                   borderColor: _emailController.text.isEmpty
-                      ? Colors.grey 
+                      ? Colors.grey
                       : _emailValid
-                          ? Colors.green 
-                          : Colors.red, 
+                      ? Colors.green
+                      : Colors.red,
                 ),
                 SizedBox(height: 10),
-
-                // Password
                 _buildRoundedTextFormField(
                   controller: _passwordController,
                   focusNode: _passwordFocusNode,
                   label: 'Password',
+                  obscureText: !_passwordVisible,
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Password must be at least 6 characters';
-                    } else if (value.length < 6) {
-                      return 'Password must be at least 6 characters';
+                    if (value == null || value.isEmpty || value.length < 6) {
+                      return 'La password deve contenere almeno 6 caratteri';
                     }
                     return null;
                   },
-                  errorText: !_passwordValid
-                      ? 'Password must be at least 6 characters'
-                      : null,
-                  obscureText: !_passwordVisible,
                   suffixIcon: IconButton(
                     icon: Icon(
                       _passwordVisible
@@ -218,21 +209,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       _checkPasswordMatch();
                     });
                   },
-                  borderColor: _passwordController.text.isEmpty
-                      ? Colors.grey // Neutral color when empty
-                      : _passwordsMatch
-                          ? Colors.green // Change to green if valid
-                          : Colors.red, // Change to red if invalid
+                  borderColor: _passwordValid
+                      ? Colors.green
+                      : Colors.red,
                 ),
                 SizedBox(height: 10),
-
-                // Confirm Password
                 if (_showConfirmPassword)
                   _buildRoundedTextFormField(
                     controller: _confirmPasswordController,
-                    label: 'Confirm Password',
-                    errorText:
-                        !_passwordsMatch ? 'Passwords do not match' : null,
+                    label: 'Conferma Password',
                     obscureText: !_confirmPasswordVisible,
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -246,6 +231,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         });
                       },
                     ),
+                    errorText: !_passwordsMatch
+                        ? 'Le password non corrispondono'
+                        : null,
                     onChanged: (value) {
                       setState(() {
                         confirmPassword = value;
@@ -254,17 +242,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     },
                     borderColor: _passwordsMatch
                         ? Colors.green
-                        : null, // Same for confirm password field
+                        : Colors.red,
                   ),
                 if (_showConfirmPassword) SizedBox(height: 10),
-
-                SizedBox(height: 20),
                 _isLoading
                     ? Center(child: CircularProgressIndicator())
                     : ElevatedButton(
-                        onPressed: () => _register(context),
-                        child: Text('Registrati'),
-                      ),
+                  onPressed: () => _register(context),
+                  child: Text('Registrati'),
+                ),
                 SizedBox(height: 20),
                 TextButton(
                   onPressed: () {
@@ -275,10 +261,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   },
                   child: Text(
                     "Hai già un account? Accedi",
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.blue),
                   ),
                 ),
               ],
@@ -316,113 +299,44 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     final textColor = isDarkMode ? Colors.white : Colors.black;
 
     if (Platform.isIOS || Platform.isMacOS) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CupertinoTextFormFieldRow(
-            controller: controller,
-            focusNode: focusNode,
-            obscureText: obscureText,
-            enabled: enabled,
-            placeholder: label,
-            validator: validator,
-            onChanged: onChanged,
-            style: TextStyle(color: textColor),
-            decoration: BoxDecoration(
-              border: Border.all(color: borderColor ?? Colors.grey),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          ),
-          if (errorText != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 5.0),
-              child: Text(
-                errorText,
-                style: TextStyle(color: Colors.red, fontSize: 12),
-              ),
-            ),
-        ],
-      );
-    } else {
-      return Container(
+      return CupertinoTextFormFieldRow(
+        controller: controller,
+        focusNode: focusNode,
+        obscureText: obscureText,
+        enabled: enabled,
+        placeholder: label,
+        validator: validator,
+        onChanged: onChanged,
+        style: TextStyle(color: textColor),
+        padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         decoration: BoxDecoration(
           border: Border.all(color: borderColor ?? Colors.grey),
           borderRadius: BorderRadius.circular(10.0),
         ),
-        child: TextFormField(
-          controller: controller,
-          validator: validator,
-          focusNode: focusNode,
-          obscureText: obscureText,
-          enabled: enabled,
-          decoration: InputDecoration(
-            labelText: label,
-            errorText: errorText,
-            border: InputBorder.none,
-            contentPadding:
-                EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            suffixIcon: suffixIcon,
+      );
+    } else {
+      return TextFormField(
+        controller: controller,
+        validator: validator,
+        focusNode: focusNode,
+        obscureText: obscureText,
+        enabled: enabled,
+        decoration: InputDecoration(
+          labelText: label,
+          errorText: errorText,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: BorderSide(
+              color: borderColor ?? Colors.grey,
+            ),
           ),
-          style: TextStyle(color: textColor),
-          onChanged: onChanged,
+          contentPadding:
+          EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          suffixIcon: suffixIcon,
         ),
+        style: TextStyle(color: textColor),
+        onChanged: onChanged,
       );
     }
   }
-
-
-void _checkPasswordMatch() {
-    setState(() {
-      _passwordsMatch =
-          _passwordController.text == _confirmPasswordController.text;
-    });
-  }
-
-  // TODO check if unused
-  // void _completeRegistration() async {
-  //   final authProvider = Provider.of<AuthProvider>(context, listen: false);
-  //   final email = _emailController.text;
-  //   final password = _passwordController.text;
-
-  //   if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Invalid email format')),
-  //     );
-  //     return;
-  //   }
-
-  //   if (password.isEmpty || password.length < 6) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Password must be at least 6 characters long')),
-  //     );
-  //     return;
-  //   }
-
-  //   if (password != _confirmPasswordController.text) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Passwords do not match')),
-  //     );
-  //     return;
-  //   }
-
-  //   final success = await authProvider.signUp(
-  //       email,
-  //       password,
-  //       _nameController.text,
-  //       _phoneController.text,
-  //       _addressController.text);
-
-  //   if (success) {
-  //     Navigator.pushReplacement(
-  //       context,
-  //       MaterialPageRoute(builder: (context) => HomeScreen()),
-  //     );
-  //   } else {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Registration failed')),
-  //     );
-  //   }
-  // }
-  
 }
