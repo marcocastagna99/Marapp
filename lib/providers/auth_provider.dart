@@ -38,14 +38,14 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  /*Future<User?> signInWithGoogle() async {
+  Future<User?> signInWithGoogle() async {
     _setLoading(true);
     User? user = await _authService.signInWithGoogle();
     _user = user;
     _setLoading(false);
     notifyListeners();
     return user;
-  }*/
+  }
 
   // Logout
   Future<void> logout() async {

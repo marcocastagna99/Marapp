@@ -1,7 +1,8 @@
-import 'package:universal_io/io.dart';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:marapp/providers/auth_provider.dart' as auth;
 
@@ -16,21 +17,17 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
   String? _errorMessage;
 
-  // Funzione per effettuare il login
   Future<void> _login() async {
     final authProvider = Provider.of<auth.AuthProvider>(context, listen: false);
 
     try {
-      // Effettua il login con Firebase
       await authProvider.login(
         _emailController.text,
         _passwordController.text,
       );
 
-      // Se il login è andato a buon fine, reindirizza alla home
       if (authProvider.isAuthenticated) {
         Navigator.pushReplacementNamed(context, '/home');
       } else {
@@ -45,11 +42,39 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _loginWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) {
+        // L'utente ha annullato l'accesso
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential userCredential =
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      if (userCredential.user != null) {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    } catch (error) {
+      setState(() {
+        _errorMessage = 'Google Sign-In failed: $error';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Login"),
+        title: const Text("Login"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -98,23 +123,33 @@ class _LoginScreenState extends State<LoginScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Text(
                     _errorMessage!,
-                    style: TextStyle(color: Colors.red),
+                    style: const TextStyle(color: Colors.red),
                   ),
                 ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState?.validate() ?? false) {
                     _login();
                   }
                 },
-                child: Text('Login'),
+                child: const Text('Login'),
+              ),
+              const SizedBox(height: 20),
+              SignInButton(
+                Theme.of(context).brightness == Brightness.dark
+                    ? Buttons.GoogleDark
+                    : Buttons.Google,
+                text: "Sign in with Google",
+                onPressed: () async {
+                  await _loginWithGoogle();
+                },
               ),
               TextButton(
                 onPressed: () {
                   Navigator.pushReplacementNamed(context, '/register');
                 },
-                child: Text(
+                child: const Text(
                   "Don't have an account? Register",
                   style: TextStyle(
                     color: Colors.blue,
@@ -144,59 +179,28 @@ class _LoginScreenState extends State<LoginScreen> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDarkMode ? Colors.white : Colors.black;
 
-    if (Platform.isIOS || Platform.isMacOS) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CupertinoTextFormFieldRow(
-            controller: controller,
-            focusNode: focusNode,
-            obscureText: obscureText,
-            enabled: enabled,
-            placeholder: label,
-            validator: validator,
-            onChanged: onChanged,
-            style: TextStyle(color: textColor),
-            decoration: BoxDecoration(
-              border: Border.all(color: borderColor ?? Colors.grey),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          ),
-          if (errorText != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 5.0),
-              child: Text(
-                errorText,
-                style: TextStyle(color: Colors.red, fontSize: 12),
-              ),
-            ),
-        ],
-      );
-    } else {
-      return Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: borderColor ?? Colors.grey),
-          borderRadius: BorderRadius.circular(10.0),
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: borderColor ?? Colors.grey),
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: TextFormField(
+        controller: controller,
+        validator: validator,
+        focusNode: focusNode,
+        obscureText: obscureText,
+        enabled: enabled,
+        decoration: InputDecoration(
+          labelText: label,
+          errorText: errorText,
+          border: InputBorder.none,
+          contentPadding:
+          const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          suffixIcon: suffixIcon,
         ),
-        child: TextFormField(
-          controller: controller,
-          validator: validator,
-          focusNode: focusNode,
-          obscureText: obscureText,
-          enabled: enabled,
-          decoration: InputDecoration(
-            labelText: label,
-            errorText: errorText,
-            border: InputBorder.none,
-            contentPadding:
-                EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            suffixIcon: suffixIcon,
-          ),
-          style: TextStyle(color: textColor),
-          onChanged: onChanged,
-        ),
-      );
-    }
+        style: TextStyle(color: textColor),
+        onChanged: onChanged,
+      ),
+    );
   }
 }

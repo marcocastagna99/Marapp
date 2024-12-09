@@ -9,10 +9,23 @@
       "client_info": {
         "mobilesdk_app_id": "1:776061981443:android:812a59a58c60b8e2e24f36",
         "android_client_info": {
-          "package_name": "com.example.marapp"
+          "package_name": "com.example.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "776061981443-gd5rk7ib5v90pin62q23c4dp9mkjpjlm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.app",
+            "certificate_hash": "7c20f216358431dbca99e818bc48d6b0d1dc28e2"
+          }
+        },
+        {
+          "client_id": "776061981443-9s75781t0ho49s82ecmqiva5e5nsndoa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBchfymgPESmGSqzg8G2zq4zCLPoqTiA4g"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "776061981443-9s75781t0ho49s82ecmqiva5e5nsndoa.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "776061981443-1uj7b37uttcvp1jda5s37nq4n46of31r.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.marapp"
+              }
+            }
+          ]
         }
       }
     }

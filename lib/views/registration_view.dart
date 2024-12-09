@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:universal_io/io.dart';
-
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:marapp/providers/auth_provider.dart';
+import 'package:marapp/providers/auth_provider.dart' as auth;
 import 'package:marapp/views/home.dart';
 import 'package:marapp/views/login_view.dart';
 
@@ -31,6 +33,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   String address = '';
   String password = '';
   String confirmPassword = '';
+  String? _errorMessage;
 
   bool _emailValid = true;
   bool _phoneValid = true;
@@ -43,13 +46,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
 
+
   void _register(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
       try {
-        final authProvider = Provider.of<AuthProvider>(context, listen: false);
+        final authProvider = Provider.of<auth.AuthProvider>(context, listen: false);
         final success = await authProvider.signUp(
           _emailController.text.trim(),
           _passwordController.text.trim(),
@@ -87,6 +91,33 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       _passwordsMatch =
           _passwordController.text == _confirmPasswordController.text;
     });
+  }
+  Future<void> _signUpWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) {
+        // L'utente ha annullato l'accesso
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential userCredential =
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      if (userCredential.user != null) {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    } catch (error) {
+      setState(() {
+        _errorMessage = 'Google Sign-In failed: $error';
+      });
+    }
   }
 
   @override
@@ -245,11 +276,29 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         : Colors.red,
                   ),
                 if (_showConfirmPassword) SizedBox(height: 10),
+
+                if (_errorMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    child: Text(
+                      _errorMessage!,
+                      style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 _isLoading
                     ? Center(child: CircularProgressIndicator())
                     : ElevatedButton(
                   onPressed: () => _register(context),
                   child: Text('Registrati'),
+                ),
+                SignInButton(
+                  Theme.of(context).brightness == Brightness.dark
+                      ? Buttons.GoogleDark
+                      : Buttons.Google,
+                  text: "Sign Up with Google",
+                  onPressed: () async {
+                    await _signUpWithGoogle();
+                  },
                 ),
                 SizedBox(height: 20),
                 TextButton(
