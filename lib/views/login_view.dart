@@ -18,9 +18,14 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   String? _errorMessage;
+  bool _isLoading = false;
 
   Future<void> _login() async {
     final authProvider = Provider.of<auth.AuthProvider>(context, listen: false);
+
+    setState(() {
+      _isLoading = true; // Imposta lo stato di caricamento a true
+    });
 
     try {
       await authProvider.login(
@@ -39,36 +44,46 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         _errorMessage = error.toString();
       });
-    }
-  }
-
-  Future<void> _loginWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) {
-        // L'utente ha annullato l'accesso
-        return;
-      }
-
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      final UserCredential userCredential =
-      await FirebaseAuth.instance.signInWithCredential(credential);
-
-      if (userCredential.user != null) {
-        Navigator.pushReplacementNamed(context, '/home');
-      }
-    } catch (error) {
+    } finally {
       setState(() {
-        _errorMessage = 'Google Sign-In failed: $error';
+        _isLoading = false; // Imposta lo stato di caricamento a false
       });
     }
   }
+
+  Future<void> _loginWithGoogle(BuildContext context) async {
+    setState(() {
+      _isLoading = true; // Imposta lo stato di caricamento a true
+    });
+
+    try {
+      // Ottieni il provider di autenticazione
+      final authProvider = Provider.of<auth.AuthProvider>(context, listen: false);
+
+      final User? user = await authProvider.signInWithGoogle();
+
+      if (user == null) {
+        // Se l'utente ha annullato il login
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Login Google annullato")),
+        );
+        return;
+      }
+
+      // Se il login è riuscito, naviga alla home
+      Navigator.pushReplacementNamed(context, '/home');
+    } catch (error) {
+      // Gestisci eventuali errori
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Errore durante il login: $error")),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false; // Imposta lo stato di caricamento a false
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +142,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               const SizedBox(height: 20),
-              ElevatedButton(
+              _isLoading
+                  ? const Center(child: CircularProgressIndicator()) // Mostra la rotella
+                  : ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState?.validate() ?? false) {
                     _login();
@@ -142,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     : Buttons.Google,
                 text: "Sign in with Google",
                 onPressed: () async {
-                  await _loginWithGoogle();
+                  await _loginWithGoogle(context);
                 },
               ),
               TextButton(

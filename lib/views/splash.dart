@@ -15,11 +15,14 @@ class Splash extends State<SplashScreen> {
   void initState() {
     super.initState();
     print("SplashScreen initialized");
-    // Navigate to main screen after 3 seconds
-    Future.delayed(const Duration(milliseconds: 700), () {
+
+    // Carica lo stato di autenticazione prima di navigare
+    Future.delayed(const Duration(milliseconds: 700), () async {
       if (mounted) {
         print("Checking authentication...");
         final authProvider = Provider.of<AuthProvider>(context, listen: false);
+        await authProvider.loadAuthenticationStatus();  // Carica stato di autenticazione
+
         print("Is user authenticated: ${authProvider.isAuthenticated}");
 
         if (authProvider.isAuthenticated) {
@@ -55,7 +58,6 @@ class Splash extends State<SplashScreen> {
               style: TextStyle(
                 fontSize: 32,  // Fixed size that works well across devices
                 fontWeight: FontWeight.bold,
-                // color: Theme.of(context).brightness == Brightness.dark ? Colors.white : primary,
                 color: primaryCyan,
               ),
             ),
