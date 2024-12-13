@@ -40,6 +40,10 @@ class AuthService {
         'name': name,
         'phoneNumber': phoneNumber,
         'address': address,
+      }).then((value) {
+        logger.d("Utente registrato in Firestore con successo.");
+      }).catchError((error) {
+        logger.e("Errore durante la registrazione in Firestore:", error: error);
       });
 
       return userCredential.user;
@@ -49,8 +53,9 @@ class AuthService {
     }
   }
 
-  // Google Sign In
   Future<User?> signInWithGoogle() async {
+    logger.d("Inizio del processo di login con Google");
+
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
@@ -70,6 +75,8 @@ class AuthService {
       User? user = userCredential.user;
 
       if (user != null) {
+        logger.d("UID utente: ${user.uid}");
+
         // Verifica se l'utente esiste già in Firestore
         DocumentSnapshot doc = await FirebaseFirestore.instance
             .collection('users')
@@ -81,21 +88,25 @@ class AuthService {
           logger.d("Documento non trovato, creazione in corso...");
           await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
             'name': user.displayName ?? 'Nome sconosciuto',
-            'phoneNumber': user.phoneNumber ?? '0000000000',
             'email': user.email ?? 'Email sconosciuta',
+            'phoneNumber': user.phoneNumber ?? '',
+            'address': '', // Campo indirizzo vuoto inizialmente
+          }).then((value) {
+            logger.d("Documento creato con successo.");
+          }).catchError((error) {
+            logger.e("Errore nella creazione del documento:", error: error);
           });
-          logger.d("Documento creato con successo.");
         } else {
           logger.d("Documento già esistente.");
         }
       }
-
       return user;
     } catch (e) {
       logger.e('Authentication error:', error: e);
       return null;
     }
   }
+
 
   // Logout
   Future<void> logout() async {

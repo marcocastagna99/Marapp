@@ -92,6 +92,42 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           _passwordController.text == _confirmPasswordController.text;
     });
   }
+
+
+  Future<void> _signUpWithGoogle(BuildContext context) async {
+    setState(() {
+      _isLoading = true; // Imposta lo stato di caricamento a true
+    });
+    try {
+      // Ottieni il provider di autenticazione
+      final authProvider = Provider.of<auth.AuthProvider>(context, listen: false);
+
+      final User? user = await authProvider.signInWithGoogle();
+
+
+      if (user == null) {
+        // Se l'utente ha annullato il login
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Login Google annullato")),
+        );
+        return;
+      }
+
+      // Se il login è riuscito, naviga alla home
+      Navigator.pushReplacementNamed(context, '/home');
+    } catch (error) {
+      // Gestisci eventuali errori
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Errore durante il login: $error")),
+      );
+    }
+    finally{
+      setState(() {
+        _isLoading = false; // Imposta lo stato di caricamento a true
+      });
+    }
+  }
+  /*
   Future<void> _signUpWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -118,7 +154,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         _errorMessage = 'Google Sign-In failed: $error';
       });
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -297,7 +333,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       : Buttons.Google,
                   text: "Sign Up with Google",
                   onPressed: () async {
-                    await _signUpWithGoogle();
+                    await _signUpWithGoogle(context);
                   },
                 ),
                 SizedBox(height: 20),

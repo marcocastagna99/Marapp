@@ -36,5 +36,10 @@ android {
 dependencies {
     implementation 'com.google.android.material:material:1.12.0' // Ultima versione del Material Design
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'com.google.android.gms:play-services-auth:21.2.0' // Dipendenza per Google Sign-In
+    implementation 'com.google.android.gms:play-services-auth:21.3.0' // Dipendenza per Google Sign-In
+    implementation platform('com.google.firebase:firebase-bom:33.7.0') // BOM per gestire le versioni
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-auth'
+
+
 }

@@ -16,7 +16,7 @@ class AuthProvider with ChangeNotifier {
   Future<void> login(String email, String password) async {
     _setLoading(true);
     _user = await _authService.login(email, password);
-    _setLoading(false);
+   _setLoading(false);
     notifyListeners();
   }
 

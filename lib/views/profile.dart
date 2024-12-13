@@ -21,7 +21,7 @@ class ProfileViewState extends State<ProfileView> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
+  //final TextEditingController _emailController = TextEditingController();
   final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
@@ -46,14 +46,14 @@ class ProfileViewState extends State<ProfileView> {
     super.initState();
     _fetchUserProfile();
 
-    _emailFocusNode.addListener(() {
+    /*_emailFocusNode.addListener(() {
       if (!_emailFocusNode.hasFocus) {
         setState(() {
           _emailValid =
               RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(_emailController.text);
         });
       }
-    });
+    });*/
 
     _passwordFocusNode.addListener(() {
       if (!_passwordFocusNode.hasFocus) {
@@ -86,7 +86,7 @@ class ProfileViewState extends State<ProfileView> {
         _nameController.text = snapshot['name'] ?? '';
         _phoneNumberController.text = snapshot['phoneNumber'] ?? '';
         _addressController.text = snapshot['address'] ?? '';
-        _emailController.text = user.email ?? '';
+        //_emailController.text = user.email ?? '';
       });
     }
   }
@@ -111,12 +111,13 @@ class ProfileViewState extends State<ProfileView> {
 
     if (user != null) {
       try {
-        if (!_emailValid) {
+        /*if (!_emailValid) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Email format error')),
           );
-          return;
-        }
+          return;}
+          */
+
 
         if (!_passwordValid) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -164,9 +165,9 @@ class ProfileViewState extends State<ProfileView> {
         });
 
         // Update email if changed
-        if (_emailController.text != user.email) {
+        /*if (_emailController.text != user.email) {
           await user.verifyBeforeUpdateEmail(_emailController.text);
-        }
+        }*/
 
         // Update password if provided
         if (_passwordController.text.isNotEmpty) {
@@ -236,9 +237,9 @@ class ProfileViewState extends State<ProfileView> {
                   return null;
                 },
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 10),/*
               _buildRoundedTextField(
-                controller: _emailController,
+               // controller: _emailController,
                 label: 'Update Email',
                 focusNode: _emailFocusNode,
                 errorText: !_emailValid ? 'Email format error' : null,
@@ -260,7 +261,20 @@ class ProfileViewState extends State<ProfileView> {
                     : _emailValid
                         ? Colors.green
                         : Colors.red,
+              ),*/
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: TextField(
+                  controller: TextEditingController(text: FirebaseAuth.instance.currentUser?.email),
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    enabled: false, // Disabilita la modifica
+                    border: OutlineInputBorder(),
+                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
+
               const SizedBox(height: 10),
 
               // Old password text field

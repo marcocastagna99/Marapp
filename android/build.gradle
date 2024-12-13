@@ -1,13 +1,13 @@
 buildscript {
-    ext.kotlin_version = "1.8.10" // Sostituisci con la versione compatibile
+    ext.kotlin_version = "1.9.0" // Aggiornato alla versione compatibile
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:8.1.4" // Sostituisci con una versione compatibile
+        classpath "com.android.tools.build:gradle:8.1.4" // Compatibile con la tua configurazione
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "com.google.gms:google-services:4.4.0" // Firebase
+        classpath "com.google.gms:google-services:4.3.15" // Plugin Google Services aggiornato
     }
 }
 
