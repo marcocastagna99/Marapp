@@ -38,9 +38,9 @@ dependencies:
   flutter_signin_button: ^2.0.0
   logger: ^2.0.2+1
   universal_io: ^2.0.5
-  flutter_native_splash: ^2.0.0
+  flutter_native_splash: ^2.3.0
   #universal_io: ^2.0.5
-  #flat_icons_flutter: ^1.0.1
+  #flat_icons_flutter: any
 
 
 
@@ -55,6 +55,18 @@ dev_dependencies:
   flutter_launcher_icons: any
   flutter_lints: any
 
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon.png"
+  web:
+    generate: true
+    image_path: "assets/icon.png"
+  macos:
+    generate: true
+    image_path: "assets/icon.png"
+
+
 flutter_launcher_icons:
   image_path: "assets/icon.png"
   android: true
@@ -67,14 +79,22 @@ flutter_launcher_icons:
   macos:
     generate: true
     image_path: "assets/icon.png"
-
-
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^4.0.0
+
+flutter_native_splash:
+  color: "#ffffff" # Colore di sfondo
+  image: "assets/icon.png" # Percorso dell'immagine dello splash screen
+  android: true
+  ios: true
+  web: true # Attiva lo splash screen per il Web
+  remove_alpha_ios: true
+
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

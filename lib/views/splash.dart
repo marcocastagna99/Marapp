@@ -14,15 +14,23 @@ class Splash extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    print("SplashScreen initialized");
     // Navigate to main screen after 3 seconds
     Future.delayed(const Duration(milliseconds: 700), () {
       if (mounted) {
+        print("Checking authentication...");
         final authProvider = Provider.of<AuthProvider>(context, listen: false);
+        print("Is user authenticated: ${authProvider.isAuthenticated}");
+
         if (authProvider.isAuthenticated) {
+          print("User is authenticated, navigating to Home");
           Navigator.pushReplacementNamed(context, '/home');
         } else {
+          print("User is not authenticated, navigating to Registration");
           Navigator.pushReplacementNamed(context, '/register');
         }
+      } else {
+        print("SplashScreen is no longer mounted");
       }
     });
   }
