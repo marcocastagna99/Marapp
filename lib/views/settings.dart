@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,6 +13,7 @@ class SettingsView extends StatefulWidget {
 
 class SettingsViewState extends State<SettingsView> {
   bool _followSystem = true; // Default: follow the system
+  bool _notifications = false;
   ThemeMode _selectedTheme = ThemeMode.system;
 
   @override
@@ -41,6 +43,11 @@ class SettingsViewState extends State<SettingsView> {
     }
   }
 
+  void _saveNotificationSetting(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('notifications', value);
+  }
+
   void _toggleFollowSystem(bool value) {
     setState(() {
       _followSystem = value;
@@ -50,12 +57,26 @@ class SettingsViewState extends State<SettingsView> {
     MarappState.themeNotifier.value = _selectedTheme;
   }
 
+  void _toggleNotifications(bool value) {
+    setState(() {
+      _notifications = value;
+    });
+    _saveNotificationSetting(value);
+  }
+
   void _setThemeMode(ThemeMode theme) {
     setState(() {
       _selectedTheme = theme;
     });
     _saveThemeSettings();
     MarappState.themeNotifier.value = _selectedTheme;
+  }
+
+  void _sendTestNotification() {
+    // Code to send a push notification
+    if (kDebugMode) {
+      print('Test push notification sent');
+    }
   }
 
   @override
@@ -69,15 +90,46 @@ class SettingsViewState extends State<SettingsView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Button to go to Theme Settings
-            ElevatedButton(
-              onPressed: () {
+            // Linea per accedere alle impostazioni del tema
+            ListTile(
+              onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const ThemeSettingsView()),
                 );
               },
-              child: const Text('Theme Settings'),
+              title: const Text('Theme Settings'),
+              leading: const Icon(Icons.color_lens),
+              trailing: const Icon(Icons.arrow_forward_ios),
             ),
+            const Divider(),  // Una linea di separazione
+
+            // Linea per inviare la notifica di prova
+            ListTile(
+              onTap: _sendTestNotification,
+              title: const Text('Test Push Notification'),
+              leading: const Icon(Icons.notifications),
+              trailing: const Icon(Icons.arrow_forward_ios),
+            ),
+            const Divider(),  // Una linea di separazione
+
+            // Notifications Toggle
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Notifications'),
+                defaultTargetPlatform == TargetPlatform.iOS ||
+                    defaultTargetPlatform == TargetPlatform.macOS
+                    ? CupertinoSwitch(
+                  value: _notifications,
+                  onChanged: _toggleNotifications,
+                )
+                    : Switch(
+                  value: _notifications,
+                  onChanged: _toggleNotifications,
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
