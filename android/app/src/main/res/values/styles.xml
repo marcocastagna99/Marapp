@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Tema applicato alla finestra Android all'avvio -->
-    <style name="LaunchTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Rimuovi il riferimento allo sfondo -->
-        <item name="android:windowBackground">@android:color/white</item>
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+
+
     </style>
 
-    <!-- Tema normale per l'attività principale -->
-    <style name="NormalTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowBackground">@android:color/white</item>
-    </style>
 </resources>

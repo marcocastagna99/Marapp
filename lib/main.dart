@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart'; // Per kIsWeb
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:marapp/views/splash.dart';
 import 'package:provider/provider.dart';
 import '/providers/auth_provider.dart';
@@ -28,11 +29,17 @@ Future<void> initializeFirebase() async {
 
 // Funzione per ottenere il tema iniziale
 Future<ThemeMode> getInitialThemeMode() async {
-  if (kIsWeb) {
-    return ThemeMode.light; // Default al tema chiaro sul web
-  } else {
+  final prefs = await SharedPreferences.getInstance();
+  final followSystem = prefs.getBool('followSystem') ?? true;
+
+  if (followSystem) {
+    // Se segue il tema di sistema, ritorna quello corrispondente
     final Brightness deviceBrightnessMode = PlatformDispatcher.instance.platformBrightness;
     return deviceBrightnessMode == Brightness.dark ? ThemeMode.dark : ThemeMode.light;
+  } else {
+    // Se non segue il sistema, usa il tema salvato
+    final isDarkMode = prefs.getBool('darkMode') ?? false;
+    return isDarkMode ? ThemeMode.dark : ThemeMode.light;
   }
 }
 
