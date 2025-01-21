@@ -1,116 +1,97 @@
 import 'package:flutter/material.dart';
 
 class CartView extends StatefulWidget {
-  const CartView({super.key});
+  final List<Map<String, dynamic>> cartItems;
+  final Function(String, int) updateCart; // Funzione di aggiornamento
+
+  const CartView({
+    super.key,
+    required this.cartItems,
+    required this.updateCart, // Passiamo la funzione updateCart
+  });
 
   @override
   CartViewState createState() => CartViewState();
 }
 
 class CartViewState extends State<CartView> {
-  final List<CartItem> _cartItems = [];
+  late List<Map<String, dynamic>> cartItems;
 
-  void _addItem(CartItem item) {
-    setState(() {
-      _cartItems.add(item);
-    });
-  }
-
-  void _removeItem(CartItem item) {
-    setState(() {
-      _cartItems.remove(item);
-    });
-  }
-
-  void _updateItemQuantity(CartItem item, int quantity) {
-    setState(() {
-      item.quantity = quantity;
-    });
-  }
-
-  double _getTotalPrice() {
-    return _cartItems.fold(0, (total, item) => total + item.price * item.quantity);
+  @override
+  void initState() {
+    super.initState();
+    cartItems = List.from(widget.cartItems); // Copia dei dati iniziali
   }
 
   @override
   Widget build(BuildContext context) {
+    double totalPrice = cartItems.fold(
+      0, (sum, item) => sum + (item['price'] * item['quantity']),
+    );
+
+    // Ottieni il colore dal tema
+    Color bottomNavBarColor = Theme.of(context).primaryColor;
+    Color textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.white;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Cart'),
+        title: const Text('My Cart'),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: _cartItems.length,
-              itemBuilder: (context, index) {
-                final item = _cartItems[index];
-                return ListTile(
-                  title: Text(item.name),
-                  subtitle: Text('Price: \$${item.price.toStringAsFixed(2)}'),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.remove),
-                        onPressed: () {
-                          if (item.quantity > 1) {
-                            _updateItemQuantity(item, item.quantity - 1);
-                          } else {
-                            _removeItem(item);
-                          }
-                        },
-                      ),
-                      Text(item.quantity.toString()),
-                      IconButton(
-                        icon: Icon(Icons.add),
-                        onPressed: () {
-                          _updateItemQuantity(item, item.quantity + 1);
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              },
+      body: cartItems.isEmpty
+          ? const Center(
+        child: Text(
+          'Your cart is empty!',
+          style: TextStyle(fontSize: 18),
+        ),
+      )
+          : ListView.builder(
+        itemCount: cartItems.length,
+        itemBuilder: (context, index) {
+          final item = cartItems[index];
+
+          return ListTile(
+            title: Text(item['name']),
+            subtitle: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.remove),
+                  onPressed: () {
+                    widget.updateCart(item['name'], -1);
+                    setState(() {}); // Rendi visibile il cambiamento
+                  },
+                ),
+                Text('Quantity: ${item['quantity']}'),
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: () {
+                    widget.updateCart(item['name'], 1);
+                    setState(() {}); // Rendi visibile il cambiamento
+                  },
+                ),
+              ],
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Total: \$${_getTotalPrice().toStringAsFixed(2)}',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: () {
-                // Implement checkout functionality here
-              },
-              child: Text('Checkout'),
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Add a new item to the cart for demonstration purposes
-          _addItem(CartItem(name: 'Item ${_cartItems.length + 1}', price: 10.0));
+            trailing: Text(
+                '€${(item['price'] * item['quantity']).toStringAsFixed(2)}'),
+          );
         },
-        child: Icon(Icons.add),
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(16.0),
+        color: bottomNavBarColor,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Total:',
+              style: TextStyle(fontSize: 18, color: textColor),
+            ),
+            Text(
+              '€${totalPrice.toStringAsFixed(2)}',
+              style: TextStyle(fontSize: 18, color: textColor),
+            ),
+          ],
+        ),
       ),
     );
   }
-}
-
-class CartItem {
-  final String name;
-  final double price;
-  int quantity;
-
-  CartItem({
-    required this.name,
-    required this.price,
-    this.quantity = 1,
-  });
 }

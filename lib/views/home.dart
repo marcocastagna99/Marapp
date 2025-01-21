@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../utils/theme.dart';
+
 import 'products.dart';
 import 'profile.dart';
-import 'cart.dart';
 import 'settings.dart';
+import 'orders.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,7 +18,7 @@ class HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _screens = [
     const ProductsView(),
-    const CartView(),
+    const OrdersView(),
     const ProfileView(),
     const SettingsView(),
   ];
@@ -36,33 +36,24 @@ class HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onTabTapped,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.cookie,
-                color: _currentIndex == 0 ? primaryCyan : Colors.grey),
+            icon: const Icon(Icons.cookie),
             label: 'Products',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart,
-                color: _currentIndex == 1 ? primaryCyan : Colors.grey),
-            label: 'Cart',
+            icon: const Icon(Icons.local_restaurant),
+            label: 'Orders',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person,
-                color: _currentIndex == 2 ? primaryCyan : Colors.grey),
+            icon: const Icon(Icons.person),
             label: 'Profile',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings,
-                color: _currentIndex == 3 ? primaryCyan : Colors.grey),
+            icon: const Icon(Icons.settings),
             label: 'Settings',
           ),
         ],
-        selectedItemColor: primaryCyan,
-        unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
       ),
     );
   }

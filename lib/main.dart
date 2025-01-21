@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart'; // Per kIsWeb
 import 'package:firebase_core/firebase_core.dart';
+import 'package:marapp/utils/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:marapp/views/splash.dart';
 import 'package:provider/provider.dart';
@@ -75,11 +76,9 @@ class MarappState extends State<Marapp> {
               return MaterialApp(
                 debugShowCheckedModeBanner: false,
                 title: 'Marapp',
-                theme: ThemeData(
-                  primarySwatch: Colors.blue,
-                ),
-                darkTheme: ThemeData.dark(), // Tema scuro opzionale
-                themeMode: themeMode,
+                theme: getTheme(false), // Usa il tuo tema personalizzato per la modalità chiara
+                darkTheme: getTheme(true), // Usa il tuo tema personalizzato per la modalità scura
+                themeMode: themeMode, // Gestisce il tema basato su `themeNotifier`
                 initialRoute: '/splash',
                 routes: {
                   '/splash': (context) => SplashScreen(),

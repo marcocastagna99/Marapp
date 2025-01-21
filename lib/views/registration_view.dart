@@ -25,6 +25,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
 
+  static const Color lightblue = Color(0xFF76B6FE);
   bool _isLoading = false;
 
   String name = '';
@@ -329,7 +330,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 SignInButton(
                   Theme.of(context).brightness == Brightness.dark
-                      ? Buttons.GoogleDark
+                      ? Buttons.Google
                       : Buttons.Google,
                   text: "Sign Up with Google",
                   onPressed: () async {
@@ -346,7 +347,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   },
                   child: Text(
                     "Hai già un account? Accedi",
-                    style: TextStyle(color: Colors.blue),
+                    style: TextStyle(color: lightblue),
                   ),
                 ),
               ],

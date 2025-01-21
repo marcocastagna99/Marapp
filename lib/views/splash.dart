@@ -17,7 +17,7 @@ class Splash extends State<SplashScreen> {
     print("SplashScreen initialized");
 
     // Carica lo stato di autenticazione prima di navigare
-    Future.delayed(const Duration(milliseconds: 700), () async {
+    Future.delayed(const Duration(milliseconds: 900), () async {
       if (mounted) {
         print("Checking authentication...");
         final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -47,7 +47,7 @@ class Splash extends State<SplashScreen> {
           children: [
             // Logo image
             Image.asset(
-              'assets/icon.png',
+              'assets/marapp.png',
               width: MediaQuery.of(context).size.width * 0.4, // 40% of screen width
               height: MediaQuery.of(context).size.width * 0.4, // Keep aspect ratio square
             ),

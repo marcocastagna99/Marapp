@@ -177,7 +177,7 @@
     },
     {
       "name": "flutter_native_splash",
-      "rootUri": "file:///C:/Users/acer/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_native_splash-2.4.3",
+      "rootUri": "file:///C:/Users/acer/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_native_splash-2.4.4",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -518,7 +518,7 @@
       "languageVersion": "3.5"
     }
   ],
-  "generated": "2024-12-13T13:07:56.431933Z",
+  "generated": "2025-01-21T13:52:58.759721Z",
   "generator": "pub",
   "generatorVersion": "3.6.0",
   "flutterRoot": "file:///C:/Users/marco/UNIGE/MAGISTRALE/I%20ANNO/MOBILE%20DEVELOPMENT/flutter",

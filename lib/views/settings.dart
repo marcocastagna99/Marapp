@@ -4,6 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
 
+// Definizione dei colori
+const Color pink = Color(0xFFE58F91);
+const Color blue = Color(0xFF76B6FE);
+const Color grey = Colors.grey;
+
 class SettingsView extends StatefulWidget {
   const SettingsView({super.key});
 
@@ -73,7 +78,6 @@ class SettingsViewState extends State<SettingsView> {
   }
 
   void _sendTestNotification() {
-    // Code to send a push notification
     if (kDebugMode) {
       print('Test push notification sent');
     }
@@ -90,7 +94,6 @@ class SettingsViewState extends State<SettingsView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Linea per accedere alle impostazioni del tema
             ListTile(
               onTap: () {
                 Navigator.of(context).push(
@@ -101,18 +104,16 @@ class SettingsViewState extends State<SettingsView> {
               leading: const Icon(Icons.color_lens),
               trailing: const Icon(Icons.arrow_forward_ios),
             ),
-            const Divider(),  // Una linea di separazione
+            const Divider(),
 
-            // Linea per inviare la notifica di prova
             ListTile(
               onTap: _sendTestNotification,
               title: const Text('Test Push Notification'),
               leading: const Icon(Icons.notifications),
               trailing: const Icon(Icons.arrow_forward_ios),
             ),
-            const Divider(),  // Una linea di separazione
+            const Divider(),
 
-            // Notifications Toggle
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -203,7 +204,6 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Follow System Switch
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -215,31 +215,28 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView> {
               ],
             ),
             const SizedBox(height: 20),
-            // Dark/Light Mode Buttons
             if (!_followSystem)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  // Light Mode Button
                   ElevatedButton.icon(
                     onPressed: () => _setThemeMode(ThemeMode.light),
                     icon: const Icon(Icons.wb_sunny),
                     label: const Text('Light Mode'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _selectedTheme == ThemeMode.light
-                          ? Colors.blue
-                          : Colors.grey,
+                          ? pink
+                          : grey,
                     ),
                   ),
-                  // Dark Mode Button
                   ElevatedButton.icon(
                     onPressed: () => _setThemeMode(ThemeMode.dark),
                     icon: const Icon(Icons.nightlight_round),
                     label: const Text('Dark Mode'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _selectedTheme == ThemeMode.dark
-                          ? Colors.blue
-                          : Colors.grey,
+                          ? blue
+                          : grey,
                     ),
                   ),
                 ],

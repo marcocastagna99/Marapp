@@ -19,6 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   String? _errorMessage;
   bool _isLoading = false;
+  static const Color lightblue = Color(0xFF76B6FE);
 
   Future<void> _login() async {
     final authProvider = Provider.of<auth.AuthProvider>(context, listen: false);
@@ -155,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 20),
               SignInButton(
                 Theme.of(context).brightness == Brightness.dark
-                    ? Buttons.GoogleDark
+                    ? Buttons.Google
                     : Buttons.Google,
                 text: "Sign in with Google",
                 onPressed: () async {
@@ -169,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: const Text(
                   "Don't have an account? Register",
                   style: TextStyle(
-                    color: Colors.blue,
+                    color: lightblue,
                     fontSize: 14,
                   ),
                 ),
