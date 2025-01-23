@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CartView extends StatefulWidget {
-  final String userId; // Aggiungi l'ID dell'utente per identificare il carrello
+  final String userId;
   final List<Map<String, dynamic>> cartItems;
-  final Function(String, int) updateCart; // Funzione di aggiornamento
+  final Function(String, int) updateCart;
 
   const CartView({
     super.key,
     required this.cartItems,
     required this.updateCart,
-    required this.userId, // Passiamo l'ID utente
+    required this.userId,
   });
 
   @override
@@ -21,7 +21,8 @@ class CartView extends StatefulWidget {
 class CartViewState extends State<CartView> {
   List<Map<String, dynamic>> cartItems = [];
 
-  // Funzione per leggere o creare un documento di carrello per un determinato userId
+  // Non è più necessario il metodo _getImageUrl
+
   Future<void> _getCartData() async {
     try {
       final user = FirebaseAuth.instance.currentUser;
@@ -40,22 +41,27 @@ class CartViewState extends State<CartView> {
           if (data['userId'] == user.uid) {
             if (data['cartItems'] is List) {
               List<Map<String, dynamic>> fetchedItems = List<Map<String, dynamic>>.from(data['cartItems']);
+
+              // Aggiungi il percorso dell'immagine da assets
+              for (var item in fetchedItems) {
+                final productRef = FirebaseFirestore.instance.collection('products').doc(item['productId']);
+                final productSnapshot = await productRef.get();
+                if (productSnapshot.exists) {
+                  final productData = productSnapshot.data();
+                  if (productData != null && productData['imageUrl'] != null) {
+                    // Usa il percorso dell'immagine direttamente da assets
+                    item['imageUrl'] = 'assets/${productData['imageUrl']}';
+                  }
+                }
+              }
+
               setState(() {
                 cartItems = fetchedItems;
               });
-              print("Carrello caricato con successo per l'utente: ${user.uid}");
-              print("Dati del carrello: $cartItems");
-            } else {
-              print("Errore: 'cartItems' non è una lista valida.");
             }
-          } else {
-            print("Errore: userId nel documento non corrisponde all'utente autenticato.");
           }
-        } else {
-          print("Errore: Il documento esiste ma i dati sono nulli.");
         }
       } else {
-        print("Documento del carrello non trovato. Creazione di un nuovo carrello per l'utente: ${user.uid}");
         await cartRef.set({
           'cartItems': [],
           'userId': user.uid,
@@ -63,7 +69,6 @@ class CartViewState extends State<CartView> {
         setState(() {
           cartItems = [];
         });
-        print("Nuovo carrello creato con successo.");
       }
     } catch (e) {
       print("Errore nel recupero dei dati del carrello: $e");
@@ -74,7 +79,6 @@ class CartViewState extends State<CartView> {
     try {
       final cartRef = FirebaseFirestore.instance.collection('cart').doc(widget.userId);
 
-      // Rimuovi gli articoli con quantità zero prima di salvare
       cartItems.removeWhere((item) => item['quantity'] <= 0);
 
       await cartRef.update({
@@ -85,6 +89,12 @@ class CartViewState extends State<CartView> {
     }
   }
 
+  void _clearCart() {
+    setState(() {
+      cartItems.clear();
+    });
+    _saveCartToFirestore();
+  }
 
   @override
   void initState() {
@@ -98,75 +108,130 @@ class CartViewState extends State<CartView> {
       0, (sum, item) => sum + (item['price'] * item['quantity']),
     );
 
-    Color bottomNavBarColor = Theme.of(context).primaryColor;
-    Color textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.white;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Cart'),
       ),
-      body: cartItems.isEmpty
-          ? const Center(
-        child: Text(
-          'Your cart is empty!',
-          style: TextStyle(fontSize: 18),
-        ),
-      )
-          : ListView.builder(
-        itemCount: cartItems.length,
-        itemBuilder: (context, index) {
-          final item = cartItems[index];
+      body: Column(
+        children: [
+          Expanded(
+            child: cartItems.isEmpty
+                ? const Center(
+              child: Text(
+                'Your cart is empty!',
+                style: TextStyle(fontSize: 18),
+              ),
+            )
+                : ListView.builder(
+              itemCount: cartItems.length,
+              itemBuilder: (context, index) {
+                final item = cartItems[index];
 
-          return ListTile(
-            title: Text(item['name'] ?? 'Nome prodotto non disponibile'),
-            subtitle: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.remove),
-                  onPressed: () {
-                    widget.updateCart(item['name'], -1);
-                    setState(() {
-                      item['quantity']--;
-                      if (item['quantity'] <= 0) {
-                        cartItems.removeAt(index); // Rimuovi l'elemento se la quantità è zero
-                      }
-                      _saveCartToFirestore(); // Salva il carrello su Firestore
-                    });
-                  },
+                return ListTile(
+                  leading: item['imageUrl'] != null && item['imageUrl'].isNotEmpty
+                      ? Image.asset(
+                    item['imageUrl'],
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                  )
+                      : Icon(Icons.image, size: 50), // Fallback se URL immagine non esiste
+                  title: Text(item['name'] ?? 'Nome prodotto non disponibile'),
+                  subtitle: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.remove),
+                        onPressed: () {
+                          widget.updateCart(item['name'], -1);
+                          setState(() {
+                            item['quantity']--;
+                            if (item['quantity'] <= 0) {
+                              cartItems.removeAt(index);
+                            }
+                            _saveCartToFirestore();
+                          });
+                        },
+                      ),
+                      Text('Quantity: ${item['quantity']}'),
+                      IconButton(
+                        icon: const Icon(Icons.add),
+                        onPressed: () {
+                          widget.updateCart(item['name'], 1);
+                          setState(() {
+                            item['quantity']++;
+                            _saveCartToFirestore();
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  trailing: Text('€${(item['price'] * item['quantity']).toStringAsFixed(2)}'),
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Card(
+              elevation: 5, // Ombra
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15), // Bordi arrotondati
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Total:',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          '€${totalPrice.toStringAsFixed(2)}',
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: _clearCart,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red, // Colore rosso per "Cancel"
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: const Text('Cancel the order'),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              // Implementazione futura
+                            },
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: const Text('Proceed with order'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                Text('Quantity: ${item['quantity']}'),
-                IconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: () {
-                    widget.updateCart(item['name'], 1);
-                    setState(() {
-                      item['quantity']++;
-                      _saveCartToFirestore(); // Salva il carrello su Firestore
-                    });
-                  },
-                ),
-              ],
+              ),
             ),
-            trailing: Text('€${(item['price'] * item['quantity']).toStringAsFixed(2)}'),
-          );
-        },
-      ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(16.0),
-        color: bottomNavBarColor,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Total:',
-              style: TextStyle(fontSize: 18, color: textColor),
-            ),
-            Text(
-              '€${totalPrice.toStringAsFixed(2)}',
-              style: TextStyle(fontSize: 18, color: textColor),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
