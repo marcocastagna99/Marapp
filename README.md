@@ -1,7 +1,7 @@
 <a href="https://github.com/enriicola/Marapp/actions"><img src="https://github.com/enriicola/Marapp/workflows/flutter/badge.svg" alt="Build Status"></a>
 
 <!-- sudo gem install -n /usr/local/bin cocoapods -->
-![Marapp](assets/icon.png)
+![Marapp](assets/marapp.png)
 
 # Marapp - Mara’s sweets and savory 🍰🥨
 Mara’s sweets and savory -> flutter app for a pastry e-commerce developed for the Mobile Development exam
@@ -12,7 +12,7 @@ Mara’s sweets and savory -> flutter app for a pastry e-commerce developed for 
 - [x] implement github actions for tests
 - [ ] check if users exists in login page
 - [ ] add forgotten password mechanism
-- [ ] add actual info inside the labels of profile.dart text boxes
+- [x] add actual info inside the labels of profile.dart text boxes
 - [x] change bottom bar icons
 - [x] create app icon 
 - [x] change theme colors
@@ -22,18 +22,18 @@ Mara’s sweets and savory -> flutter app for a pastry e-commerce developed for 
 - [x] finish this readme in function of our project proposal pdf
 - [x] product list
 - [x] cart
+- [] search bar with filters
+- [] orders logic
 - [ ] add login/signup with button of facebook
 - [ ] add login/signup with button of instagram 
 - [ ] add login/signup with button of apple
 - [ ] GPS to locate user address and distance from the Mara' shop
 - [ ] camera usage to upload a selfie/photo as profile pic
-- [ ] file or photo access in the phone to choose one image for the profile pic
 - [ ] SMS managing for psw recovery, and (?)
-- [ ] biometric authentication (touch id or face id) instead of username and psw
 - [ ] add timetable booking foods (because my mom is cooking alone)
 - [ ] add products such as "wedding menu" or "bachelor/birthdate menu"
 - [ ] implement admin account for mara herself (maybe just 2 buttons in the bottom bar (for editing foods offers and for managing her incoming orders))
-- [ ] GUI with "homemade" feelings ??
+- [x] GUI with "homemade" feelings ??
 - [ ] push notifications system for both clients and Mara
 - [ ] add "change status for order" for mara, on the side for managing orders
 - [ ] add reviews implementation
