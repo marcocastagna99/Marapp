@@ -59,53 +59,56 @@ class AuthService {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
-        // L'utente ha annullato il login con Google
+        logger.d("Login annullato dall'utente.");
         return null;
       }
 
       final GoogleSignInAuthentication? googleAuth = await googleUser.authentication;
 
+      if (googleAuth == null) {
+        logger.e("GoogleAuth è null.");
+        return null;
+      }
+
       final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
       );
 
-      // Esegui l'accesso con le credenziali ottenute da Google
       UserCredential userCredential = await _auth.signInWithCredential(credential);
       User? user = userCredential.user;
 
-      if (user != null) {
-        logger.d("UID utente: ${user.uid}");
-
-        // Verifica se l'utente esiste già in Firestore
-        DocumentSnapshot doc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
-
-        if (!doc.exists) {
-          // Se il documento non esiste, crealo
-          logger.d("Documento non trovato, creazione in corso...");
-          await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-            'name': user.displayName ?? 'Nome sconosciuto',
-            'email': user.email ?? 'Email sconosciuta',
-            'phoneNumber': user.phoneNumber ?? '',
-            'address': '', // Campo indirizzo vuoto inizialmente
-          }).then((value) {
-            logger.d("Documento creato con successo.");
-          }).catchError((error) {
-            logger.e("Errore nella creazione del documento:", error: error);
-          });
-        } else {
-          logger.d("Documento già esistente.");
-        }
+      if (user == null) {
+        logger.e("Autenticazione fallita: utente è null.");
+        return null;
       }
+
+      logger.d("UID utente: ${user.uid}");
+
+      DocumentSnapshot doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (!doc.exists) {
+        logger.d("Documento non trovato, creazione in corso...");
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'name': user.displayName ?? 'Nome sconosciuto',
+          'email': user.email ?? 'Email sconosciuta',
+          'phoneNumber': user.phoneNumber ?? '',
+          'address': '',
+        });
+      } else {
+        logger.d("Documento già esistente.");
+      }
+
       return user;
-    } catch (e) {
-      logger.e('Authentication error:', error: e);
+    } catch (e, stack) {
+      logger.e('Authentication error:', error: e, stackTrace: stack);
       return null;
     }
   }
+
 
 
   // Logout

@@ -84,8 +84,6 @@ class ProductsViewState extends State<ProductsView> {
     }
   }
 
-
-
   // Function to add product to cart
   void _addToCart(String productId, double price, String name, int quantity) async {
     try {
@@ -223,31 +221,59 @@ class ProductsViewState extends State<ProductsView> {
               String description = documentSnapshot['description'] ?? "No Description";
               String imageUrl = documentSnapshot['imageUrl'];
 
-              return ListTile(
-                leading: Image.asset(
-                  'assets/$imageUrl',
-                  width: 150,
-                  height: 150,
-                  fit: BoxFit.cover,
+              return Card(
+                elevation: 4.0,
+                margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.0),
                 ),
-                title: Text(name, style: Theme.of(context).textTheme.bodyLarge),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('€${price.toStringAsFixed(2)}', style: Theme.of(context).textTheme.bodyMedium),
-                    const SizedBox(height: 5),
-                    Text(description, maxLines: 2, overflow: TextOverflow.ellipsis),
-                  ],
-                ),
-                onTap: () {
-                  _navigateToProductDetail(productId, price, description, imageUrl, name); // Pass 'name'
-                },
-                trailing: IconButton(
-                  icon: const Icon(Icons.add, color: Color(0xFF76B6FE)),
-                  onPressed: () {
-                    int quantity = 1; // Quantity to add on button press
-                    _addToCart(productId, price, name, quantity); // Pass both productId and quantity
+                child: ListTile(
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(12.0),
+                    child: Image.asset(
+                      'assets/$imageUrl',
+                      width: 120,
+                      height: 120,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  title: Text(name, style: Theme.of(context).textTheme.bodyLarge),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('€${price.toStringAsFixed(2)}', style: Theme.of(context).textTheme.bodyMedium),
+                      const SizedBox(height: 5),
+                      Text(description, maxLines: 2, overflow: TextOverflow.ellipsis),
+                    ],
+                  ),
+                  onTap: () {
+                    _navigateToProductDetail(productId, price, description, imageUrl, name); // Pass 'name'
                   },
+                  trailing: GestureDetector(
+                    onTap: () {
+                      int quantity = 1; // Aumenta la quantità
+                      _addToCart(productId, price, name, quantity); // Aggiungi il prodotto al carrello
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: Color(0xFF76B6FE), // Colore di sfondo
+                        borderRadius: BorderRadius.circular(12.0), // Angoli arrotondati
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 6.0,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.add,
+                        color: Colors.white, // Colore dell'icona
+                        size: 28.0, // Dimensione dell'icona
+                      ),
+                    ),
+                  ),
                 ),
               );
             },
@@ -308,31 +334,21 @@ class ProductsViewState extends State<ProductsView> {
               stream: _getTotalCartQuantityStream(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const SizedBox();
                 }
 
-                if (snapshot.hasError) {
-                  return const Icon(Icons.shopping_cart);
-                }
-
-                int totalQuantity = snapshot.data ?? 0;
-
-                if (totalQuantity > 0) {
-                  return Positioned(
-                    right: 0,
-                    top: 0,
-                    child: CircleAvatar(
-                      radius: 10,
-                      backgroundColor: Colors.red,
-                      child: Text(
-                        totalQuantity.toString(),
-                        style: const TextStyle(color: Colors.white, fontSize: 12),
-                      ),
+                return Positioned(
+                  top: 0,
+                  right: 0,
+                  child: CircleAvatar(
+                    radius: 10,
+                    backgroundColor: Colors.red,
+                    child: Text(
+                      snapshot.data.toString(),
+                      style: const TextStyle(fontSize: 12, color: Colors.white),
                     ),
-                  );
-                }
-
-                return const SizedBox(); // Nessun contatore da mostrare
+                  ),
+                );
               },
             ),
           ],
