@@ -94,6 +94,15 @@ class _ProductDetailViewState extends State<ProductDetailView> {
                     widget.name,
                     _quantity,
                   ); // Aggiungi al carrello con la quantità
+                  ScaffoldMessenger.of(context)
+                      .clearSnackBars();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                          'Product added to cart successfully!'),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
                   Navigator.pop(context); // Torna indietro
                 }
               },

@@ -18,6 +18,7 @@ class ProductsViewState extends State<ProductsView> {
   TextEditingController _searchController = TextEditingController(); // Controller per la barra di ricerca
   String _searchQuery = ""; // Variabile per la query di ricerca
   final FocusNode _focusNode = FocusNode();
+  String _sortOption = 'Price Ascending';
 
 
   @override
@@ -209,6 +210,28 @@ class ProductsViewState extends State<ProductsView> {
     });
   }
 
+  Stream<QuerySnapshot> _getFilteredProducts() {
+    Query query = _firestore.collection('products');
+
+    if (_searchQuery.isNotEmpty) {
+      query = query.where('name', isGreaterThanOrEqualTo: _searchQuery)
+          .where('name', isLessThan: _searchQuery + 'z');
+    }
+
+    if (_sortOption == 'Price Ascending') {
+      query = query.orderBy('price');
+    } else if (_sortOption == 'Price Descending') {
+      query = query.orderBy('price', descending: true);
+    } else if (_sortOption == 'Name Ascending') {
+      query = query.orderBy('name');
+    } else if (_sortOption == 'Name Descending') {
+      query = query.orderBy('name', descending: true);
+    }
+
+    return query.snapshots();
+  }
+
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -304,10 +327,31 @@ class ProductsViewState extends State<ProductsView> {
               ),
             ),
           ),
-
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: DropdownButton<String>(
+              value: _sortOption,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _sortOption = newValue!;
+                });
+              },
+              items: <String>[
+                'Price Ascending',
+                'Price Descending',
+                'Name Ascending',
+                'Name Descending',
+              ].map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+          ),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: _firestore.collection('products').snapshots(),
+              stream: _getFilteredProducts(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return const Center(
