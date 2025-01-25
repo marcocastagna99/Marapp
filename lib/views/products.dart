@@ -17,6 +17,7 @@ class ProductsViewState extends State<ProductsView> {
 
   List<Map<String, dynamic>> _cartItems = [];
 
+
   @override
   void initState() {
     super.initState();
@@ -222,60 +223,109 @@ class ProductsViewState extends State<ProductsView> {
               String imageUrl = documentSnapshot['imageUrl'];
 
               return Card(
-                elevation: 4.0,
+                elevation: 5.0,
                 margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.0),
                 ),
-                child: ListTile(
-                  leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(12.0),
-                    child: Image.asset(
-                      'assets/$imageUrl',
-                      width: 120,
-                      height: 120,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  title: Text(name, style: Theme.of(context).textTheme.bodyLarge),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('€${price.toStringAsFixed(2)}', style: Theme.of(context).textTheme.bodyMedium),
-                      const SizedBox(height: 5),
-                      Text(description, maxLines: 2, overflow: TextOverflow.ellipsis),
-                    ],
-                  ),
+                child: InkWell(
                   onTap: () {
                     _navigateToProductDetail(productId, price, description, imageUrl, name); // Pass 'name'
                   },
-                  trailing: GestureDetector(
-                    onTap: () {
-                      int quantity = 1; // Aumenta la quantità
-                      _addToCart(productId, price, name, quantity); // Aggiungi il prodotto al carrello
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                        color: Color(0xFF76B6FE), // Colore di sfondo
-                        borderRadius: BorderRadius.circular(12.0), // Angoli arrotondati
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 6.0,
-                            offset: Offset(0, 3),
+                  borderRadius: BorderRadius.circular(12.0), // Per effetto ripple arrotondato
+                  child: Container(
+                    padding: const EdgeInsets.all(12.0), // Padding interno per estetica
+                    constraints: const BoxConstraints(minHeight: 180), // Imposta un'altezza minima
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Immagine ingrandita
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12.0),
+                          child: Image.asset(
+                            'assets/$imageUrl',
+                            width: 150, // Dimensione maggiore per l'immagine
+                            height: 150,
+                            fit: BoxFit.cover,
                           ),
-                        ],
-                      ),
-                      child: Icon(
-                        Icons.add,
-                        color: Colors.white, // Colore dell'icona
-                        size: 28.0, // Dimensione dell'icona
-                      ),
+                        ),
+                        const SizedBox(width: 16.0), // Spazio tra immagine e contenuto
+                        // Contenuto espandibile
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                name,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                '€${price.toStringAsFixed(2)}',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                description,
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Pulsante allineato al centro verticalmente
+                        Align(
+                          alignment: Alignment.center,
+                          child: GestureDetector(
+                            onTap: () {
+                              int quantity = 1; // Aumenta la quantità
+                              _addToCart(productId, price, name, quantity); // Aggiungi il prodotto al carrello
+
+                              // Rimuove eventuali snackbar in coda
+                              ScaffoldMessenger.of(context).clearSnackBars();
+
+                              // Mostra un messaggio di conferma con Snackbar
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Product added to cart successfully!'),
+                                  duration: const Duration(seconds: 2), // Durata del messaggio
+                                ),
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(8.0),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF76B6FE),
+                                borderRadius: BorderRadius.circular(12.0),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 6.0,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.add,
+                                color: Colors.white,
+                                size: 28.0,
+                              ),
+                            ),
+                          ),
+                        )
+
+
+                      ],
                     ),
                   ),
                 ),
               );
+
+
+
             },
           );
         },

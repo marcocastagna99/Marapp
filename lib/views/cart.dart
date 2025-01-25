@@ -32,7 +32,8 @@ class CartViewState extends State<CartView> {
         return;
       }
 
-      final cartRef = FirebaseFirestore.instance.collection('cart').doc(user.uid);
+      final cartRef = FirebaseFirestore.instance.collection('cart').doc(
+          user.uid);
       final docSnapshot = await cartRef.get();
 
       if (docSnapshot.exists) {
@@ -40,11 +41,13 @@ class CartViewState extends State<CartView> {
         if (data != null) {
           if (data['userId'] == user.uid) {
             if (data['cartItems'] is List) {
-              List<Map<String, dynamic>> fetchedItems = List<Map<String, dynamic>>.from(data['cartItems']);
+              List<Map<String, dynamic>> fetchedItems = List<
+                  Map<String, dynamic>>.from(data['cartItems']);
 
               // Aggiungi il percorso dell'immagine da assets
               for (var item in fetchedItems) {
-                final productRef = FirebaseFirestore.instance.collection('products').doc(item['productId']);
+                final productRef = FirebaseFirestore.instance.collection(
+                    'products').doc(item['productId']);
                 final productSnapshot = await productRef.get();
                 if (productSnapshot.exists) {
                   final productData = productSnapshot.data();
@@ -77,7 +80,8 @@ class CartViewState extends State<CartView> {
 
   Future<void> _saveCartToFirestore() async {
     try {
-      final cartRef = FirebaseFirestore.instance.collection('cart').doc(widget.userId);
+      final cartRef = FirebaseFirestore.instance.collection('cart').doc(
+          widget.userId);
 
       cartItems.removeWhere((item) => item['quantity'] <= 0);
 
@@ -119,7 +123,7 @@ class CartViewState extends State<CartView> {
                 ? const Center(
               child: Text(
                 'Your cart is empty!',
-                style: TextStyle(fontSize: 18),
+                style: TextStyle(fontSize: 24),
               ),
             )
                 : ListView.builder(
@@ -128,19 +132,26 @@ class CartViewState extends State<CartView> {
                 final item = cartItems[index];
 
                 return ListTile(
-                  leading: item['imageUrl'] != null && item['imageUrl'].isNotEmpty
+                  leading: item['imageUrl'] != null &&
+                      item['imageUrl'].isNotEmpty
                       ? Image.asset(
                     item['imageUrl'],
-                    width: 50,
-                    height: 50,
+                    width: 70, // Dimensione maggiore per l'immagine
+                    height: 70,
                     fit: BoxFit.cover,
                   )
-                      : Icon(Icons.image, size: 50), // Fallback se URL immagine non esiste
-                  title: Text(item['name'] ?? 'Nome prodotto non disponibile'),
+                      : Icon(Icons.image, size: 70),
+                  // Icona di fallback più grande
+                  title: Text(
+                    item['name'] ?? 'Nome prodotto non disponibile',
+                    style: const TextStyle(
+                        fontSize: 18), // Aumenta la dimensione del testo
+                  ),
                   subtitle: Row(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.remove),
+                        icon: const Icon(Icons.remove, size: 30),
+                        // Icona più grande per rimuovere
                         onPressed: () {
                           widget.updateCart(item['name'], -1);
                           setState(() {
@@ -152,9 +163,14 @@ class CartViewState extends State<CartView> {
                           });
                         },
                       ),
-                      Text('Quantity: ${item['quantity']}'),
+                      Text(
+                        'Quantity: ${item['quantity']}',
+                        style: const TextStyle(
+                            fontSize: 18), // Aumenta la dimensione del testo della quantità
+                      ),
                       IconButton(
-                        icon: const Icon(Icons.add),
+                        icon: const Icon(Icons.add, size: 30),
+                        // Icona più grande per aggiungere
                         onPressed: () {
                           widget.updateCart(item['name'], 1);
                           setState(() {
@@ -165,7 +181,11 @@ class CartViewState extends State<CartView> {
                       ),
                     ],
                   ),
-                  trailing: Text('€${(item['price'] * item['quantity']).toStringAsFixed(2)}'),
+                  trailing: Text(
+                    '€${(item['price'] * item['quantity']).toStringAsFixed(2)}',
+                    style: const TextStyle(
+                        fontSize: 18), // Aumenta la dimensione del testo del prezzo
+                  ),
                 );
               },
             ),
@@ -187,11 +207,14 @@ class CartViewState extends State<CartView> {
                       children: [
                         const Text(
                           'Total:',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight
+                              .bold), // Aumenta la dimensione del testo
                         ),
                         Text(
                           '€${totalPrice.toStringAsFixed(2)}',
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              fontSize: 20, fontWeight: FontWeight
+                              .bold), // Aumenta la dimensione del testo
                         ),
                       ],
                     ),
@@ -202,15 +225,20 @@ class CartViewState extends State<CartView> {
                           child: ElevatedButton(
                             onPressed: _clearCart,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red, // Colore rosso per "Cancel"
+                              backgroundColor: Colors.red,
+                              // Colore rosso per "Cancel"
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            child: const Text('Cancel the order'),
+                            child: const Text(
+                              'Cancel the order',
+                              style: TextStyle(
+                                  fontSize: 16), // Aumenta la dimensione del testo
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: 15),
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
@@ -221,7 +249,11 @@ class CartViewState extends State<CartView> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            child: const Text('Proceed with order'),
+                            child: const Text(
+                              'Proceed with order',
+                              style: TextStyle(
+                                  fontSize: 15), // Aumenta la dimensione del testo
+                            ),
                           ),
                         ),
                       ],
