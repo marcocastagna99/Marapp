@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';  // Import Firebase Authentication
 import 'package:flutter/material.dart';
-import 'package:marapp/views/productDetailView.dart';
+import 'package:marapp/views/products/productDetailView.dart';
 import 'cart.dart'; // Import the cart.dart
 
 class ProductsView extends StatefulWidget {

@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart'; // Add this import
 
-import 'login_view.dart';
+import '../login_view.dart';
 
-class ProfileView extends StatefulWidget {
-  const ProfileView({super.key});
+class UpdateProfileProfileView extends StatefulWidget {
+  const UpdateProfileProfileView({super.key});
 
   @override
   ProfileViewState createState() => ProfileViewState();
 }
 
-class ProfileViewState extends State<ProfileView> {
+class ProfileViewState extends State<UpdateProfileProfileView> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -27,7 +27,6 @@ class ProfileViewState extends State<ProfileView> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  bool _emailValid = true;
   bool _passwordValid = true;
 
   bool _oldPasswordVisible = false;
@@ -46,14 +45,6 @@ class ProfileViewState extends State<ProfileView> {
     super.initState();
     _fetchUserProfile();
 
-    /*_emailFocusNode.addListener(() {
-      if (!_emailFocusNode.hasFocus) {
-        setState(() {
-          _emailValid =
-              RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(_emailController.text);
-        });
-      }
-    });*/
 
     _passwordFocusNode.addListener(() {
       if (!_passwordFocusNode.hasFocus) {
@@ -111,13 +102,6 @@ class ProfileViewState extends State<ProfileView> {
 
     if (user != null) {
       try {
-        /*if (!_emailValid) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Email format error')),
-          );
-          return;}
-          */
-
 
         if (!_passwordValid) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -164,10 +148,6 @@ class ProfileViewState extends State<ProfileView> {
           'address': _addressController.text,
         });
 
-        // Update email if changed
-        /*if (_emailController.text != user.email) {
-          await user.verifyBeforeUpdateEmail(_emailController.text);
-        }*/
 
         // Update password if provided
         if (_passwordController.text.isNotEmpty) {
@@ -237,31 +217,7 @@ class ProfileViewState extends State<ProfileView> {
                   return null;
                 },
               ),
-              const SizedBox(height: 10),/*
-              _buildRoundedTextField(
-               // controller: _emailController,
-                label: 'Update Email',
-                focusNode: _emailFocusNode,
-                errorText: !_emailValid ? 'Email format error' : null,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                    return 'Please enter a valid email';
-                  }
-                  return null;
-                },
-                onChanged: (value) {
-                  setState(() {
-                    _emailValid = RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value);
-                  });
-                },
-                borderColor: _emailController.text.isEmpty
-                    ? Colors.grey
-                    : _emailValid
-                        ? Colors.green
-                        : Colors.red,
-              ),*/
+              const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: TextField(
@@ -339,7 +295,7 @@ class ProfileViewState extends State<ProfileView> {
                             : Colors.red,
               ),
               const SizedBox(height: 10), // Add space here
-              
+
               if (_showConfirmPassword)
                 _buildRoundedTextField(
                   controller: _confirmPasswordController,

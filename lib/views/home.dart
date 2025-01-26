@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 
-import 'products.dart';
-import 'profile.dart';
+import 'products/products.dart';
+import 'profile/update_profile.dart';
 import 'settings.dart';
-import 'orders.dart';
+import 'products/orders.dart';
+import 'profile/profile.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
