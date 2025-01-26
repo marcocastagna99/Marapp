@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart'; // Add this import
 
-import '../login_view.dart';
 
 class UpdateProfileProfileView extends StatefulWidget {
   const UpdateProfileProfileView({super.key});
@@ -21,7 +20,6 @@ class ProfileViewState extends State<UpdateProfileProfileView> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  //final TextEditingController _emailController = TextEditingController();
   final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
@@ -37,7 +35,6 @@ class ProfileViewState extends State<UpdateProfileProfileView> {
   bool _passwordsMatch = true;
 
   bool _passwordsMatchError = false; // Flag for matching error
-  final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
 
   @override
@@ -56,15 +53,6 @@ class ProfileViewState extends State<UpdateProfileProfileView> {
     });
   }
 
-  Future<void> _logout() async {
-    await _auth.signOut().then((_) {
-       Navigator.pushReplacement( context ,MaterialPageRoute( builder: (context) => LoginScreen() ));
-    }).catchError((error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error signing out: $error')),
-      );
-    });
-  }
 
   Future<void> _fetchUserProfile() async {
     User? user = _auth.currentUser;
@@ -170,12 +158,6 @@ class ProfileViewState extends State<UpdateProfileProfileView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: _logout,
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

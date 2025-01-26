@@ -388,14 +388,21 @@ class ProductsViewState extends State<ProductsView> {
                     return Card(
                       elevation: 5.0,
                       margin: const EdgeInsets.symmetric(
-                          vertical: 8.0, horizontal: 16.0),
+                        vertical: 8.0,
+                        horizontal: 16.0,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       child: InkWell(
                         onTap: () {
                           _navigateToProductDetail(
-                              productId, price, description, imageUrl, name);
+                            productId,
+                            price,
+                            description,
+                            imageUrl,
+                            name,
+                          );
                         },
                         borderRadius: BorderRadius.circular(12.0),
                         child: Container(
@@ -421,20 +428,14 @@ class ProductsViewState extends State<ProductsView> {
                                   children: [
                                     Text(
                                       name,
-                                      style: Theme
-                                          .of(context)
-                                          .textTheme
-                                          .bodyLarge,
+                                      style: Theme.of(context).textTheme.bodyLarge,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
                                       '€${price.toStringAsFixed(2)}',
-                                      style: Theme
-                                          .of(context)
-                                          .textTheme
-                                          .bodyMedium,
+                                      style: Theme.of(context).textTheme.bodyMedium,
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
@@ -447,41 +448,43 @@ class ProductsViewState extends State<ProductsView> {
                               ),
                               Align(
                                 alignment: Alignment.center,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    int quantity = 1;
-                                    _addToCart(
-                                        productId, price, name, quantity);
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min, // Adatta la larghezza al contenuto
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        int quantity = 1;
+                                        _addToCart(productId, price, name, quantity);
 
-                                    ScaffoldMessenger.of(context)
-                                        .clearSnackBars();
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                            'Product added to cart successfully!'),
-                                        duration: const Duration(seconds: 2),
-                                      ),
-                                    );
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.all(8.0),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF76B6FE),
-                                      borderRadius: BorderRadius.circular(12.0),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.1),
-                                          blurRadius: 6.0,
-                                          offset: const Offset(0, 3),
+                                        ScaffoldMessenger.of(context).clearSnackBars();
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text('Product added to cart successfully!'),
+                                            duration: const Duration(seconds: 2),
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8.0),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFF76B6FE),
+                                          borderRadius: BorderRadius.circular(12.0),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withOpacity(0.1),
+                                              blurRadius: 6.0,
+                                              offset: const Offset(0, 3),
+                                            ),
+                                          ],
                                         ),
-                                      ],
+                                        child: const Icon(
+                                          Icons.add,
+                                          color: Colors.white,
+                                          size: 28.0,
+                                        ),
+                                      ),
                                     ),
-                                    child: const Icon(
-                                      Icons.add,
-                                      color: Colors.white,
-                                      size: 28.0,
-                                    ),
-                                  ),
+                                  ],
                                 ),
                               ),
                             ],

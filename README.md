@@ -23,6 +23,7 @@ Mara’s sweets and savory -> flutter app for a pastry e-commerce developed for 
 - [x] product list
 - [x] cart
 - [x] search bar with filters
+- [ ] favourites logic
 - [ ] orders logic
 - [ ] add login/signup with button of facebook
 - [ ] add login/signup with button of instagram 

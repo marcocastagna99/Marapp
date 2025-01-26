@@ -3,30 +3,41 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'update_profile.dart'; // Importa il file di update_profile.dart
 import 'favourites_view.dart'; // Aggiungi il tuo file per Favourites
-import 'payment_method_view.dart'; // Aggiungi il tuo file per Payment Method
+import 'payment_method_view.dart';// Aggiungi il tuo file per Payment Method
+import '../login_view.dart';
 
 class ProfileView extends StatelessWidget {
-  const ProfileView({Key? key}) : super(key: key);
 
-  Future<String> _getUserName() async {
-    // Ottieni l'ID dell'utente corrente
+ const ProfileView({Key? key}) : super(key: key);
+ static final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>> _getUserStream() {
     User? user = FirebaseAuth.instance.currentUser;
+
     if (user != null) {
-      // Ottieni i dati utente da Firestore
-      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+      return FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
-          .get();
-
-      // Controlla se il documento esiste e se ha i dati
-      if (snapshot.exists && snapshot.data() != null) {
-        // Fai il cast dei dati a Map<String, dynamic> e prendi il campo 'name'
-        Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-        return data['name'] ?? 'Unknown User';
-      }
+          .snapshots();
+    } else {
+      throw Exception("User is not logged in");
     }
-    return 'Unknown User'; // Se l'utente non esiste o non ha un nome
   }
+  Future<void> _logout(BuildContext context) async {
+    try {
+      await _auth.signOut();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error signing out: $error')),
+      );
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -37,13 +48,13 @@ class ProfileView extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {
-              // Funzionalità di logout
+              _logout(context);
             },
           ),
         ],
       ),
-      body: FutureBuilder<String>(
-        future: _getUserName(), // Chiama il metodo per ottenere il nome dell'utente
+      body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        stream: _getUserStream(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -53,11 +64,14 @@ class ProfileView extends StatelessWidget {
             return const Center(child: Text('Error loading user data'));
           }
 
-          if (!snapshot.hasData || snapshot.data == null) {
+          if (!snapshot.hasData || snapshot.data?.data() == null) {
             return const Center(child: Text('No user data found'));
           }
 
-          String userName = snapshot.data!;
+          // Ottieni i dati dall'istanza di snapshot
+          Map<String, dynamic> userData = snapshot.data!.data()!;
+          String userName = userData['name'] ?? 'Unknown User';
+
 
           return ListView(
             padding: const EdgeInsets.all(16.0),
