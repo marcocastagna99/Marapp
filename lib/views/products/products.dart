@@ -15,10 +15,12 @@ class ProductsViewState extends State<ProductsView> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   late String userId; // Declare userId
   List<Map<String, dynamic>> _cartItems = [];
+  List<Map<String, dynamic>> _allProducts = []; // Lista per tutti i prodotti
+  List<Map<String, dynamic>> _filteredProducts = []; // Lista per i prodotti filtrati
   TextEditingController _searchController = TextEditingController(); // Controller per la barra di ricerca
   String _searchQuery = ""; // Variabile per la query di ricerca
   final FocusNode _focusNode = FocusNode();
-  String _sortOption = 'Price Ascending';
+  String _sortOption = 'Name Ascending';
 
 
   @override
@@ -31,6 +33,7 @@ class ProductsViewState extends State<ProductsView> {
   void initState() {
     super.initState();
     _loadUserId();
+    _loadProducts();
     _searchController.addListener(() {
       setState(() {
         _searchQuery = _searchController.text
@@ -52,6 +55,25 @@ class ProductsViewState extends State<ProductsView> {
       print("User is not logged in");
     }
   }
+
+  Future<void> _loadProducts() async {
+    try {
+      final snapshot = await _firestore.collection('products').get();
+      final products = snapshot.docs.map((doc) {
+        final product = doc.data() as Map<String, dynamic>;
+        product['id'] = doc.id;  // Aggiungi l'ID del prodotto
+        return product;
+      }).toList();
+
+      setState(() {
+        _allProducts = products;
+        _filteredProducts = products; // Inizialmente, tutti i prodotti sono filtrati
+      });
+    } catch (e) {
+      print("Error loading products: $e");
+    }
+  }
+
 
   Future<void> _createEmptyCartIfNotExists() async {
     if (userId == null) {
@@ -210,25 +232,31 @@ class ProductsViewState extends State<ProductsView> {
     });
   }
 
-  Stream<QuerySnapshot> _getFilteredProducts() {
-    Query query = _firestore.collection('products');
+  void _filterProducts() {
+    List<Map<String, dynamic>> filtered = _allProducts;
 
+    // Filtraggio per nome prodotto
     if (_searchQuery.isNotEmpty) {
-      query = query.where('name', isGreaterThanOrEqualTo: _searchQuery)
-          .where('name', isLessThan: _searchQuery + 'z');
+      filtered = filtered.where((product) {
+        final productName = product['name'].toLowerCase();
+        return productName.contains(_searchQuery);
+      }).toList();
     }
 
+    // Ordinamento
     if (_sortOption == 'Price Ascending') {
-      query = query.orderBy('price');
+      filtered.sort((a, b) => (a['price'] as num).compareTo(b['price']));
     } else if (_sortOption == 'Price Descending') {
-      query = query.orderBy('price', descending: true);
+      filtered.sort((a, b) => (b['price'] as num).compareTo(a['price']));
     } else if (_sortOption == 'Name Ascending') {
-      query = query.orderBy('name');
+      filtered.sort((a, b) => a['name'].compareTo(b['name']));
     } else if (_sortOption == 'Name Descending') {
-      query = query.orderBy('name', descending: true);
+      filtered.sort((a, b) => b['name'].compareTo(a['name']));
     }
 
-    return query.snapshots();
+    setState(() {
+      _filteredProducts = filtered; // Aggiorna i prodotti filtrati
+    });
   }
 
 
@@ -259,6 +287,7 @@ class ProductsViewState extends State<ProductsView> {
               onChanged: (query) {
                 setState(() {
                   _searchQuery = query.toLowerCase(); // Aggiorna la ricerca
+                  _filterProducts(); // Riflitra i prodotti
                 });
               },
               decoration: InputDecoration(
@@ -288,16 +317,17 @@ class ProductsViewState extends State<ProductsView> {
                       _searchController.clear(); // Pulisce il TextField
                     });
                     _focusNode.unfocus(); // Rimuove il focus dalla barra di ricerca
+                    _filterProducts(); // Riflitra i prodotti
                   },
                 )
-                    : null, // Mostra la "x" solo se c'è del testo
+                    : null,
                 filled: true,
                 fillColor: Theme.of(context).brightness == Brightness.dark
                     ? Colors.grey[800]
-                    : Colors.grey[200], // Colore di sfondo a seconda del tema
+                    : Colors.grey[200],
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30.0),
-                  borderSide: BorderSide.none, // Rimuove il bordo di default
+                  borderSide: BorderSide.none,
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30.0),
@@ -306,7 +336,7 @@ class ProductsViewState extends State<ProductsView> {
                         ? (Theme.of(context).brightness == Brightness.dark
                         ? Colors.blue[300]!
                         : Colors.blue)
-                        : Colors.transparent, // Bordo solo quando il focus è attivo
+                        : Colors.transparent,
                     width: 2,
                   ),
                 ),
@@ -315,7 +345,7 @@ class ProductsViewState extends State<ProductsView> {
                   borderSide: BorderSide(
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.grey[700]!
-                        : Colors.grey[300]!, // Colore del bordo per il tema abilitato
+                        : Colors.grey[300]!,
                     width: 2,
                   ),
                 ),
@@ -323,7 +353,7 @@ class ProductsViewState extends State<ProductsView> {
               style: TextStyle(
                 color: Theme.of(context).brightness == Brightness.dark
                     ? Colors.white
-                    : Colors.black, // Colore del testo a seconda del tema
+                    : Colors.black,
               ),
             ),
           ),
@@ -334,6 +364,7 @@ class ProductsViewState extends State<ProductsView> {
               onChanged: (String? newValue) {
                 setState(() {
                   _sortOption = newValue!;
+                  _filterProducts(); // Riflitra i prodotti dopo la modifica del filtro
                 });
               },
               items: <String>[
@@ -350,155 +381,130 @@ class ProductsViewState extends State<ProductsView> {
             ),
           ),
           Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: _getFilteredProducts(),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return const Center(
-                      child: Text('Something went wrong, please try again.'));
-                }
+            child: ListView.builder(
+              itemCount: _filteredProducts.length,
+              itemBuilder: (context, index) {
+                final product = _filteredProducts[index];
+                final name = product['name'] ?? "No Name";  // Fallback se il nome è nullo
+                final price = (product['price'] as num?)?.toDouble() ?? 0.0;  // Fallback se il prezzo è nullo
+                final description = product['description'] ?? "No Description";  // Fallback se la descrizione è nulla
+                final imageUrl = product['imageUrl'] ?? 'default_image.jpg';  // Fallback se l'immagine è nulla
+                final id = product['id'] ?? 'defaultId';  // Fallback se l'id è nullo
 
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
 
-                // Filtra i prodotti in base alla query di ricerca
-                final filteredProducts = snapshot.data!.docs
-                    .map((doc) => doc.data() as Map<String, dynamic>)
-                    .where((product) {
-                  final productName = product['name'].toLowerCase();
-                  return productName.contains(_searchQuery);
-                }).toList();
-
-                if (filteredProducts.isEmpty) {
-                  return const Center(child: Text('No products found'));
-                }
-
-                return ListView.builder(
-                  itemCount: filteredProducts.length,
-                  itemBuilder: (context, index) {
-                    final product = filteredProducts[index];
-                    final productId = snapshot.data!.docs[index].id;
-                    final name = product['name'] ?? "No Name";
-                    final price = (product['price'] as num).toDouble();
-                    final description = product['description'] ??
-                        "No Description";
-                    final imageUrl = product['imageUrl'];
-
-                    return Card(
-                      elevation: 5.0,
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 8.0,
-                        horizontal: 16.0,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: InkWell(
-                        onTap: () {
-                          _navigateToProductDetail(
-                            productId,
-                            price,
-                            description,
-                            imageUrl,
-                            name,
-                          );
-                        },
-                        borderRadius: BorderRadius.circular(12.0),
-                        child: Container(
-                          padding: const EdgeInsets.all(12.0),
-                          constraints: const BoxConstraints(minHeight: 180),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(12.0),
-                                child: Image.asset(
-                                  'assets/$imageUrl',
-                                  width: 150,
-                                  height: 150,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              const SizedBox(width: 16.0),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      name,
-                                      style: Theme.of(context).textTheme.bodyLarge,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      '€${price.toStringAsFixed(2)}',
-                                      style: Theme.of(context).textTheme.bodyMedium,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      description,
-                                      maxLines: 3,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Align(
-                                alignment: Alignment.center,
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min, // Adatta la larghezza al contenuto
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        int quantity = 1;
-                                        _addToCart(productId, price, name, quantity);
-
-                                        ScaffoldMessenger.of(context).clearSnackBars();
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(
-                                            content: Text('Product added to cart successfully!'),
-                                            duration: const Duration(seconds: 2),
-                                          ),
-                                        );
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.all(8.0),
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xFF76B6FE),
-                                          borderRadius: BorderRadius.circular(12.0),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black.withOpacity(0.1),
-                                              blurRadius: 6.0,
-                                              offset: const Offset(0, 3),
-                                            ),
-                                          ],
-                                        ),
-                                        child: const Icon(
-                                          Icons.add,
-                                          color: Colors.white,
-                                          size: 28.0,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                return Card(
+                  elevation: 5.0,
+                  margin: const EdgeInsets.symmetric(
+                    vertical: 8.0,
+                    horizontal: 16.0,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      // Verifica se l'id è valido prima di navigare
+                      if (id != 'defaultId') {
+                        _navigateToProductDetail(id, price, description, imageUrl, name);
+                      } else {
+                        // Gestisci l'errore nel caso in cui l'id sia nullo
+                        print("Errore: ID prodotto mancante");
+                      }
+                    },
+                    borderRadius: BorderRadius.circular(12.0),
+                    child: Container(
+                      padding: const EdgeInsets.all(12.0),
+                      constraints: const BoxConstraints(minHeight: 180),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12.0),
+                            child: Image.asset(
+                              'assets/$imageUrl',
+                              width: 150,
+                              height: 150,
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 16.0),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  name,
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  '€${price.toStringAsFixed(2)}',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  description,
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.center,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    int quantity = 1;
+                                    _addToCart(product['id'], price, name, quantity);
+
+                                    ScaffoldMessenger.of(context).clearSnackBars();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Product added to cart successfully!'),
+                                        duration: const Duration(seconds: 2),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8.0),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF76B6FE),
+                                      borderRadius: BorderRadius.circular(12.0),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.1),
+                                          blurRadius: 6.0,
+                                          offset: const Offset(0, 3),
+                                        ),
+                                      ],
+                                    ),
+                                    child: const Icon(
+                                      Icons.add,
+                                      color: Colors.white,
+                                      size: 28.0,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    );
-                  },
+                    ),
+                  ),
                 );
               },
             ),
           ),
         ],
       ),
+
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
