@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 
 import 'products/products.dart';
-import 'profile/update_profile.dart';
 import 'settings.dart';
 import 'products/orders.dart';
 import 'profile/profile.dart';

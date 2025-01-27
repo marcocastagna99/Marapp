@@ -11,7 +11,7 @@ Mara’s sweets and savory -> flutter app for a pastry e-commerce developed for 
 - [x] implement tests
 - [x] implement github actions for tests
 - [ ] check if users exists in login page
-- [ ] add forgotten password mechanism
+- [x] add forgotten password mechanism
 - [x] add actual info inside the labels of profile.dart text boxes
 - [x] change bottom bar icons
 - [x] create app icon 
@@ -23,7 +23,7 @@ Mara’s sweets and savory -> flutter app for a pastry e-commerce developed for 
 - [x] product list
 - [x] cart
 - [x] search bar with filters
-- [ ] favourites logic
+- [x] favourites logic
 - [ ] orders logic
 - [ ] add login/signup with button of facebook
 - [ ] add login/signup with button of instagram 

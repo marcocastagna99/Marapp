@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:marapp/views/passwordReset.dart';
 import 'package:provider/provider.dart';
 import 'package:marapp/providers/auth_provider.dart' as auth;
 
@@ -175,12 +175,29 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
+              TextButton(
+                onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => PasswordResetScreen()),
+                    );
+
+                },
+                child: const Text(
+                  "Forgot your password?",
+                  style: TextStyle(
+                    color: lightblue,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
   }
+
 
   Widget _buildRoundedTextFormField({
     required TextEditingController controller,

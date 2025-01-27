@@ -128,34 +128,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       });
     }
   }
-  /*
-  Future<void> _signUpWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) {
-        // L'utente ha annullato l'accesso
-        return;
-      }
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      final UserCredential userCredential =
-      await FirebaseAuth.instance.signInWithCredential(credential);
-
-      if (userCredential.user != null) {
-        Navigator.pushReplacementNamed(context, '/home');
-      }
-    } catch (error) {
-      setState(() {
-        _errorMessage = 'Google Sign-In failed: $error';
-      });
-    }
-  }*/
 
   @override
   Widget build(BuildContext context) {

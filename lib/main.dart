@@ -10,6 +10,7 @@ import '/providers/auth_provider.dart';
 import 'package:marapp/views/home.dart';
 import 'package:marapp/views/registration_view.dart';
 import 'firebase_options.dart'; // Importa il file di configurazione
+import  'package:marapp/views/passwordReset.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -84,6 +85,7 @@ class MarappState extends State<Marapp> {
                   '/splash': (context) => SplashScreen(),
                   '/register': (context) => RegistrationScreen(),
                   '/home': (context) => HomeScreen(),
+                  '/passwordReset': (context) => PasswordResetScreen(),
                 },
               );
             },
