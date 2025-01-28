@@ -29,7 +29,7 @@ Mara’s sweets and savory -> flutter app for a pastry e-commerce developed for 
 - [ ] add login/signup with button of instagram 
 - [ ] add login/signup with button of apple
 - [ ] GPS to locate user address and distance from the Mara' shop
-- [ ] camera usage to upload a selfie/photo as profile pic
+- [x]  camera usage to upload a selfie/photo as profile pic
 - [ ] SMS managing for psw recovery, and (?)
 - [ ] add timetable booking foods (because my mom is cooking alone)
 - [ ] add products such as "wedding menu" or "bachelor/birthdate menu"

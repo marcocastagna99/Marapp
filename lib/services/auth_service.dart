@@ -40,6 +40,7 @@ class AuthService {
         'name': name,
         'phoneNumber': phoneNumber,
         'address': address,
+        'profilePicture': '',
       }).then((value) {
         logger.d("Utente registrato in Firestore con successo.");
       }).catchError((error) {
@@ -97,6 +98,7 @@ class AuthService {
           'email': user.email ?? 'Email sconosciuta',
           'phoneNumber': user.phoneNumber ?? '',
           'address': '',
+          'profilePitcure' : '',
         });
       } else {
         logger.d("Documento già esistente.");

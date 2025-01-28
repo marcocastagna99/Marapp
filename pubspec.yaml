@@ -21,6 +21,9 @@ dependencies:
   cupertino_icons: ^1.0.8
   shared_preferences: ^2.3.3
   flutter_native_splash: ^2.2.14
+  image_picker: ^0.8.5+3
+  http: any
+  cached_network_image: ^3.2.0
 
 
 dev_dependencies:

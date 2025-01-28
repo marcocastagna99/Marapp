@@ -1,16 +1,21 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:marapp/views/profile/upload_foto.dart';
 import 'update_profile.dart'; // Importa il file di update_profile.dart
 import 'favourites_view.dart'; // Aggiungi il tuo file per Favourites
-import 'payment_method_view.dart';// Aggiungi il tuo file per Payment Method
+import 'payment_method_view.dart'; // Aggiungi il tuo file per Payment Method
 import '../login_view.dart';
 
 class ProfileView extends StatelessWidget {
+  const ProfileView({Key? key}) : super(key: key);
+  static final FirebaseAuth _auth = FirebaseAuth.instance;
 
- const ProfileView({Key? key}) : super(key: key);
- static final FirebaseAuth _auth = FirebaseAuth.instance;
-
+  // Stream che restituisce i dati dell'utente in tempo reale da Firestore
   Stream<DocumentSnapshot<Map<String, dynamic>>> _getUserStream() {
     User? user = FirebaseAuth.instance.currentUser;
 
@@ -23,6 +28,8 @@ class ProfileView extends StatelessWidget {
       throw Exception("User is not logged in");
     }
   }
+
+  // Metodo per il logout
   Future<void> _logout(BuildContext context) async {
     try {
       await _auth.signOut();
@@ -36,8 +43,6 @@ class ProfileView extends StatelessWidget {
       );
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +59,7 @@ class ProfileView extends StatelessWidget {
         ],
       ),
       body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-        stream: _getUserStream(),
+        stream: _getUserStream(), // Otteniamo il flusso dei dati dell'utente
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -71,15 +76,34 @@ class ProfileView extends StatelessWidget {
           // Ottieni i dati dall'istanza di snapshot
           Map<String, dynamic> userData = snapshot.data!.data()!;
           String userName = userData['name'] ?? 'Unknown User';
-
+          String? profilePicUrl = userData['profilePicUrl']; // URL immagine
 
           return ListView(
             padding: const EdgeInsets.all(16.0),
             children: [
-              // Foto del profilo
-              CircleAvatar(
-                radius: 50,
-                backgroundImage: NetworkImage("https://www.example.com/profile.jpg"), // Modifica con il link della foto
+              // Foto del profilo con icona della fotocamera
+              Center(
+                child: Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundImage: profilePicUrl != null
+                          ? NetworkImage(profilePicUrl) // Mostra immagine da Firestore
+                          : const NetworkImage('https://link.to/default/image.jpg'), // Immagine di default se manca
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.camera_alt, color: Colors.white),
+                      onPressed: () {
+                        // Naviga alla schermata per caricare la foto
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ProfilePictureUploader()),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 20),
 
