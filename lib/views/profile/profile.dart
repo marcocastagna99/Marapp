@@ -11,9 +11,20 @@ import 'favourites_view.dart'; // Aggiungi il tuo file per Favourites
 import 'payment_method_view.dart'; // Aggiungi il tuo file per Payment Method
 import '../login_view.dart';
 
-class ProfileView extends StatelessWidget {
+class ProfileView extends StatefulWidget {
   const ProfileView({Key? key}) : super(key: key);
+
+  @override
+  _ProfileViewState createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<ProfileView> {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
+  bool _isLoading = false;
+  String _statusMessage = '';
+
+
+
 
   // Stream che restituisce i dati dell'utente in tempo reale da Firestore
   Stream<DocumentSnapshot<Map<String, dynamic>>> _getUserStream() {
@@ -28,6 +39,31 @@ class ProfileView extends StatelessWidget {
       throw Exception("User is not logged in");
     }
   }
+
+  Future<void> _handleImageUpload() async {
+    setState(() {
+      _isLoading = true;
+      _statusMessage = '';
+    });
+
+    final uploader = ProfilePictureUploader();
+    final result = await uploader.pickAndUploadImage(context);
+
+    setState(() {
+      _isLoading = false;
+      _statusMessage = result;
+    });
+
+    // Mostra lo Snackbar con il risultato del caricamento
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Image uploaded successfully!'),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
 
   // Metodo per il logout
   Future<void> _logout(BuildContext context) async {
@@ -76,7 +112,7 @@ class ProfileView extends StatelessWidget {
           // Ottieni i dati dall'istanza di snapshot
           Map<String, dynamic> userData = snapshot.data!.data()!;
           String userName = userData['name'] ?? 'Unknown User';
-          String? profilePicUrl = userData['profilePicUrl']; // URL immagine
+          String? profilePicUrl = userData['profilePicture']; // URL immagine
 
           return ListView(
             padding: const EdgeInsets.all(16.0),
@@ -94,13 +130,7 @@ class ProfileView extends StatelessWidget {
                     ),
                     IconButton(
                       icon: const Icon(Icons.camera_alt, color: Colors.white),
-                      onPressed: () {
-                        // Naviga alla schermata per caricare la foto
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => ProfilePictureUploader()),
-                        );
-                      },
+                      onPressed: _handleImageUpload,
                     ),
                   ],
                 ),

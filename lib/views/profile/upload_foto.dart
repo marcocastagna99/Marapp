@@ -1,27 +1,32 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart'; // Per kIsWeb
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:image/image.dart' as img; // Per la compressione delle immagini
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../secrets.dart';
 
-class ProfilePictureUploader extends StatefulWidget {
-  @override
-  _ProfilePictureUploaderState createState() =>
-      _ProfilePictureUploaderState();
-}
-
-class _ProfilePictureUploaderState extends State<ProfilePictureUploader> {
-  File? _image;
-  String? _uploadedImageUrl;
+class ProfilePictureUploader {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final ImagePicker _picker = ImagePicker();
 
-  // Funzione per scegliere un'immagine dalla galleria o scattarla
-  Future<void> _pickImage() async {
+  File? _image; // Per mobile
+  Uint8List? _webImage; // Per web
+  bool _isLoading = false; // Stato per la rotella di caricamento
+
+  Uint8List compressImage(Uint8List imageBytes) {
+    final image = img.decodeImage(imageBytes);
+    final resizedImage = img.copyResize(image!, width: 800); // Ridimensiona a 800px di larghezza
+    return Uint8List.fromList(img.encodeJpg(resizedImage, quality: 85)); // Comprime a 85% di qualità
+  }
+
+  // Funzione per scegliere un'immagine e caricarla
+  Future<String> pickAndUploadImage(BuildContext context) async {
     final pickedFile = await showDialog<ImageSource>(
       context: context,
       builder: (context) => AlertDialog(
@@ -42,33 +47,37 @@ class _ProfilePictureUploaderState extends State<ProfilePictureUploader> {
     if (pickedFile != null) {
       final file = await _picker.pickImage(source: pickedFile);
       if (file != null) {
-        setState(() {
+        if (kIsWeb) {
+          _webImage = await file.readAsBytes();
+        } else {
           _image = File(file.path);
-        });
+        }
+        return await uploadImage(context);
       }
     }
+    return 'No image selected';
   }
 
-  // Funzione per caricare l'immagine su Imgur
-  Future<void> _uploadImage() async {
-    if (_image == null) return;
-
-    // Converti l'immagine in base64
-    final bytes = _image!.readAsBytesSync();
-    String base64Image = base64Encode(bytes);
-
-    // URL per caricare l'immagine su Imgur
-    final url = Uri.parse('https://api.imgur.com/3/image');
-    final headers = {
-      'Authorization': Secrets.imgurAuthToken,
-    };
-
-    final body = {
-      'image': base64Image,
-      'type': 'base64',
-    };
+  // Funzione per caricare l'immagine su Imgur e salvarla su Firestore
+  Future<String> uploadImage(BuildContext context) async {
+    if (_image == null && _webImage == null) return 'No image selected';
 
     try {
+      Uint8List bytes = kIsWeb ? _webImage! : await _image!.readAsBytes();
+      bytes = compressImage(bytes); // Comprimi l'immagine
+
+      String base64Image = base64Encode(bytes);
+
+      final url = Uri.parse('https://api.imgur.com/3/image');
+      final headers = {
+        'Authorization': Secrets.imgurAuthToken,
+      };
+
+      final body = {
+        'image': base64Image,
+        'type': 'base64',
+      };
+
       final response = await http.post(
         url,
         headers: headers,
@@ -77,79 +86,21 @@ class _ProfilePictureUploaderState extends State<ProfilePictureUploader> {
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
-        setState(() {
-          _uploadedImageUrl = responseData['data']['link']; // Link dell'immagine caricata
-        });
+        final uploadedImageUrl = responseData['data']['link'];
 
-        // Salva l'URL dell'immagine in Firestore sotto il documento dell'utente
         User? user = _auth.currentUser;
         if (user != null) {
           await _firestore.collection('users').doc(user.uid).update({
-            'profilePicture': _uploadedImageUrl,
+            'profilePicture': uploadedImageUrl,
           });
         }
 
-        print("Image uploaded and URL saved to Firestore.");
+        return 'Image uploaded successfully!';
       } else {
-        // Gestisci errore
-        print('Failed to upload image: ${response.statusCode}');
+        return 'Failed to upload image: ${response.statusCode}';
       }
     } catch (e) {
-      print('Error uploading image: $e');
+      return 'Error uploading image: $e';
     }
-  }
-
-  // Funzione per caricare l'immagine dal Firebase Firestore
-  Future<String?> _getProfilePictureUrl() async {
-    User? user = _auth.currentUser;
-    if (user != null) {
-      DocumentSnapshot userDoc =
-      await _firestore.collection('users').doc(user.uid).get();
-      return userDoc['profilePicture'];  // L'URL dell'immagine salvato in Firestore
-    }
-    return null;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Upload Profile Picture')),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          if (_image != null) ...[
-            Image.file(_image!),  // Mostra l'immagine selezionata
-            const SizedBox(height: 20),
-          ],
-          ElevatedButton(
-            onPressed: _pickImage,
-            child: const Text('Pick an Image'),
-          ),
-          ElevatedButton(
-            onPressed: _uploadImage,
-            child: const Text('Upload Image to Imgur'),
-          ),
-          if (_uploadedImageUrl != null) ...[
-            const SizedBox(height: 20),
-            Image.network(_uploadedImageUrl!), // Mostra l'immagine caricata
-          ],
-          // Carica e visualizza l'immagine dal Firestore quando disponibile
-          FutureBuilder<String?>(
-            future: _getProfilePictureUrl(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              } else if (snapshot.hasData) {
-                return snapshot.data != null
-                    ? Image.network(snapshot.data!)
-                    : const Text('No profile picture found.');
-              } else {
-                return const Text('Error loading profile picture.');
-              }
-            },
-          ),
-        ],
-      ),
-    );
   }
 }

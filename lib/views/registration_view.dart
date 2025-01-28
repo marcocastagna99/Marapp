@@ -319,7 +319,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     );
                   },
                   child: Text(
-                    "Hai già un account? Accedi",
+                    "Already have an account? Sign in",
                     style: TextStyle(color: lightblue),
                   ),
                 ),
