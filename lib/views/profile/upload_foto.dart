@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../secrets.dart';
 
 class ProfilePictureUploader extends StatefulWidget {
   @override
@@ -59,7 +60,7 @@ class _ProfilePictureUploaderState extends State<ProfilePictureUploader> {
     // URL per caricare l'immagine su Imgur
     final url = Uri.parse('https://api.imgur.com/3/image');
     final headers = {
-      'Authorization': 'Bearer 3c63568977bc47a4fb662f88b52e2ee401a524d2',
+      'Authorization': Secrets.imgurAuthToken,
     };
 
     final body = {

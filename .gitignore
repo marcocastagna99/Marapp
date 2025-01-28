@@ -18,3 +18,7 @@ pubspec.lock
 pubspec.lock
 
 .metadata
+
+secrets.dart
+
+firebase_options.dart
