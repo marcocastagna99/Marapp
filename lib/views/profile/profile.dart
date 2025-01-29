@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -41,8 +42,9 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   Future<void> _handleImageUpload() async {
-
-
+    if (kIsWeb){
+      return;
+    }
     final uploader = ProfilePictureUploader();
     final result = await uploader.pickAndUploadImage(context);
 
@@ -54,11 +56,6 @@ class _ProfileViewState extends State<ProfileView> {
     // Mostra lo Snackbar con il risultato del caricamento
     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(_statusMessage))
-      /*SnackBar(
-        content: const Text('Image uploaded successfully!'),
-        backgroundColor: Colors.green,
-        duration: const Duration(seconds: 3),
-      ),*/
     );
   }
 

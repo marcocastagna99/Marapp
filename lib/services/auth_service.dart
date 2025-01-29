@@ -38,6 +38,7 @@ class AuthService {
           .doc(userCredential.user?.uid)
           .set({
         'name': name,
+        'email': email,
         'phoneNumber': phoneNumber,
         'address': address,
         'profilePicture': '',

@@ -48,7 +48,7 @@ class ProfilePictureUploader {
       if (file != null) {
         if (kIsWeb) {
           _webImage = await file.readAsBytes();
-          return await uploadImageToVercel(context);
+          //return await uploadImageToVercel(context);
         } else {
           _image = File(file.path);
         }
@@ -59,6 +59,8 @@ class ProfilePictureUploader {
   }
 
   // Funzione per caricare l'immagine su Imgur e salvarla su Firestore
+
+
   Future<String> uploadImage(BuildContext context) async {
     if (_image == null && _webImage == null) return 'No image selected';
 
@@ -71,12 +73,13 @@ class ProfilePictureUploader {
       final url = Uri.parse('https://api.imgur.com/3/image');
       final headers = {
         'Authorization': Secrets.imgurAuthToken,
+        'Content-Type': 'application/json',  // Importante per il JSON
       };
 
-      final body = {
+      final body = jsonEncode({
         'image': base64Image,
         'type': 'base64',
-      };
+      });
 
       final response = await http.post(
         url,
@@ -97,12 +100,22 @@ class ProfilePictureUploader {
 
         return 'Image uploaded successfully!';
       } else {
+        print('Error: ${response.body}'); // Stampa l'errore della richiesta
         return 'Failed to upload image: ${response.statusCode}';
       }
     } catch (e) {
       return 'Error uploading image: $e';
     }
   }
+
+
+
+
+
+
+
+
+
   Future<String> uploadImageToVercel(BuildContext context) async {
     if (_image == null && _webImage == null) return 'No image selected';
 

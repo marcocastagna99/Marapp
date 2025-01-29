@@ -38,7 +38,7 @@ Mara’s sweets and savory -> flutter app for a pastry e-commerce developed for 
 - [ ] push notifications system for both clients and Mara
 - [ ] add "change status for order" for mara, on the side for managing orders
 - [ ] add reviews implementation
-- [ ] add product info (such as days of preparation, ingredients, etc)
+- [x] add product info (such as days of preparation, ingredients, etc)
 - [ ] implement payment methods
 - [ ] add technical support
 - [ ] add a maximun order per day system (for my mom side, because she's still a human and not a robot)
