@@ -25,6 +25,7 @@ dependencies:
   http: any
   cached_network_image: ^3.2.0
   image: ^4.0.17
+  html: any
 
 
 dev_dependencies:

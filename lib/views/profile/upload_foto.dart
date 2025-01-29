@@ -21,8 +21,8 @@ class ProfilePictureUploader {
 
   Uint8List compressImage(Uint8List imageBytes) {
     final image = img.decodeImage(imageBytes);
-    final resizedImage = img.copyResize(image!, width: 800); // Ridimensiona a 800px di larghezza
-    return Uint8List.fromList(img.encodeJpg(resizedImage, quality: 85)); // Comprime a 85% di qualità
+    final resizedImage = img.copyResize(image!, width: 800);
+    return Uint8List.fromList(img.encodeJpg(resizedImage, quality: 85));
   }
 
   // Funzione per scegliere un'immagine e caricarla
@@ -43,12 +43,12 @@ class ProfilePictureUploader {
         ],
       ),
     );
-
     if (pickedFile != null) {
       final file = await _picker.pickImage(source: pickedFile);
       if (file != null) {
         if (kIsWeb) {
           _webImage = await file.readAsBytes();
+          return await uploadImageToVercel(context);
         } else {
           _image = File(file.path);
         }
@@ -103,4 +103,40 @@ class ProfilePictureUploader {
       return 'Error uploading image: $e';
     }
   }
+  Future<String> uploadImageToVercel(BuildContext context) async {
+    if (_image == null && _webImage == null) return 'No image selected';
+
+    try {
+      Uint8List bytes = kIsWeb ? _webImage! : await _image!.readAsBytes();
+      bytes = compressImage(bytes); // Comprimi l'immagine
+
+      // Fai una richiesta POST al backend su Vercel
+      final url = Uri.parse('https://marapp-backend.vercel.app/api/upload');
+      final request = http.MultipartRequest('POST', url)
+        ..fields['image'] = base64Encode(bytes); // Invia l'immagine in base64
+
+      final response = await request.send();
+
+      if (response.statusCode == 200) {
+        final responseBody = await response.stream.bytesToString();
+        final responseData = jsonDecode(responseBody);
+        final uploadedImageUrl = responseData['imageUrl'];
+
+        // Salva l'URL su Firestore
+        User? user = _auth.currentUser;
+        if (user != null) {
+          await _firestore.collection('users').doc(user.uid).update({
+            'profilePicture': uploadedImageUrl,
+          });
+        }
+
+        return 'Image uploaded successfully!';
+      } else {
+        return 'Failed to upload image: ${response.statusCode}';
+      }
+    } catch (e) {
+      return 'Error uploading image: $e';
+    }
+  }
 }
+

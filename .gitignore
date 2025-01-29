@@ -22,3 +22,5 @@ pubspec.lock
 secrets.dart
 
 firebase_options.dart
+
+.env

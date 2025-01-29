@@ -1,1 +1,40 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"marapp-38546","appId":"1:776061981443:android:812a59a58c60b8e2e24f36","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"marapp-38546","configurations":{"android":"1:776061981443:android:812a59a58c60b8e2e24f36","ios":"1:776061981443:ios:2d08ee091f7a01bde24f36","macos":"1:776061981443:ios:2d08ee091f7a01bde24f36","web":"1:776061981443:web:e0e56496e530cd2ee24f36"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "marapp-38546",
+          "appId": "1:776061981443:android:812a59a58c60b8e2e24f36",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "marapp-38546",
+          "configurations": {
+            "android": "1:776061981443:android:812a59a58c60b8e2e24f36",
+            "ios": "1:776061981443:ios:2d08ee091f7a01bde24f36",
+            "macos": "1:776061981443:ios:2d08ee091f7a01bde24f36",
+            "web": "1:776061981443:web:e0e56496e530cd2ee24f36"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run lint"
+      ]
+    }
+  ]
+}

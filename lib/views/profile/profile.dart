@@ -41,10 +41,7 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   Future<void> _handleImageUpload() async {
-    setState(() {
-      _isLoading = true;
-      _statusMessage = '';
-    });
+
 
     final uploader = ProfilePictureUploader();
     final result = await uploader.pickAndUploadImage(context);
@@ -56,11 +53,12 @@ class _ProfileViewState extends State<ProfileView> {
 
     // Mostra lo Snackbar con il risultato del caricamento
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+        SnackBar(content: Text(_statusMessage))
+      /*SnackBar(
         content: const Text('Image uploaded successfully!'),
         backgroundColor: Colors.green,
         duration: const Duration(seconds: 3),
-      ),
+      ),*/
     );
   }
 
