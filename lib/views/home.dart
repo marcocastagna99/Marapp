@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'products/products.dart';
 import 'settings.dart';
-import 'products/orders.dart';
+import 'orders/orders.dart';
 import 'profile/profile.dart';
 
 class HomeScreen extends StatefulWidget {

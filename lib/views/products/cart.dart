@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../orders/book_day.dart';
+
 class CartView extends StatefulWidget {
   final String userId;
   final List<Map<String, dynamic>> cartItems;
@@ -22,6 +24,11 @@ class CartViewState extends State<CartView> {
   List<Map<String, dynamic>> cartItems = [];
 
   // Non è più necessario il metodo _getImageUrl
+  @override
+  void initState() {
+    super.initState();
+    _getCartData();
+  }
 
   Future<void> _getCartData() async {
     try {
@@ -93,6 +100,8 @@ class CartViewState extends State<CartView> {
     }
   }
 
+
+
   void _clearCart() {
     setState(() {
       cartItems.clear();
@@ -100,11 +109,68 @@ class CartViewState extends State<CartView> {
     _saveCartToFirestore();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _getCartData();
+
+
+  Future<void> proceedWithOrder(BuildContext context) async {
+    bool isValid = await _quantityControl();
+
+    if (!isValid) {
+      return; // Se le quantità non sono valide, esci
+    }
+
+    // Se le quantità sono valide, passa al BookDay
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BookDay(cartItems: cartItems), // Passa il carrello a BookDay
+      ),
+    );
   }
+  Future<bool> _quantityControl() async {
+    try {
+      bool allValid = true; // Assume all quantities are valid
+
+      // Loop through cart items
+      for (var item in cartItems) {
+        final productId = item['productId'];
+        final quantity = item['quantity'];
+
+        // Get product data from Firestore
+        final productRef = FirebaseFirestore.instance.collection('products').doc(productId);
+        final productSnapshot = await productRef.get();
+
+        if (productSnapshot.exists) {
+          final productData = productSnapshot.data();
+          if (productData != null && productData['limitPerOrder'] != null) {
+            final limitPerOrder = productData['limitPerOrder'];
+
+            // If quantity exceeds limit, update the quantity and return false
+            if (quantity > limitPerOrder) {
+              setState(() {
+                item['quantity'] = limitPerOrder; // Set quantity to the limit
+              });
+
+              // Show feedback message to the user
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('The quantity for ${item['name']} has been limited to $limitPerOrder'),
+                ),
+              );
+
+              allValid = false; // Mark as invalid if limit exceeded
+            }
+          }
+        }
+      }
+
+      // Return true if all items have valid quantities, false otherwise
+      return allValid;
+    } catch (e) {
+      print("Error accessing Firestore: $e");
+      return false;
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -241,9 +307,7 @@ class CartViewState extends State<CartView> {
                         const SizedBox(width: 15),
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: () {
-                              // Implementazione futura
-                            },
+                            onPressed: () => proceedWithOrder(context),
                             style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),

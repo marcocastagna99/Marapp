@@ -8,6 +8,7 @@ class ProductDetailView extends StatefulWidget {
   final double price;
   final String description;
   final String imageUrl;
+  final int maxQuantity;
   final Function(String, double, String, int) addToCart;
 
   const ProductDetailView({
@@ -18,6 +19,7 @@ class ProductDetailView extends StatefulWidget {
     required this.description,
     required this.imageUrl,
     required this.addToCart,
+    required this.maxQuantity,
   });
 
   @override
@@ -163,10 +165,21 @@ class _ProductDetailViewState extends State<ProductDetailView> {
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 10),
-            Text(
-              widget.description,
-              style: Theme.of(context).textTheme.bodyMedium,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start, // Allinea il testo a sinistra
+              children: [
+                Text(
+                  widget.description,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                SizedBox(height: 4),
+                Text(
+                  "max quantity: ${widget.maxQuantity}",
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
             ),
+
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

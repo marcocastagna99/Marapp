@@ -20,7 +20,9 @@ class ProductsViewState extends State<ProductsView> {
   TextEditingController _searchController = TextEditingController(); // Controller per la barra di ricerca
   String _searchQuery = ""; // Variabile per la query di ricerca
   final FocusNode _focusNode = FocusNode();
-  String _sortOption = 'Name Ascending';
+  String _sortOption = '----';
+  Set<String> _categories = {}; // Per memorizzare le categorie uniche
+  String _selectedCategory = 'All'; // Categoria selezionata
 
 
   @override
@@ -68,10 +70,16 @@ class ProductsViewState extends State<ProductsView> {
       setState(() {
         _allProducts = products;
         _filteredProducts = products; // Inizialmente, tutti i prodotti sono filtrati
+        _extractCategories();
       });
     } catch (e) {
       print("Error loading products: $e");
     }
+  }
+  void _extractCategories() {
+    _categories = {'All', ..._allProducts.map((product) => product['category'] as String).toSet()};
+    setState(() {}); // Aggiorna la UI con le categorie disponibili
+
   }
 
 
@@ -124,7 +132,7 @@ class ProductsViewState extends State<ProductsView> {
 
   // Function to add product to cart
   void _addToCart(String productId, double price, String name,
-      int quantity) async {
+      int quantity, int prepTime) async {
     try {
       final cartRef = FirebaseFirestore.instance.collection('cart').doc(userId);
       final cartDoc = await cartRef.get();
@@ -146,6 +154,7 @@ class ProductsViewState extends State<ProductsView> {
             'quantity': quantity, // Usa la quantità passata
             'price': price, // Salva il prezzo per ogni prodotto
             'name': name, // Salva il nome del prodotto
+            'prepTime': prepTime,
           });
         }
 
@@ -159,6 +168,7 @@ class ProductsViewState extends State<ProductsView> {
               'quantity': quantity, // Usa la quantità passata
               'price': price, // Aggiungi il prezzo
               'name': name, // Aggiungi il nome
+              'prepTime': prepTime,
             }
           ]
         });
@@ -171,7 +181,7 @@ class ProductsViewState extends State<ProductsView> {
   }
 
   void _navigateToProductDetail(String productId, double price,
-      String description, String imageUrl, String name) {
+      String description, String imageUrl, String name, int prepTime, int limit) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -183,9 +193,10 @@ class ProductsViewState extends State<ProductsView> {
               imageUrl: imageUrl,
               addToCart: (productId, price, name, quantity) {
                 _addToCart(productId, price, name,
-                    quantity); // Pass both productId and quantity
+                    quantity, prepTime); // Pass both productId and quantity
               },
               name: name,
+              maxQuantity: limit,
             ),
       ),
     );
@@ -235,11 +246,18 @@ class ProductsViewState extends State<ProductsView> {
   void _filterProducts() {
     List<Map<String, dynamic>> filtered = _allProducts;
 
+    // Filtraggio per categoria (se selezionata)
+    if (_selectedCategory != 'All') {
+      filtered = filtered.where((product) {
+        return product['category'] == _selectedCategory;
+      }).toList();
+    }
+
     // Filtraggio per nome prodotto
     if (_searchQuery.isNotEmpty) {
       filtered = filtered.where((product) {
         final productName = product['name'].toLowerCase();
-        return productName.contains(_searchQuery);
+        return productName.contains(_searchQuery.toLowerCase());
       }).toList();
     }
 
@@ -258,6 +276,7 @@ class ProductsViewState extends State<ProductsView> {
       _filteredProducts = filtered; // Aggiorna i prodotti filtrati
     });
   }
+
 
 
   Widget build(BuildContext context) {
@@ -357,29 +376,61 @@ class ProductsViewState extends State<ProductsView> {
               ),
             ),
           ),
+
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: DropdownButton<String>(
-              value: _sortOption,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _sortOption = newValue!;
-                  _filterProducts(); // Riflitra i prodotti dopo la modifica del filtro
-                });
-              },
-              items: <String>[
-                'Price Ascending',
-                'Price Descending',
-                'Name Ascending',
-                'Name Descending',
-              ].map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center, // Centra la riga
+              children: [
+                SizedBox(width: 20),
+                Expanded(
+                  child: DropdownButton<String>(
+                    value: _sortOption,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _sortOption = newValue!;
+                        _filterProducts(); // Riflitra i prodotti dopo la modifica del filtro
+                      });
+                    },
+                    alignment: Alignment.center,  // Centra il testo nel DropdownButton
+                    items: <String>[
+                      '----',
+                      'Price Ascending',
+                      'Price Descending',
+                      'Name Ascending',
+                      'Name Descending',
+                    ].map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value, textAlign: TextAlign.center),  // Centra il testo del menu
+                      );
+                    }).toList(),
+                  ),
+                ),
+                SizedBox(width: 40), // Spazio tra i due dropdown
+                Expanded(
+                  child: DropdownButton<String>(
+                    value: _selectedCategory,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _selectedCategory = newValue!;
+                        _filterProducts(); // Riflitra i prodotti in base alla categoria selezionata
+                      });
+                    },
+                    alignment: Alignment.center,  // Centra il testo nel DropdownButton
+                    items: _categories.map<DropdownMenuItem<String>>((String category) {
+                      return DropdownMenuItem<String>(
+                        value: category,
+                        child: Text(category, textAlign: TextAlign.center),  // Centra il testo del menu
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
             ),
           ),
+
+
           Expanded(
             child: ListView.builder(
               itemCount: _filteredProducts.length,
@@ -390,6 +441,8 @@ class ProductsViewState extends State<ProductsView> {
                 final description = product['description'] ?? "No Description";  // Fallback se la descrizione è nulla
                 final imageUrl = product['imageUrl'] ?? 'default_image.jpg';  // Fallback se l'immagine è nulla
                 final id = product['id'] ?? 'defaultId';  // Fallback se l'id è nullo
+                final prepTime = (product['timePreparation'] as num?)?.toInt() ?? 0;
+                final limit = (product['limitPerOrder'] as num?)?.toInt() ?? 0;
 
 
                 return Card(
@@ -405,7 +458,7 @@ class ProductsViewState extends State<ProductsView> {
                     onTap: () {
                       // Verifica se l'id è valido prima di navigare
                       if (id != 'defaultId') {
-                        _navigateToProductDetail(id, price, description, imageUrl, name);
+                        _navigateToProductDetail(id, price, description, imageUrl, name, prepTime, limit);
                       } else {
                         // Gestisci l'errore nel caso in cui l'id sia nullo
                         print("Errore: ID prodotto mancante");
@@ -461,7 +514,7 @@ class ProductsViewState extends State<ProductsView> {
                                 GestureDetector(
                                   onTap: () {
                                     int quantity = 1;
-                                    _addToCart(product['id'], price, name, quantity);
+                                    _addToCart(product['id'], price, name, quantity, prepTime);
 
                                     ScaffoldMessenger.of(context).clearSnackBars();
                                     ScaffoldMessenger.of(context).showSnackBar(
