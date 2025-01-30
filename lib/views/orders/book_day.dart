@@ -1,20 +1,35 @@
-// File: book_day.dart
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-// Funzione per mostrare il selettore di data (DatePicker)
-Future<void> showDatePickerDialog(BuildContext context, DateTime initialDate) async {
-  final DateTime today = DateTime.now(); // Data di oggi
+Future<DateTime?> showDatePickerDialog(BuildContext context, DateTime initialDate) async {
+  final DateTime today = DateTime.now();
+  List<DateTime> unavailableDates = [];
+
+  // Recupera i giorni non disponibili da Firestore
+  try {
+    final snapshot = await FirebaseFirestore.instance.collection('notAvailable').get();
+    for (var doc in snapshot.docs) {
+      final timestamp = doc['date'];
+      if (timestamp is Timestamp) {
+        final date = timestamp.toDate();
+        final normalizedDate = DateTime(date.year, date.month, date.day);
+        unavailableDates.add(normalizedDate);
+      }
+    }
+  } catch (e) {
+    print("Errore nel recupero dei giorni non disponibili: $e");
+  }
 
   final DateTime? picked = await showDatePicker(
     context: context,
     initialDate: initialDate,
-    firstDate: today, // Non permettere date precedenti ad oggi
-    lastDate: DateTime(2025, 12, 31), // Ultima data disponibile
+    firstDate: today,
+    lastDate: DateTime(2025, 12, 31),
     builder: (BuildContext context, Widget? child) {
       return Theme(
         data: ThemeData.light().copyWith(
-          primaryColor: Colors.blue, // Colore del picker
-          hintColor: Colors.blue, // Colore del selettore
+          primaryColor: Colors.blue,
+          hintColor: Colors.blue,
           primaryTextTheme: TextTheme(
             titleLarge: TextStyle(color: Colors.black),
           ),
@@ -26,20 +41,13 @@ Future<void> showDatePickerDialog(BuildContext context, DateTime initialDate) as
       );
     },
     selectableDayPredicate: (DateTime date) {
-      // Disabilita specifici giorni (esempio: sabato e domenica)
-      // Ritorna false per giorni non selezionabili
-      if (date.weekday == DateTime.sunday) {
-        return false; // Disabilita sabato e domenica
+      final normalizedDate = DateTime(date.year, date.month, date.day);
+
+      if (unavailableDates.contains(normalizedDate) || date.weekday == DateTime.sunday) {
+        return false;
       }
 
-      // Disabilita determinate date specifiche (ad esempio, feste)
-      if (date.month == 2 && date.day == 25) {
-        return false; // Disabilita il 25 dicembre (Natale)
-      }
-
-      // Puoi aggiungere altre condizioni personalizzate qui
-
-      return true; // Altrimenti, la data è selezionabile
+      return true;
     },
   );
 
@@ -47,10 +55,11 @@ Future<void> showDatePickerDialog(BuildContext context, DateTime initialDate) as
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Your order will be delivered on ${picked.toLocal()}')),
     );
-    // Passa la data al carrello o salva nel database
+    return picked; // Ritorna la data selezionata
   } else {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Please select a future date for delivery.')),
     );
+    return null; // Nessuna data selezionata
   }
 }

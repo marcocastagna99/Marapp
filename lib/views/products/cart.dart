@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:marapp/views/orders/address_view.dart';
 
 import '../orders/book_day.dart';
 
@@ -117,11 +118,23 @@ class CartViewState extends State<CartView> {
     if (!isValid) {
       return; // Se le quantità non sono valide, esci
     }
-    DateTime selectedDate = DateTime.now();
 
-    // Se le quantità sono valide, passa al BookDay
-    showDatePickerDialog(context, selectedDate);
+    DateTime? selectedDate  = await showDatePickerDialog(context, DateTime.now());
+
+
+    if (selectedDate != null) {
+      //da fare per dopo
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              AddressViewScreen(
+                  selectedDate: selectedDate), // Passa la data selezionata se necessaria
+        ),
+      );
+    }
   }
+
   Future<bool> _quantityControl() async {
     try {
       bool allValid = true; // Assume all quantities are valid
