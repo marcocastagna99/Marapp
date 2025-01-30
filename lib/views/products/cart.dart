@@ -117,14 +117,10 @@ class CartViewState extends State<CartView> {
     if (!isValid) {
       return; // Se le quantità non sono valide, esci
     }
+    DateTime selectedDate = DateTime.now();
 
     // Se le quantità sono valide, passa al BookDay
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => BookDay(cartItems: cartItems), // Passa il carrello a BookDay
-      ),
-    );
+    showDatePickerDialog(context, selectedDate);
   }
   Future<bool> _quantityControl() async {
     try {

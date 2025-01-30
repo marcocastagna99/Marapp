@@ -1,70 +1,56 @@
 // File: book_day.dart
 import 'package:flutter/material.dart';
 
-class BookDay extends StatefulWidget {
-  final List<Map<String, dynamic>> cartItems;
+// Funzione per mostrare il selettore di data (DatePicker)
+Future<void> showDatePickerDialog(BuildContext context, DateTime initialDate) async {
+  final DateTime today = DateTime.now(); // Data di oggi
 
-  BookDay({required this.cartItems});
-
-  @override
-  _BookDayState createState() => _BookDayState();
-}
-
-class _BookDayState extends State<BookDay> {
-  DateTime selectedDate = DateTime.now(); // Data predefinita (oggi)
-
-  // Funzione che gestisce la selezione della data
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2025), // Prima data disponibile
-      lastDate: DateTime(2025, 12, 31), // Ultima data disponibile
-    );
-
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Select Delivery Day'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Selected Date: ${selectedDate.toLocal()}'.split(' ')[0], // Mostra solo la data
-              style: const TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => _selectDate(context), // Apre il selettore di data
-              child: const Text('Select Date'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Procedi con la logica di prenotazione, ad esempio, salva la data nel carrello o Firestore
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Your order for ${widget.cartItems.length} items will be delivered on ${selectedDate.toLocal()}'),
-                  ),
-                );
-                // Puoi anche salvare la data scelta nel carrello o nel database
-              },
-              child: const Text('Confirm Order'),
-            ),
-          ],
+  final DateTime? picked = await showDatePicker(
+    context: context,
+    initialDate: initialDate,
+    firstDate: today, // Non permettere date precedenti ad oggi
+    lastDate: DateTime(2025, 12, 31), // Ultima data disponibile
+    builder: (BuildContext context, Widget? child) {
+      return Theme(
+        data: ThemeData.light().copyWith(
+          primaryColor: Colors.blue, // Colore del picker
+          hintColor: Colors.blue, // Colore del selettore
+          primaryTextTheme: TextTheme(
+            titleLarge: TextStyle(color: Colors.black),
+          ),
+          textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(foregroundColor: Colors.blue),
+          ),
         ),
-      ),
+        child: child!,
+      );
+    },
+    selectableDayPredicate: (DateTime date) {
+      // Disabilita specifici giorni (esempio: sabato e domenica)
+      // Ritorna false per giorni non selezionabili
+      if (date.weekday == DateTime.sunday) {
+        return false; // Disabilita sabato e domenica
+      }
+
+      // Disabilita determinate date specifiche (ad esempio, feste)
+      if (date.month == 2 && date.day == 25) {
+        return false; // Disabilita il 25 dicembre (Natale)
+      }
+
+      // Puoi aggiungere altre condizioni personalizzate qui
+
+      return true; // Altrimenti, la data è selezionabile
+    },
+  );
+
+  if (picked != null && picked.isAfter(today)) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Your order will be delivered on ${picked.toLocal()}')),
+    );
+    // Passa la data al carrello o salva nel database
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Please select a future date for delivery.')),
     );
   }
 }
