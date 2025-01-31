@@ -52,9 +52,9 @@ Future<DateTime?> showDatePickerDialog(BuildContext context, DateTime initialDat
   );
 
   if (picked != null && picked.isAfter(today)) {
-    ScaffoldMessenger.of(context).showSnackBar(
+    /*ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Your order will be delivered on ${picked.toLocal()}')),
-    );
+    );*/
     return picked; // Ritorna la data selezionata
   } else {
     ScaffoldMessenger.of(context).showSnackBar(

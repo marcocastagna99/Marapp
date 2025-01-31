@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:marapp/views/orders/address_view.dart';
+import 'package:marapp/views/orders/order_management.dart';
 
 import '../orders/book_day.dart';
 
@@ -120,6 +121,20 @@ class CartViewState extends State<CartView> {
     }
 
     DateTime? selectedDate  = await showDatePickerDialog(context, DateTime.now());
+    //updateDailyLimit(selectedDate!, cartItems);
+
+    bool result = await checkPreparationLimit(selectedDate!, cartItems);
+    if (!result) {
+      // Show the snackbar message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Too busy on that day. Please choose another day or reduce your cart items.'),
+          duration: Duration(seconds: 3), // Set the duration of the message
+        ),
+      );
+      return;
+    }
+
 
 
     if (selectedDate != null) {
