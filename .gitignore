@@ -23,4 +23,6 @@ secrets.dart
 
 firebase_options.dart
 
+android/app/src/main/AndroidManifest.xml
+
 .env

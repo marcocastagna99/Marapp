@@ -41,7 +41,7 @@ Future<bool> checkAndUpdateAvailability(DateTime date) async {
 
 
 
-Future<void> updateDailyLimit(DateTime selectedDate, List<Map<String, dynamic>> cartItems) async {
+Future<bool> updateDailyLimit(DateTime selectedDate, List<Map<String, dynamic>> cartItems) async {
   // Formatta la data come stringa (chiave documento)
   String formattedDate = "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
   print("🟢 Data selezionata: $formattedDate");
@@ -57,10 +57,9 @@ Future<void> updateDailyLimit(DateTime selectedDate, List<Map<String, dynamic>> 
     DocumentSnapshot docSnapshot = await dateDocRef.get();
     print("📄 Documento trovato: ${docSnapshot.exists}");
 
-    // Se il documento NON esiste, lo creiamo subito senza fare controlli
+    // Se il documento NON esiste, lo creiamo subito
     if (!docSnapshot.exists) {
       int newPrepTimeSum = cartItems.fold(0, (sum, item) => sum + (item['prepTime'] as int));
-
 
       print("📌 Creazione nuovo documento per la data $formattedDate");
       await dateDocRef.set({
@@ -73,7 +72,7 @@ Future<void> updateDailyLimit(DateTime selectedDate, List<Map<String, dynamic>> 
       });
 
       print("✅ Nuovo documento creato.");
-      return; // Uscita immediata, non serve fare altro
+      return true; // Aggiornamento avvenuto
     }
 
     // Se il documento esiste, recuperiamo i dati
@@ -82,17 +81,15 @@ Future<void> updateDailyLimit(DateTime selectedDate, List<Map<String, dynamic>> 
 
     List<Map<String, dynamic>> existingProdPrepTime = [];
     int currentPrepTime = data['currentPrepTime'] ?? 0;
+    int maxPrepTime = data['maxPrepTime'] ?? 500; // Assumiamo un valore predefinito se non esiste
     int currentOrders = data['currentOrders'] ?? 0;
-
 
     if (data.containsKey('prodPrepTime')) {
       existingProdPrepTime = List<Map<String, dynamic>>.from(data['prodPrepTime']);
     }
 
-
     // Creiamo un set con i prodId già presenti
     Set<String> existingProdIds = existingProdPrepTime.map((e) => e['productId'] as String).toSet();
-    print(existingProdIds);
     print("🔹 Prodotti già presenti: $existingProdIds");
 
     // Nuovi prodotti da aggiungere
@@ -102,35 +99,46 @@ Future<void> updateDailyLimit(DateTime selectedDate, List<Map<String, dynamic>> 
     for (var item in cartItems) {
       if (!existingProdIds.contains(item['productId'])) {
         newProducts.add({'productId': item['productId'], 'prepTime': item['prepTime']});
-        newPrepTimeSum += (item['prepTime'] as int); // Qui aggiunto il cast
+        newPrepTimeSum += (item['prepTime'] as int);
       }
     }
 
     print("🆕 Nuovi prodotti da aggiungere: $newProducts");
     print("⏳ Tempo di preparazione aggiunto: $newPrepTimeSum");
 
-    // Se ci sono nuovi prodotti, aggiorniamo il documento esistente
-    if (newProducts.isNotEmpty) {
-      print("🔄 Aggiornamento documento esistente per la data $formattedDate");
+    // Calcoliamo il nuovo tempo totale di preparazione
+    int updatedPrepTime = currentPrepTime + newPrepTimeSum;
+    print("⚖️ Tempo di preparazione totale dopo aggiornamento: $updatedPrepTime / $maxPrepTime");
+
+    // Aggiorniamo solo se il tempo di preparazione totale è inferiore a maxPrepTime
+    if (updatedPrepTime <= maxPrepTime) {
+      print("🔄 Aggiornamento consentito: aggiorniamo il documento.");
       await dateDocRef.set({
         'prodPrepTime': FieldValue.arrayUnion(newProducts),
-        'currentPrepTime': currentPrepTime + newPrepTimeSum,
+        'currentPrepTime': updatedPrepTime,
         'currentOrders': currentOrders + 1, // Aggiungiamo un ordine
       }, SetOptions(merge: true));
-    }
 
-    print("✅ Documento aggiornato con i nuovi prodotti.");
+      print("✅ Documento aggiornato con i nuovi prodotti.");
+      return true; // Aggiornamento avvenuto
+    } else {
+      print("❌ Limite di preparazione superato. Nessun aggiornamento effettuato.");
+      return false; // Aggiornamento bloccato
+    }
   } catch (e) {
     print("❌ Errore durante l'aggiornamento: $e");
+    return false; // Ritorna false in caso di errore
   }
 }
+
+
+
 
 
 
 Future<bool> checkPreparationLimit(DateTime selectedDate, List<Map<String, dynamic>> cartItems) async {
   // Formatta la data come stringa (chiave documento)
   String formattedDate = "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
-  print("🟢 Formatted date: $formattedDate");
 
   // Riferimento alla collezione Firestore
   CollectionReference dailyLimits = FirebaseFirestore.instance.collection('dailyLimits');
@@ -141,11 +149,9 @@ Future<bool> checkPreparationLimit(DateTime selectedDate, List<Map<String, dynam
   try {
     // Ottieni il documento dal database
     DocumentSnapshot docSnapshot = await dateDocRef.get();
-    print("📄 Documento esistente: ${docSnapshot.exists}");
 
     if (!docSnapshot.exists) {
       // Se il documento non esiste, significa che non ci sono limiti superati → OK
-      print("✅ Documento non trovato. Limiti non raggiunti, ordine possibile.");
       return true;
     }
 
@@ -158,49 +164,39 @@ Future<bool> checkPreparationLimit(DateTime selectedDate, List<Map<String, dynam
 
     if (data.containsKey('prodPrepTime')) {
       existingProdPrepTime = List<Map<String, dynamic>>.from(data['prodPrepTime']);
-      print("🔹 Prodotti esistenti con tempo di preparazione: $existingProdPrepTime");
     }
     if (data.containsKey('currentPrepTime')) {
       currentPrepTime = data['currentPrepTime'];
-      print("⏳ Tempo di preparazione attuale: $currentPrepTime");
     }
     if (data.containsKey('maxPrepTime')) {
       maxPrepTime = data['maxPrepTime'];
-      print("📊 Tempo di preparazione massimo: $maxPrepTime");
     }
 
-    // Creiamo un set con i productId già presenti
+    // Creiamo un set con i prodId già presenti
     Set<String> existingProdIds = existingProdPrepTime.map((e) => e['productId'] as String).toSet();
-    print("🔹 Prodotti già presenti (ID): $existingProdIds");
 
     // Calcolare la somma dei nuovi tempi di preparazione da aggiungere
     int newPrepTimeSum = 0;
     for (var item in cartItems) {
       String prodId = item['productId'];
       int prepTime = item['prepTime'];
-      print("🔍 Verifica prodotto: ID = $prodId, Tempo di preparazione = $prepTime");
 
       if (!existingProdIds.contains(prodId)) {
         newPrepTimeSum += prepTime;
-        print("🆕 Nuovo tempo di preparazione aggiunto: $newPrepTimeSum");
       }
     }
 
     // Controllo se la somma dei nuovi prepTime supera maxPrepTime
-    print("⚖️ Somma tempo di preparazione attuale + nuovo: ${currentPrepTime + newPrepTimeSum}");
     if ((currentPrepTime + newPrepTimeSum) > maxPrepTime) {
-      print("❌ Limite di tempo di preparazione superato, ordine non possibile.");
       return false; // Troppo lavoro, ordine non possibile
     }
 
-    print("✅ Ordine possibile, limite rispettato.");
     return true; // Ordine possibile
   } catch (e) {
-    print("❌ Errore durante il controllo del limite: $e");
+    print("Errore durante il controllo del limite: $e");
     return false; // Se c'è un errore, meglio non permettere l'ordine
   }
 }
-
 
 
 
