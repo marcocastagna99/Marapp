@@ -1,133 +1,73 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
+import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:marapp/views/secrets.dart';
 
-class AddressViewScreen extends StatefulWidget {
-  final DateTime selectedDate; // Data selezionata da passare al widget
+class AddressSearch extends StatefulWidget {
+  final DateTime selectedDate; // Add selectedDate here if you want to pass it
 
-  // Aggiungi il required per il parametro
-  AddressViewScreen({Key? key, required this.selectedDate}) : super(key: key);
+  AddressSearch({Key? key, required this.selectedDate}) : super(key: key);
+
   @override
-  _AddressViewScreenState createState() => _AddressViewScreenState();
+  _AddressSearchState createState() => _AddressSearchState(); // Implementing createState
 }
 
-class _AddressViewScreenState extends State<AddressViewScreen> {
+class _AddressSearchState extends State<AddressSearch> {
+  TextEditingController _controller = TextEditingController();
 
-  String address = ''; // Indirizzo dell'utente
-  LatLng? _currentPosition; // Posizione corrente per il segnalino sulla mappa
+  // Sostituisci questa con la tua chiave API
+  final String apiKey = Secrets.OpenCageapiKey;
 
-  @override
-  void initState() {
-    super.initState();
-    _getAddress();
-  }
-
-  // Carica l'indirizzo dal documento dell'utente
-  Future<void> _getAddress() async {
-    try {
-      // Ottieni l'ID dell'utente autenticato
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        // Recupera il documento dell'utente usando l'ID
-        final userDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid) // Usa l'ID dell'utente autenticato
-            .get();
-
-        // Controlla se il documento esiste e se contiene il campo address
-        if (userDoc.exists && userDoc.data() != null) {
-          setState(() {
-            address = userDoc.data()?['address'] ?? ''; // Imposta l'indirizzo se esiste
-          });
-        } else {
-          setState(() {
-            address = ''; // Se non c'è l'indirizzo, lascialo vuoto
-          });
-        }
-      }
-    } catch (e) {
-      print('Errore nel recupero dell\'indirizzo: $e');
+  // Funzione per cercare i suggerimenti
+  Future<List<String>> fetchSuggestions(String query) async {
+    if (query.isEmpty) {
+      return [];
     }
-  }
 
+    final url = 'https://api.opencagedata.com/geocode/v1/json?q=$query&key=$apiKey&language=it&limit=5';
+    final response = await http.get(Uri.parse(url));
 
-  // Mostra la mappa per selezionare una nuova posizione
-  void _selectOnMap() async {
-    final LatLng? newPosition = await showDialog(
-      context: context,
-      builder: (context) => MapPickerDialog(currentPosition: _currentPosition),
-    );
-
-    if (newPosition != null) {
-      setState(() {
-        _currentPosition = newPosition;
-        // Potresti anche voler aggiornare la posizione su Firestore qui
-      });
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      List<String> suggestions = [];
+      for (var result in data['results']) {
+        suggestions.add(result['formatted']);
+      }
+      return suggestions;
+    } else {
+      throw Exception('Failed to load suggestions');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('View Address'),
-      ),
+      appBar: AppBar(title: Text('Address Search')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Text(
-              'Your Address: $address',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 20),
-            _currentPosition != null
-                ? GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: _currentPosition!,
-                zoom: 14.0,
+        child: (TypeAheadField<String>(
+          builder: (context, controller, focusNode) {
+            return TextField(
+              controller: controller,
+              focusNode: focusNode,
+              decoration: InputDecoration(
+                labelText: 'Search Address',
+                border: OutlineInputBorder(),
               ),
-              markers: {
-                Marker(
-                  markerId: MarkerId('currentPosition'),
-                  position: _currentPosition!,
-                ),
-              },
-            )
-                : Container(
-              height: 200,
-              child: Center(child: CircularProgressIndicator()),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _selectOnMap,
-              child: Text('Change Address on Map'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class MapPickerDialog extends StatelessWidget {
-  final LatLng? currentPosition;
-  MapPickerDialog({required this.currentPosition});
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      child: Container(
-        height: 400,
-        child: GoogleMap(
-          initialCameraPosition: CameraPosition(
-            target: currentPosition ?? LatLng(37.7749, -122.4194), // Default San Francisco
-            zoom: 14.0,
-          ),
-          onTap: (LatLng position) {
-            Navigator.of(context).pop(position);
+            );
           },
+          suggestionsCallback: fetchSuggestions,
+          itemBuilder: (context, suggestion) {
+            return ListTile(
+              title: Text(suggestion),
+            );
+          },
+          onSelected: (suggestion) {
+            print('Selected address: $suggestion');
+          },
+        )
         ),
       ),
     );

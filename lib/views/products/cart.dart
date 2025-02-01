@@ -143,7 +143,7 @@ class CartViewState extends State<CartView> {
         context,
         MaterialPageRoute(
           builder: (context) =>
-              AddressViewScreen(
+              AddressSearch(
                   selectedDate: selectedDate), // Passa la data selezionata se necessaria
         ),
       );
