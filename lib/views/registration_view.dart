@@ -47,7 +47,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
 
-
   void _register(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       setState(() {
@@ -64,7 +63,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         );
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Registrazione completata!')),
+            SnackBar(content: Text('Registration successful!')),
           );
           Navigator.pushReplacement(
             context,
@@ -72,12 +71,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Errore nella registrazione')),
+            SnackBar(content: Text('Registration error')),
           );
         }
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Errore: ${error.toString()}')),
+          SnackBar(content: Text('Error: ${error.toString()}')),
         );
       } finally {
         setState(() {
@@ -94,47 +93,43 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     });
   }
 
-
   Future<void> _signUpWithGoogle(BuildContext context) async {
     setState(() {
-      _isLoading = true; // Imposta lo stato di caricamento a true
+      _isLoading = true;
     });
     try {
-      // Ottieni il provider di autenticazione
+      // Get the authentication provider
       final authProvider = Provider.of<auth.AuthProvider>(context, listen: false);
 
       final User? user = await authProvider.signInWithGoogle();
 
-
       if (user == null) {
-        // Se l'utente ha annullato il login
+        // If the user canceled the login
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Login Google annullato")),
+          SnackBar(content: Text("Google login canceled")),
         );
         return;
       }
 
-      // Se il login è riuscito, naviga alla home
+      // If the login is successful, navigate to home
       Navigator.pushReplacementNamed(context, '/home');
     } catch (error) {
-      // Gestisci eventuali errori
+      // Handle any errors
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Errore durante il login: $error")),
+        SnackBar(content: Text("Error during login: $error")),
       );
-    }
-    finally{
+    } finally {
       setState(() {
-        _isLoading = false; // Imposta lo stato di caricamento a true
+        _isLoading = false;
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Registrazione'),
+        title: Text('Registration'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -146,10 +141,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               children: [
                 _buildRoundedTextFormField(
                   controller: _nameController,
-                  label: 'Nome Completo',
+                  label: 'Full Name',
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Inserisci il tuo nome';
+                      return 'Enter your name';
                     }
                     return null;
                   },
@@ -158,12 +153,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 SizedBox(height: 10),
                 _buildRoundedTextFormField(
                   controller: _phoneController,
-                  label: 'Numero di Telefono',
+                  label: 'Phone Number',
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Inserisci un numero di telefono valido';
+                      return 'Enter a valid phone number';
                     } else if (!RegExp(r'^\d{10}$').hasMatch(value)) {
-                      return 'Inserisci un numero di telefono valido';
+                      return 'Enter a valid phone number';
                     }
                     return null;
                   },
@@ -172,18 +167,18 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       phoneNumber = value;
                     });
                   },
-                  errorText: null, // Non usare il `errorText` personalizzato per la validazione immediata
+                  errorText: null,
                   borderColor: _phoneController.text.isEmpty || !RegExp(r'^\d{10}$').hasMatch(_phoneController.text)
-                      ? Colors.red  // Il bordo sarà rosso solo quando il campo è vuoto o non valido
-                      : Colors.green,  // Il bordo sarà verde quando il numero è valido
+                      ? Colors.red
+                      : Colors.green,
                 ),
                 SizedBox(height: 10),
                 _buildRoundedTextFormField(
                   controller: _addressController,
-                  label: 'Indirizzo',
+                  label: 'Address',
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Inserisci il tuo indirizzo';
+                      return 'Enter your address';
                     }
                     return null;
                   },
@@ -196,9 +191,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   label: 'Email',
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Inserisci un\'email valida';
+                      return 'Enter a valid email';
                     } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                      return 'Inserisci un\'email valida';
+                      return 'Enter a valid email';
                     }
                     return null;
                   },
@@ -210,7 +205,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     });
                   },
                   errorText: !_emailValid
-                      ? 'Inserisci un\'email valida'
+                      ? 'Enter a valid email'
                       : null,
                   borderColor: _emailController.text.isEmpty
                       ? Colors.grey
@@ -226,7 +221,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   obscureText: !_passwordVisible,
                   validator: (value) {
                     if (value == null || value.isEmpty || value.length < 6) {
-                      return 'La password deve contenere almeno 6 caratteri';
+                      return 'Password must be at least 6 characters';
                     }
                     return null;
                   },
@@ -258,7 +253,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 if (_showConfirmPassword)
                   _buildRoundedTextFormField(
                     controller: _confirmPasswordController,
-                    label: 'Conferma Password',
+                    label: 'Confirm Password',
                     obscureText: !_confirmPasswordVisible,
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -273,7 +268,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       },
                     ),
                     errorText: !_passwordsMatch
-                        ? 'Le password non corrispondono'
+                        ? 'Passwords do not match'
                         : null,
                     onChanged: (value) {
                       setState(() {
@@ -299,7 +294,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     ? Center(child: CircularProgressIndicator())
                     : ElevatedButton(
                   onPressed: () => _register(context),
-                  child: Text('Registrati'),
+                  child: Text('Register'),
                 ),
                 SignInButton(
                   Theme.of(context).brightness == Brightness.dark
@@ -376,25 +371,21 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     } else {
       return TextFormField(
         controller: controller,
-        validator: validator,
         focusNode: focusNode,
         obscureText: obscureText,
         enabled: enabled,
+        onChanged: onChanged,
+        style: TextStyle(color: textColor),
+        validator: validator,
         decoration: InputDecoration(
           labelText: label,
+          suffixIcon: suffixIcon,
           errorText: errorText,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
-            borderSide: BorderSide(
-              color: borderColor ?? Colors.grey,
-            ),
+            borderSide: BorderSide(color: borderColor ?? Colors.grey),
           ),
-          contentPadding:
-          EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          suffixIcon: suffixIcon,
         ),
-        style: TextStyle(color: textColor),
-        onChanged: onChanged,
       );
     }
   }

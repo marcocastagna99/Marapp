@@ -6,17 +6,18 @@ import 'package:marapp/views/orders/address_payment.dart';
 import '../orders/book_day.dart';
 
 class CartView extends StatefulWidget {
+  final GlobalKey<CartViewState> cartKey;
   final String userId;
   final List<Map<String, dynamic>> cartItems;
   final Function(String, int) updateCart;
 
   const CartView({
     super.key,
+    required this.cartKey,  // Aggiungi la cartKey qui
     required this.cartItems,
     required this.updateCart,
     required this.userId,
   });
-
   @override
   CartViewState createState() => CartViewState();
 }
@@ -141,7 +142,7 @@ class CartViewState extends State<CartView> {
         MaterialPageRoute(
           builder: (context) =>
               AddressPaymentScreen(
-                  selectedDate: selectedDate), // Passa la data selezionata se necessaria
+                  selectedDate: selectedDate, cartItems: cartItems, cartKey: widget.cartKey), // Passa la data selezionata se necessaria
         ),
       );
     }

@@ -25,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final authProvider = Provider.of<auth.AuthProvider>(context, listen: false);
 
     setState(() {
-      _isLoading = true; // Imposta lo stato di caricamento a true
+      _isLoading = true; // Set loading state to true
     });
 
     try {
@@ -47,44 +47,38 @@ class _LoginScreenState extends State<LoginScreen> {
       });
     } finally {
       setState(() {
-        _isLoading = false; // Imposta lo stato di caricamento a false
+        _isLoading = false; // Set loading state to false
       });
     }
   }
 
   Future<void> _loginWithGoogle(BuildContext context) async {
     setState(() {
-      _isLoading = true; // Imposta lo stato di caricamento a true
+      _isLoading = true; // Set loading state to true
     });
 
     try {
-      // Ottieni il provider di autenticazione
       final authProvider = Provider.of<auth.AuthProvider>(context, listen: false);
-
       final User? user = await authProvider.signInWithGoogle();
 
       if (user == null) {
-        // Se l'utente ha annullato il login
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Login Google annullato")),
+          SnackBar(content: Text("Google login cancelled")),
         );
         return;
       }
 
-      // Se il login è riuscito, naviga alla home
       Navigator.pushReplacementNamed(context, '/home');
     } catch (error) {
-      // Gestisci eventuali errori
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Errore durante il login: $error")),
+        SnackBar(content: Text("Login error: $error")),
       );
     } finally {
       setState(() {
-        _isLoading = false; // Imposta lo stato di caricamento a false
+        _isLoading = false; // Set loading state to false
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               const SizedBox(height: 20),
               _isLoading
-                  ? const Center(child: CircularProgressIndicator()) // Mostra la rotella
+                  ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState?.validate() ?? false) {
@@ -177,11 +171,10 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               TextButton(
                 onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => PasswordResetScreen()),
-                    );
-
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => PasswordResetScreen()),
+                  );
                 },
                 child: const Text(
                   "Forgot your password?",
@@ -197,7 +190,6 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-
 
   Widget _buildRoundedTextFormField({
     required TextEditingController controller,
@@ -229,8 +221,7 @@ class _LoginScreenState extends State<LoginScreen> {
           labelText: label,
           errorText: errorText,
           border: InputBorder.none,
-          contentPadding:
-          const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           suffixIcon: suffixIcon,
         ),
         style: TextStyle(color: textColor),
