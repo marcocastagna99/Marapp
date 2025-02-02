@@ -20,9 +20,15 @@ Future<DateTime?> showDatePickerDialog(BuildContext context, DateTime initialDat
     print("Errore nel recupero dei giorni non disponibili: $e");
   }
 
+  // Verifica se l'initialDate è valida, altrimenti trova il primo giorno disponibile
+  DateTime validInitialDate = initialDate;
+  while (unavailableDates.contains(validInitialDate) || validInitialDate.weekday == DateTime.sunday) {
+    validInitialDate = validInitialDate.add(Duration(days: 1)); // Sposta in avanti
+  }
+
   final DateTime? picked = await showDatePicker(
     context: context,
-    initialDate: initialDate,
+    initialDate: validInitialDate, // Usa la data valida
     firstDate: today,
     lastDate: DateTime(2025, 12, 31),
     builder: (BuildContext context, Widget? child) {
@@ -42,24 +48,17 @@ Future<DateTime?> showDatePickerDialog(BuildContext context, DateTime initialDat
     },
     selectableDayPredicate: (DateTime date) {
       final normalizedDate = DateTime(date.year, date.month, date.day);
-
-      if (unavailableDates.contains(normalizedDate) || date.weekday == DateTime.sunday) {
-        return false;
-      }
-
-      return true;
+      return !unavailableDates.contains(normalizedDate) && date.weekday != DateTime.sunday;
     },
   );
 
   if (picked != null && picked.isAfter(today)) {
-    /*ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Your order will be delivered on ${picked.toLocal()}')),
-    );*/
-    return picked; // Ritorna la data selezionata
+    return picked;
   } else {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Please select a future date for delivery.')),
     );
-    return null; // Nessuna data selezionata
+    return null;
   }
 }
+

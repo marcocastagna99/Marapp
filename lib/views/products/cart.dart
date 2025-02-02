@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:marapp/views/orders/address_view.dart';
 import 'package:marapp/views/orders/order_management.dart';
-
+import 'package:marapp/views/orders/address_payment.dart';
 import '../orders/book_day.dart';
 
 class CartView extends StatefulWidget {
@@ -135,15 +134,13 @@ class CartViewState extends State<CartView> {
       return;
     }
 
-
-
     if (selectedDate != null) {
       //da fare per dopo
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) =>
-              AddressSearch(
+              AddressPaymentScreen(
                   selectedDate: selectedDate), // Passa la data selezionata se necessaria
         ),
       );

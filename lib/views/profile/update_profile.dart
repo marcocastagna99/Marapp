@@ -1,8 +1,15 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart'; // Add this import
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:marapp/views/secrets.dart';
+import 'package:http/http.dart' as http;
+
+import 'address_search.dart';
 
 
 class UpdateProfileProfileView extends StatefulWidget {
@@ -37,6 +44,8 @@ class ProfileViewState extends State<UpdateProfileProfileView> {
   bool _passwordsMatchError = false; // Flag for matching error
   final FocusNode _passwordFocusNode = FocusNode();
 
+
+
   @override
   void initState() {
     super.initState();
@@ -69,6 +78,8 @@ class ProfileViewState extends State<UpdateProfileProfileView> {
       });
     }
   }
+
+
 
   void _checkPasswordMatch() {
     setState(() {
@@ -188,17 +199,30 @@ class ProfileViewState extends State<UpdateProfileProfileView> {
                   return null;
                 },
               ),
+              /// **🔹 Campo di ricerca degli indirizzi integrato**
               const SizedBox(height: 10),
-              _buildRoundedTextField(
+              TextFormField(
                 controller: _addressController,
-                label: 'Update Address',
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your address';
+                decoration: InputDecoration(
+                  labelText: 'Address',
+                  border: OutlineInputBorder(),
+                ),
+                readOnly: true,  // Imposta a true per evitare modifiche dirette
+                onTap: () async {
+                  // Quando l'utente tocca il campo dell'indirizzo, attiva la ricerca
+                  String? newAddress = await showSearch<String>(
+                    context: context,
+                    delegate: AddressSearchDelegate(),
+                  );
+
+                  if (newAddress != null && newAddress.isNotEmpty) {
+                    setState(() {
+                      _addressController.text = newAddress;  // Aggiorna l'indirizzo con quello selezionato
+                    });
                   }
-                  return null;
                 },
               ),
+
               const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
