@@ -5,23 +5,24 @@ import 'package:marapp/views/orders/order_management.dart';
 import 'package:marapp/views/orders/address_payment.dart';
 import '../orders/book_day.dart';
 
+
 class CartView extends StatefulWidget {
-  final GlobalKey<CartViewState> cartKey;
   final String userId;
   final List<Map<String, dynamic>> cartItems;
   final Function(String, int) updateCart;
+  final GlobalKey<CartViewState> cartKey; // Use the key passed in
 
   const CartView({
-    super.key,
-    required this.cartKey,  // Aggiungi la cartKey qui
-    required this.cartItems,
-    required this.updateCart,
-    required this.userId,
+  super.key,
+  required this.cartKey,
+  required this.cartItems,
+  required this.updateCart,
+  required this.userId,
   });
+
   @override
   CartViewState createState() => CartViewState();
-}
-
+  }
 class CartViewState extends State<CartView> {
   List<Map<String, dynamic>> cartItems = [];
 
@@ -87,7 +88,7 @@ class CartViewState extends State<CartView> {
     }
   }
 
-  Future<void> _saveCartToFirestore() async {
+  Future<void> saveCartToFirestore() async {
     try {
       final cartRef = FirebaseFirestore.instance.collection('cart').doc(
           widget.userId);
@@ -104,11 +105,11 @@ class CartViewState extends State<CartView> {
 
 
 
-  void _clearCart() {
+  void clearCart() {
     setState(() {
       cartItems.clear();
     });
-    _saveCartToFirestore();
+    saveCartToFirestore();
   }
 
 
@@ -247,7 +248,7 @@ class CartViewState extends State<CartView> {
                             if (item['quantity'] <= 0) {
                               cartItems.removeAt(index);
                             }
-                            _saveCartToFirestore();
+                            saveCartToFirestore();
                           });
                         },
                       ),
@@ -263,7 +264,7 @@ class CartViewState extends State<CartView> {
                           widget.updateCart(item['name'], 1);
                           setState(() {
                             item['quantity']++;
-                            _saveCartToFirestore();
+                            saveCartToFirestore();
                           });
                         },
                       ),
@@ -311,7 +312,7 @@ class CartViewState extends State<CartView> {
                       children: [
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: _clearCart,
+                            onPressed: clearCart,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.red,
                               // Colore rosso per "Cancel"

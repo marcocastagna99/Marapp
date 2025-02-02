@@ -31,8 +31,6 @@ class _AddressPaymentScreenState extends State<AddressPaymentScreen> {
   bool isNewAddress = false;
   bool showSummary = false;
 
-  DateTime get selectedDate => selectedDate;
-  List<Map<String, dynamic>> get cartItems => cartItems;
 
   @override
   void initState() {
@@ -71,6 +69,7 @@ class _AddressPaymentScreenState extends State<AddressPaymentScreen> {
     final orderDate = Timestamp.fromDate(DateTime.now());
     final deliveryPreparationDate = Timestamp.fromDate(widget.selectedDate);
 
+
     final List<Map<String, dynamic>> items = widget.cartItems.map((item) {
       return {
         'prodId': item['productId'], // Assicurati che ogni item abbia un campo 'id'
@@ -89,13 +88,13 @@ class _AddressPaymentScreenState extends State<AddressPaymentScreen> {
     };
 
     try {
-      bool valid= await updateDailyLimit(selectedDate, cartItems);
+      bool valid= await updateDailyLimit(widget.selectedDate, widget.cartItems);
       if(valid){
         await FirebaseFirestore.instance.collection('orders').add(orderData);
+        await checkAndUpdateAvailability(widget.selectedDate);
 
 
-        // SVUOTA IL CARRELLO DOPO L'INSERIMENTO DELL'ORDINE
-        widget.cartKey.currentState?._clearCart();
+        widget.cartKey.currentState?.clearCart();
 
         // NAVIGA ALLA SCHERMATA DI RINGRAZIAMENTO
         Navigator.pushReplacement(
@@ -104,6 +103,7 @@ class _AddressPaymentScreenState extends State<AddressPaymentScreen> {
         );
       }
     } catch (e) {
+      print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error saving order: $e')),
       );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:marapp/views/products/products.dart';
+import 'package:marapp/views/home.dart';
+
 
 class ThankYouScreen extends StatelessWidget {
   @override
@@ -26,7 +27,7 @@ class ThankYouScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => ProductsView()), // Torna alla schermata prodotti
+                  MaterialPageRoute(builder: (context) => HomeScreen()), // Torna alla schermata prodotti
                       (Route<dynamic> route) => false, // Rimuove tutte le schermate precedenti
                 );
               },

@@ -57,15 +57,22 @@ class OrdersViewState extends State<OrdersView> {
             itemBuilder: (context, index) {
               DocumentSnapshot documentSnapshot = snapshot.data!.docs[index];
 
+              // Estrazione dei dati
               String orderId = documentSnapshot.id;
-              double totalPrice = documentSnapshot['totalPrice'];
-              Timestamp timestamp = documentSnapshot['timestamp'];
+              Timestamp deliveryPreparationDate = documentSnapshot['DeliveryPreparationDate'];
               List<dynamic> items = documentSnapshot['items'];
+              double total = documentSnapshot['total'];
+              String status = documentSnapshot['status'];
+              String userId = documentSnapshot['userId'];
+              Timestamp orderDateTimestamp = documentSnapshot['orderDate'];
 
-              // Formattiamo la data
-              DateTime orderDate = timestamp.toDate();
-              String formattedDate =
-                  '${orderDate.day}/${orderDate.month}/${orderDate.year}';
+              // Conversione timestamp in DateTime
+              DateTime orderDate = orderDateTimestamp.toDate();
+              DateTime preparationDate = deliveryPreparationDate.toDate();
+
+              // Formattazione delle date
+              String formattedOrderDate = '${orderDate.day}/${orderDate.month}/${orderDate.year}';
+              String formattedPreparationDate = '${preparationDate.day}/${preparationDate.month}/${preparationDate.year}';
 
               return Card(
                 margin: const EdgeInsets.all(8.0),
@@ -74,12 +81,14 @@ class OrdersViewState extends State<OrdersView> {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Date: $formattedDate'),
-                      Text('Total Price: \$${totalPrice.toStringAsFixed(2)}'),
+                      Text('Order Date: $formattedOrderDate'),
+                      Text('Preparation Date: $formattedPreparationDate'),
+                      Text('Status: $status'),
+                      Text('Total: \$${total.toStringAsFixed(2)}'),
                       const SizedBox(height: 5),
                       const Text('Items:'),
                       ...items.map((item) {
-                        return Text('- ${item['name']} x${item['quantity']}');
+                        return Text('- Product ID: ${item['prodId']} x${item['quantity']}');
                       }).toList(),
                     ],
                   ),
