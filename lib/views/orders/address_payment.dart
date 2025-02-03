@@ -247,9 +247,6 @@ class _AddressPaymentScreenState extends State<AddressPaymentScreen> {
                     onPressed: () {
                       if (selectedPaymentMethod != null && widget.selectedDate != null) {
                         _saveOrder();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Order saved!')),
-                        );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Please, fill all fields')),
