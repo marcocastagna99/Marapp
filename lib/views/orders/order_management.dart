@@ -182,7 +182,6 @@ Future<bool> checkPreparationLimit(DateTime selectedDate, List<Map<String, dynam
     for (var item in cartItems) {
       String prodId = item['productId'];
       int prepTime = item['prepTime'];
-
       if (!existingProdIds.contains(prodId)) {
         newPrepTimeSum += prepTime;
       }

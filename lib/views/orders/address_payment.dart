@@ -105,7 +105,15 @@ class _AddressPaymentScreenState extends State<AddressPaymentScreen> {
           context,
           MaterialPageRoute(builder: (context) => ThankYouScreen()),
         );
+      }else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Mara has received another order before yours, so the day is fully booked. Please try again another day as she cannot prepare your order on this date.'),
+              duration: Duration(seconds: 8) ),
+
+        );
+
       }
+
     } catch (e) {
       print(e);
       ScaffoldMessenger.of(context).showSnackBar(
