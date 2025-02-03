@@ -9,11 +9,18 @@ Future<DateTime?> showDatePickerDialog(BuildContext context, DateTime initialDat
   try {
     final snapshot = await FirebaseFirestore.instance.collection('notAvailable').get();
     for (var doc in snapshot.docs) {
-      final timestamp = doc['date'];
-      if (timestamp is Timestamp) {
-        final date = timestamp.toDate();
-        final normalizedDate = DateTime(date.year, date.month, date.day);
-        unavailableDates.add(normalizedDate);
+      final dateString = doc['date'];
+      if (dateString is String) {
+        // Converte la stringa in DateTime con il formato corretto
+        final dateParts = dateString.split('-');
+        if (dateParts.length == 3) {
+          final year = int.parse(dateParts[0]);
+          final month = int.parse(dateParts[1]);
+          final day = int.parse(dateParts[2]);
+          final date = DateTime(year, month, day);
+          final normalizedDate = DateTime(date.year, date.month, date.day);
+          unavailableDates.add(normalizedDate);
+        }
       }
     }
   } catch (e) {
@@ -48,6 +55,7 @@ Future<DateTime?> showDatePickerDialog(BuildContext context, DateTime initialDat
     },
     selectableDayPredicate: (DateTime date) {
       final normalizedDate = DateTime(date.year, date.month, date.day);
+      // Verifica che la data non sia nella lista dei giorni non disponibili e che non sia domenica
       return !unavailableDates.contains(normalizedDate) && date.weekday != DateTime.sunday;
     },
   );
@@ -61,4 +69,3 @@ Future<DateTime?> showDatePickerDialog(BuildContext context, DateTime initialDat
     return null;
   }
 }
-

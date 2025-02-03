@@ -12,7 +12,6 @@ class ProductsView extends StatefulWidget {
 }
 
 class ProductsViewState extends State<ProductsView> {
-  final GlobalKey<CartViewState> _cartKey = GlobalKey<CartViewState>();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   late String userId; // Declare userId
   List<Map<String, dynamic>> _cartItems = [];
@@ -599,7 +598,7 @@ class ProductsViewState extends State<ProductsView> {
                               });
                             }
                           });
-                        }, cartKey: _cartKey,
+                        },
                       );
                     },
                   ),

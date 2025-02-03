@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';  // Importa il pacchetto intl
 import '../profile/address_search.dart'; // Importa il delegate per la ricerca
-// Sostituisci con il percorso corretto
 import 'order_management.dart';
 import 'thank_you.dart';
 import '../products/cart.dart';
@@ -11,12 +10,15 @@ import '../products/cart.dart';
 class AddressPaymentScreen extends StatefulWidget {
   final DateTime selectedDate;
   final List<Map<String, dynamic>> cartItems;
-  final GlobalKey<CartViewState> cartKey;
+  final Function() clearCart;
+  final Function() saveCartToFirestore;
+
 
   const AddressPaymentScreen({
     required this.selectedDate,
     required this.cartItems,
-    required this.cartKey,
+    required this.clearCart,
+    required this.saveCartToFirestore,
     Key? key,
   }) : super(key: key);
 
@@ -92,9 +94,11 @@ class _AddressPaymentScreenState extends State<AddressPaymentScreen> {
       if(valid){
         await FirebaseFirestore.instance.collection('orders').add(orderData);
         await checkAndUpdateAvailability(widget.selectedDate);
+        //empty the cart
+        widget.clearCart();
+        widget.saveCartToFirestore();
 
 
-        widget.cartKey.currentState?.clearCart();
 
         // NAVIGA ALLA SCHERMATA DI RINGRAZIAMENTO
         Navigator.pushReplacement(

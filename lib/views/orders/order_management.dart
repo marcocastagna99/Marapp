@@ -2,34 +2,34 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 Future<bool> checkAndUpdateAvailability(DateTime date) async {
   try {
-    // Converte la data in formato DateTime UTC per fare la query correttamente
-    final dateUtc = DateTime.utc(date.year, date.month, date.day);
+    // Converti la data in stringa con il formato corretto (yyyy-M-d)
+    final dateStr = '${date.year}-${date.month}-${date.day}';
 
-    // Ottieni il documento relativo alla data nella collection 'dailyLimits'
+    // Esegui la query su Firestore cercando la data come stringa
     final snapshot = await FirebaseFirestore.instance
         .collection('dailyLimits')
-        .where('date', isEqualTo: dateUtc)
+        .where('date', isEqualTo: dateStr) // Usa la stringa invece di DateTime
         .get();
 
     if (snapshot.docs.isNotEmpty) {
       final doc = snapshot.docs.first;
-      final currentOrders = doc['currentOrders']; // Ordini correnti
-      final maxOrders = doc['maxOrders']; // Limite massimo ordini
+      final currentOrders = doc['currentOrders'] as int; // Ordini correnti
+      final maxOrders = doc['maxOrders'] as int; // Limite massimo ordini
 
       // Verifica se il numero di ordini ha raggiunto il massimo
       if (currentOrders >= maxOrders) {
         // Aggiungi la data alla collection 'notAvailable' con il campo isSystemWrite
         await FirebaseFirestore.instance.collection('notAvailable').add({
-          'date': dateUtc, // La data quando non è disponibile
+          'date': dateStr, // Usa la stringa per coerenza con Firestore
           'isSystemWrite': true, // Indica che la scrittura è automatica (procedurale)
         });
-        print("Data $dateUtc aggiunta a notAvailable");
+        print("Data $dateStr aggiunta a notAvailable");
 
         // Restituisce true per indicare che la data è stata aggiunta
         return true;
       }
     } else {
-      print('Data non trovata nella collection dailyLimits.');
+      print('Data $dateStr non trovata nella collection dailyLimits.');
     }
   } catch (e) {
     print('Errore durante l\'aggiornamento della disponibilità: $e');
@@ -38,6 +38,8 @@ Future<bool> checkAndUpdateAvailability(DateTime date) async {
   // Restituisce false se non è stato aggiunto un giorno non disponibile
   return false;
 }
+
+
 
 
 
