@@ -21,4 +21,14 @@ jobs:
           channel: 'stable'
 
       - run: flutter pub get
+
+      - name: Create .env file
+        run: |
+          echo "EMAILJS_API_KEY=${{ secrets.EMAILJS_API_KEY }}" > .env
+          echo "SERVICE_ID=${{ secrets.SERVICE_ID }}" >> .env
+          echo "TEMPLATE_ID=${{ secrets.TEMPLATE_ID }}" >> .env
+          echo "imgurAuthToken=${{ secrets.IMGUR_AUTH_TOKEN }}" >> .env
+          echo "OpenCageapiKey=${{ secrets.OPENCAGE_API_KEY }}" >> .env
+          echo "EMAILJS_PRIVATE_KEY=${{ secrets.EMAILJS_PRIVATE_KEY }}" >> .env
+
       - run: flutter test
