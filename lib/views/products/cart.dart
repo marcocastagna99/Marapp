@@ -116,7 +116,6 @@ class CartViewState extends State<CartView> {
 
   Future<void> proceedWithOrder(BuildContext context) async {
     bool isValid = await _quantityControl();
-
     if (!isValid) {
       return; // Se le quantità non sono valide, esci
     }

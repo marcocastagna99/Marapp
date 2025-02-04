@@ -1,69 +1,59 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-Future<void> sendOrderSummaryEmail(String userEmail, List<dynamic> items, DateTime orderDate, DateTime deliveryDate, double orderTotal, double deliveryCost) async {
-  // Carica le variabili di ambiente
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
+
+Future<void> sendOrderSummaryEmail(
+    String userEmail,
+    List<Map<String, dynamic>> items,
+    DateTime orderDate,
+    DateTime deliveryDate,
+    double orderTotal,
+    double deliveryCost) async {
+
   await dotenv.load();
   print('Dotenv loaded');
 
-  // Recupera le informazioni dal file .env
-  final String apiKey = dotenv.env['API_KEY'] ?? ''; // La tua API Key
-  final String serviceId = dotenv.env['SERVICE_ID'] ?? ''; // Il tuo Service ID
-  final String templateId = dotenv.env['TEMPLATE_ID'] ?? ''; // Il tuo Template ID
+  final String apiKey = dotenv.env['EMAILJS_API_KEY'] ?? '';
+  final String serviceId = dotenv.env['SERVICE_ID'] ?? '';
+  final String templateId = dotenv.env['TEMPLATE_ID'] ?? '';
+  final String privateKey = dotenv.env['EMAILJS_PRIVATE_KEY'] ?? '';
 
-  // Debug: Controlliamo i valori caricati dal file .env
-  print('API Key: $apiKey');
-  print('Service ID: $serviceId');
-  print('Template ID: $templateId');
+  print('items: ${items}');
 
-  // Crea il corpo dell'email
+  String itemsList = items.map((item) {
+    return "<li>${item['name']} x${item['quantity']}: €${item['price']} (Total: €${(item['price'] * item['quantity']).toStringAsFixed(2)})</li>";
+  }).join("");
+
+
   final emailBody = {
     'to_email': userEmail,
-    'from_name': 'Marapp', // Nome del negozio o dell'app
+    'from_name': 'Marapp',
     'formattedOrderDate': '${orderDate.day}/${orderDate.month}/${orderDate.year}',
     'formattedDeliveryDate': '${deliveryDate.day}/${deliveryDate.month}/${deliveryDate.year}',
-    'items': items.map((item) {
-      return {
-        'productName': item['productName'],
-        'quantity': item['quantity'],
-        'productPrice': item['productPrice'],
-        'itemTotal': item['itemTotal'],
-      };
-    }).toList(),
-    'deliveryCost': deliveryCost.toString(),
-    'total': (orderTotal + deliveryCost).toStringAsFixed(2),
+    'itemsList': itemsList, // Passa la stringa HTML
+    'deliveryCost': deliveryCost.toStringAsFixed(2),
+    'total': orderTotal.toStringAsFixed(2),
   };
 
-  // Debug: Controlliamo il corpo dell'email
   print('Email body: $emailBody');
 
-  // L'endpoint di EmailJS
+  final data = {
+    'service_id': serviceId,
+    'template_id': templateId,
+    'user_id': apiKey,
+    'template_params': emailBody,
+    'accessToken': privateKey,
+  };
+
   final url = Uri.parse('https://api.emailjs.com/api/v1.0/email/send');
   print('Sending request to: $url');
 
-  // Crea il corpo della richiesta JSON
-  final body = jsonEncode({
-    'service_id': serviceId,
-    'template_id': templateId,
-    'user_id': apiKey, // L'API Key viene utilizzata come 'user_id'
-    'template_params': emailBody,
-  });
-
-  // Debug: Controlliamo il corpo della richiesta
-  print('Request body: $body');
-
-  // Impostazioni della richiesta HTTP
-  final headers = {
-    'Content-Type': 'application/json',
-  };
+  final body = jsonEncode(data);
+  final headers = {'Content-Type': 'application/json'};
 
   try {
-    final response = await http.post(
-      url,
-      headers: headers,
-      body: body,
-    );
+    final response = await http.post(url, headers: headers, body: body);
 
     if (response.statusCode == 200) {
       print('Email sent successfully');

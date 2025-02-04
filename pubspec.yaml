@@ -65,6 +65,7 @@ flutter_native_splash:
 flutter:
   uses-material-design: true
   assets:
+    - .env
     - assets/marapp.png
     - assets/icon.webp
     - assets/food_photos/

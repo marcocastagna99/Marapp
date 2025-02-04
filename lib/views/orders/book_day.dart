@@ -28,10 +28,17 @@ Future<DateTime?> showDatePickerDialog(BuildContext context, DateTime initialDat
   }
 
   // Verifica se l'initialDate è valida, altrimenti trova il primo giorno disponibile
-  DateTime validInitialDate = initialDate;
+
+// Verifica se l'initialDate è valida, altrimenti trova il primo giorno disponibile
+  DateTime validInitialDate = DateTime(initialDate.year, initialDate.month, initialDate.day); // Normalizza la data
   while (unavailableDates.contains(validInitialDate) || validInitialDate.weekday == DateTime.sunday) {
     validInitialDate = validInitialDate.add(Duration(days: 1)); // Sposta in avanti
   }
+
+  print('Initial Date: $initialDate');
+  print('Valid Initial Date: $validInitialDate'); // Controlla se la data è cambiata
+
+
 
   final DateTime? picked = await showDatePicker(
     context: context,

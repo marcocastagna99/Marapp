@@ -9,7 +9,7 @@ import 'package:image/image.dart' as img; // Per la compressione delle immagini
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../secrets.dart';
+
 
 class ProfilePictureUploader {
   final FirebaseAuth _auth = FirebaseAuth.instance;

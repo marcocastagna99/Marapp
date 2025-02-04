@@ -99,7 +99,9 @@ class _AddressPaymentScreenState extends State<AddressPaymentScreen> {
       if(valid){
         await FirebaseFirestore.instance.collection('orders').add(orderData);
         await checkAndUpdateAvailability(widget.selectedDate);
-        sendOrderSummaryEmail(userEmail!, widget.cartItems, orderDate as DateTime, deliveryPreparationDate as DateTime, getTotalPrice(), 1.0 );
+
+        print('item befor sending email ${widget.cartItems}');
+        sendOrderSummaryEmail(userEmail!, List.from(widget.cartItems), orderDate.toDate(), deliveryPreparationDate.toDate(), getTotalPrice(), 1.0 );
         //empty the cart
         widget.clearCart();
         widget.saveCartToFirestore();

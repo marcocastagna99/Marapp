@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart'; // Add this import
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:marapp/views/secrets.dart';
 import 'package:http/http.dart' as http;
 
 import 'address_search.dart';
