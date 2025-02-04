@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';  // Importa il pacchetto intl
 import '../profile/address_search.dart'; // Importa il delegate per la ricerca
 import 'order_management.dart';
+import 'order_summary_email.dart';
 import 'thank_you.dart';
 import '../products/cart.dart';
 
@@ -30,6 +31,7 @@ class _AddressPaymentScreenState extends State<AddressPaymentScreen> {
   TextEditingController addressController = TextEditingController();
   String? selectedPaymentMethod;
   String? existingAddress;
+  String? userEmail;
   bool isNewAddress = false;
   bool showSummary = false;
 
@@ -37,11 +39,11 @@ class _AddressPaymentScreenState extends State<AddressPaymentScreen> {
   @override
   void initState() {
     super.initState();
-    _loadExistingAddress();
+    _loadExistingAddressAndEmail();
   }
 
   // Recupera l'indirizzo esistente dal database
-  Future<void> _loadExistingAddress() async {
+  Future<void> _loadExistingAddressAndEmail() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       final snapshot = await FirebaseFirestore.instance
@@ -52,6 +54,7 @@ class _AddressPaymentScreenState extends State<AddressPaymentScreen> {
       if (snapshot.exists) {
         setState(() {
           existingAddress = snapshot.data()?['address'];
+          userEmail= snapshot.data()?['email'];
         });
       }
     }
@@ -96,6 +99,7 @@ class _AddressPaymentScreenState extends State<AddressPaymentScreen> {
       if(valid){
         await FirebaseFirestore.instance.collection('orders').add(orderData);
         await checkAndUpdateAvailability(widget.selectedDate);
+        sendOrderSummaryEmail(userEmail!, widget.cartItems, orderDate as DateTime, deliveryPreparationDate as DateTime, getTotalPrice(), 1.0 );
         //empty the cart
         widget.clearCart();
         widget.saveCartToFirestore();

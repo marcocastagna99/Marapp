@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart'; // Per kIsWeb
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img; // Per la compressione delle immagini
@@ -72,7 +73,7 @@ class ProfilePictureUploader {
 
       final url = Uri.parse('https://api.imgur.com/3/image');
       final headers = {
-        'Authorization': Secrets.imgurAuthToken,
+        'Authorization': 'Bearer ${dotenv.env['imgurAuthToken']}',
         'Content-Type': 'application/json',  // Importante per il JSON
       };
 

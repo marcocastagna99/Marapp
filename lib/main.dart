@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart'; // Per kIsWeb
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:marapp/utils/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:marapp/views/splash.dart';
@@ -17,7 +18,7 @@ void main() async {
 
   // Inizializzazione Firebase
   await initializeFirebase();
-
+  await dotenv.load();
   // Avvio dell'app con tema iniziale
   runApp(Marapp(initialThemeMode: await getInitialThemeMode()));
 }
