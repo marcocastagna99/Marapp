@@ -57,6 +57,8 @@ class _AddressPaymentScreenState extends State<AddressPaymentScreen> {
     }
   }
 
+
+
   // Funzione per salvare l'ordine
   Future<void> _saveOrder() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -121,6 +123,8 @@ class _AddressPaymentScreenState extends State<AddressPaymentScreen> {
       );
     }
   }
+
+
 
 
   double getTotalPrice() {
