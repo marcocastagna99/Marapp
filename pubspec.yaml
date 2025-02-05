@@ -34,6 +34,8 @@ dependencies:
   intl: any
   emailjs: ^4.0.0
   flutter_dotenv: ^5.0.2
+  firebase_messaging: any
+  flutter_local_notifications: any
 
 
 
