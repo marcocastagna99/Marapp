@@ -1,11 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin
       _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-
   static Future<void> initialize() async {
     await Firebase.initializeApp();
     const AndroidInitializationSettings initializationSettingsAndroid =
@@ -15,6 +15,21 @@ class NotificationService {
       android: initializationSettingsAndroid,
     );
     await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+    // Request permission for web
+    if (kIsWeb) {
+      NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+      
+      // Get the token for web
+      String? token = await FirebaseMessaging.instance.getToken(
+        vapidKey: 'YOUR_VAPID_KEY_HERE', // Add your VAPID key from Firebase Console
+      );
+      print('FCM Token: $token');
+    }
 
     FirebaseMessaging.onMessage.listen(_onMessage);
     FirebaseMessaging.onMessageOpenedApp.listen(_onMessageOpenedApp);
