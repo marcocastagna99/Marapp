@@ -73,15 +73,24 @@ class _AddressPaymentScreenState extends State<AddressPaymentScreen> {
       return;
     }
 
+    // Determina quale indirizzo usare
+    String finalAddress = isNewAddress ? addressController.text : (existingAddress ?? "");
+
+    if (finalAddress.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please provide an address')),
+      );
+      return;
+    }
+
     final orderDate = Timestamp.fromDate(DateTime.now());
     final deliveryPreparationDate = Timestamp.fromDate(widget.selectedDate);
 
-
     final List<Map<String, dynamic>> items = widget.cartItems.map((item) {
       return {
-        'prodId': item['productId'], // Assicurati che ogni item abbia un campo 'id'
+        'prodId': item['productId'],
         'quantity': item['quantity'],
-        'prepTime': item['prepTime'] ?? 0, // Usa un valore di default se prepTime non è presente
+        'prepTime': item['prepTime'] ?? 0,
       };
     }).toList();
 
@@ -90,38 +99,37 @@ class _AddressPaymentScreenState extends State<AddressPaymentScreen> {
       'orderDate': orderDate,
       'DeliveryPreparationDate': deliveryPreparationDate,
       'items': items,
-      'status': 'paid', // Puoi cambiare lo stato in base al metodo di pagamento
+      'status': 'paid',
       'total': getTotalPrice(),
+      'address': finalAddress,
     };
 
     try {
-      bool valid= await updateDailyLimit(widget.selectedDate, widget.cartItems);
-      if(valid){
+      bool valid = await updateDailyLimit(widget.selectedDate, widget.cartItems);
+      if (valid) {
         await FirebaseFirestore.instance.collection('orders').add(orderData);
         await checkAndUpdateAvailability(widget.selectedDate);
 
-        print('item befor sending email ${widget.cartItems}');
-        sendOrderSummaryEmail(userEmail!, List.from(widget.cartItems), orderDate.toDate(), deliveryPreparationDate.toDate(), getTotalPrice(), 1.0 );
-        //empty the cart
+        print('item before sending email ${widget.cartItems}');
+        sendOrderSummaryEmail(userEmail!, finalAddress, List.from(widget.cartItems), orderDate.toDate(), deliveryPreparationDate.toDate(), getTotalPrice(), 1.0);
+
+        // Svuota il carrello
         widget.clearCart();
         widget.saveCartToFirestore();
 
-
-
-        // NAVIGA ALLA SCHERMATA DI RINGRAZIAMENTO
+        // Naviga alla schermata di ringraziamento
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => ThankYouScreen()),
         );
-      }else {
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Mara has received another order before yours, so the day is fully booked. Please try again another day as she cannot prepare your order on this date.'),
-              duration: Duration(seconds: 8) ),
-
+          SnackBar(
+            content: Text('Mara has received another order before yours, so the day is fully booked. Please try again another day as she cannot prepare your order on this date.'),
+            duration: Duration(seconds: 8),
+          ),
         );
-
       }
-
     } catch (e) {
       print(e);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -129,6 +137,7 @@ class _AddressPaymentScreenState extends State<AddressPaymentScreen> {
       );
     }
   }
+
 
 
 

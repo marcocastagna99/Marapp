@@ -68,7 +68,7 @@ Future<bool> updateDailyLimit(DateTime selectedDate, List<Map<String, dynamic>> 
         'date': formattedDate,
         'currentOrders': 1, // Prima prenotazione del giorno
         'currentPrepTime': newPrepTimeSum,
-        'maxOrders': 7, // Valore predefinito
+        'maxOrders': 5, // Valore predefinito
         'maxPrepTime': 500, // Valore predefinito
         'prodPrepTime': cartItems.map((item) => {'productId': item['productId'], 'prepTime': item['prepTime']}).toList(),
       });

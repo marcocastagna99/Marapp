@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 Future<void> sendOrderSummaryEmail(
     String userEmail,
+    String address,
     List<Map<String, dynamic>> items,
     DateTime orderDate,
     DateTime deliveryDate,
@@ -31,6 +32,7 @@ Future<void> sendOrderSummaryEmail(
     'from_name': 'Marapp',
     'formattedOrderDate': '${orderDate.day}/${orderDate.month}/${orderDate.year}',
     'formattedDeliveryDate': '${deliveryDate.day}/${deliveryDate.month}/${deliveryDate.year}',
+    'address': address,
     'itemsList': itemsList, // Passa la stringa HTML
     'deliveryCost': deliveryCost.toStringAsFixed(2),
     'total': orderTotal.toStringAsFixed(2),

@@ -64,6 +64,8 @@ class OrdersViewState extends State<OrdersView> {
               List<dynamic> items = documentSnapshot['items'];
               double total = documentSnapshot['total'];
               String status = documentSnapshot['status'];
+              String address =
+                  documentSnapshot['address'] ?? 'No address provided'; // 🏠 Aggiunto
 
               // Formattazione date (giorno/mese/anno)
               DateTime deliveryDate = deliveryDateTimestamp.toDate();
@@ -86,22 +88,19 @@ class OrdersViewState extends State<OrdersView> {
                   statusColor = Colors.red;
                   break;
                 case 'inPreparation':
-                  statusColor = Colors.blue;
-                  break;
-                case 'outForDelivery': // In consegna
+                case 'outForDelivery':
                   statusColor = Colors.blue;
                   break;
                 case 'delivered':
                   statusColor = Colors.green[700]!;
                   break;
-
                 default:
                   statusColor = Colors.grey;
               }
 
               return FutureBuilder<List<String>>(
-                future: Future.wait(
-                    items.map((item) => getProductName(item['prodId']))),
+                future:
+                Future.wait(items.map((item) => getProductName(item['prodId']))),
                 builder: (context, productNamesSnapshot) {
                   if (!productNamesSnapshot.hasData) {
                     return const Center(child: CircularProgressIndicator());
@@ -140,8 +139,7 @@ class OrdersViewState extends State<OrdersView> {
                             child: Text(
                               status.toUpperCase(),
                               style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
+                                  color: Colors.white, fontWeight: FontWeight.bold),
                             ),
                           ),
                         ],
@@ -152,18 +150,24 @@ class OrdersViewState extends State<OrdersView> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Products:',
-                                  style:
-                                  TextStyle(fontWeight: FontWeight.bold)),
+                              const Text(
+                                'Products:',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
                               for (int i = 0; i < items.length; i++)
-                                Text(
-                                    '- ${productNames[i]} x${items[i]['quantity']}'),
+                                Text('- ${productNames[i]} x${items[i]['quantity']}'),
                               const SizedBox(height: 8),
                               Text(
                                 'Total: €${total.toStringAsFixed(2)}',
                                 style: const TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold),
                               ),
+                              const SizedBox(height: 8),
+                              const Text(
+                                'Delivery Address:',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text(address), // 🏠 Mostra l'indirizzo dell'ordine
                             ],
                           ),
                         ),
