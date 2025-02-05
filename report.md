@@ -19,22 +19,93 @@ The application was built with the following technologies:
 
 ### 1. Firebase API Limitations
 **Issue:** One of the primary challenges was Firebase's free-tier limitations, particularly with image storage and mapping services. The basic plan imposed restrictions that affected the development.
+
 **Solution:** We implemented a workaround by using Imgur for image storage, which provided more flexibility. For maps, we integrated an alternative service to avoid the limitations imposed by Firebase.
+
+**Code Example:**
+```dart
+Future<String> uploadImage(File imageFile) async {
+  var request = http.MultipartRequest('POST', Uri.parse('https://api.imgur.com/3/image'));
+  request.headers['Authorization'] = 'Client-ID YOUR_CLIENT_ID';
+  request.files.add(await http.MultipartFile.fromPath('image', imageFile.path));
+  var response = await request.send();
+  var responseData = await response.stream.bytesToString();
+  var jsonResponse = jsonDecode(responseData);
+  return jsonResponse['data']['link'];
+}
+```
+This function uploads an image to Imgur and returns the URL of the uploaded image.
 
 ### 2. User Permissions
 **Issue:** Managing user permissions within Firebase Authentication was more complex than anticipated.
+
 **Solution:** We created custom Firebase rules to manage user permissions effectively, ensuring that data access was restricted appropriately.
+
+**Firebase Rules Example:**
+```json
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid"
+      }
+    }
+  }
+}
+```
+This ensures that users can only read and write their own data in Firestore.
 
 ### 3. Absence of Firebase Functions
 **Issue:** Firebase's free-tier does not support Cloud Functions, which would have automated tasks and triggers.
+
 **Solution:** We used client-side logic to replace Cloud Functions and implemented background tasks within the app to achieve similar results.
+
+**Code Example:**
+```dart
+void sendWelcomeEmail(String userEmail) async {
+  final url = Uri.parse("https://api.emailjs.com/api/v1.0/email/send");
+  final response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({
+      'service_id': 'your_service_id',
+      'template_id': 'your_template_id',
+      'user_id': 'your_user_id',
+      'template_params': {
+        'user_email': userEmail,
+      },
+    }),
+  );
+  if (response.statusCode == 200) {
+    print("Email sent successfully");
+  } else {
+    print("Failed to send email");
+  }
+}
+```
+This function replaces Firebase Cloud Functions by sending an email using EmailJS from the client-side.
 
 ### 4. Query Complexity
 **Issue:** Firestore’s querying system was restrictive, leading to complex queries.
+
 **Solution:** We optimized the database schema and designed queries to improve performance and reduce the need for complex joins and filters.
+
+**Optimized Query Example:**
+```dart
+Future<List<DocumentSnapshot>> getUserPosts(String userId) async {
+  QuerySnapshot snapshot = await FirebaseFirestore.instance
+      .collection('posts')
+      .where('userId', isEqualTo: userId)
+      .get();
+  return snapshot.docs;
+}
+```
+This query retrieves all posts by a specific user while keeping the query simple and efficient.
 
 ### 5. Learning Dart and Flutter
 **Issue:** Adapting to Dart and Flutter posed a learning curve for the team.
+
 **Solution:** We made use of online tutorials, official documentation, and community resources to accelerate our learning. We also broke the development into smaller tasks to get more familiar with the language.
 
 ## Implementation Choices
@@ -69,3 +140,4 @@ If you're not using Android Studio:
 
 ## Conclusion
 Through a mix of creative solutions and optimizations, we overcame the challenges associated with Firebase's free-tier limitations, learned Dart effectively, and implemented alternative solutions for image storage and maps. This project allowed us to develop a fully functional mobile app with a robust backend, learning valuable lessons in both frontend and backend development.
+
