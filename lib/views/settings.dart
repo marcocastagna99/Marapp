@@ -170,7 +170,6 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView> {
     MarappState.themeNotifier.value = _selectedTheme;
   }
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -179,6 +178,7 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -190,6 +190,33 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView> {
                 ),
               ],
             ),
+            const SizedBox(height: 50),
+            if (!_followSystem)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () => _setThemeMode(ThemeMode.light),
+                    icon: const Icon(Icons.wb_sunny),
+                    label: const Text('Light Mode'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _selectedTheme == ThemeMode.light
+                          ? pink
+                          : grey,
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () => _setThemeMode(ThemeMode.dark),
+                    icon: const Icon(Icons.nightlight_round),
+                    label: const Text('Dark Mode'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _selectedTheme == ThemeMode.dark
+                          ? blue
+                          : grey,
+                    ),
+                  ),
+                ],
+              ),
           ],
         ),
       ),
@@ -208,6 +235,7 @@ class ScreenOrientationView extends StatefulWidget {
 
 class _ScreenOrientationViewState extends State<ScreenOrientationView> {
   bool _followSystem = true;
+  bool _isPortrait = true; // Per gestire la selezione del radio button
 
   @override
   void initState() {
@@ -219,12 +247,14 @@ class _ScreenOrientationViewState extends State<ScreenOrientationView> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _followSystem = prefs.getBool('followSystemOrientation') ?? true;
+      _isPortrait = prefs.getBool('isPortrait') ?? true;
     });
   }
 
   Future<void> _saveOrientationSettings() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('followSystemOrientation', _followSystem);
+    await prefs.setBool('isPortrait', _isPortrait);
   }
 
   void _toggleFollowSystem(bool value) {
@@ -241,6 +271,7 @@ class _ScreenOrientationViewState extends State<ScreenOrientationView> {
     if (!mounted) return;
     setState(() {
       _followSystem = false;
+      _isPortrait = isPortrait;
     });
     _saveOrientationSettings();
     SystemChrome.setPreferredOrientations(
@@ -257,6 +288,7 @@ class _ScreenOrientationViewState extends State<ScreenOrientationView> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -268,31 +300,38 @@ class _ScreenOrientationViewState extends State<ScreenOrientationView> {
                 ),
               ],
             ),
+            const SizedBox(height: 50),
             if (!_followSystem)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              Column(
                 children: [
-                  Column(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.stay_primary_portrait),
-                        onPressed: () => _setOrientation(true),
-                      ),
-                      const Text('Portrait'),
-                    ],
+                  ListTile(
+                    leading: const Icon(Icons.stay_primary_portrait),
+                    title: const Text('Portrait'),
+                    trailing: Radio<bool>(
+                      value: true,
+                      groupValue: _isPortrait,
+                      onChanged: (value) {
+                        if (value != null) {
+                          _setOrientation(value);
+                        }
+                      },
+                    ),
                   ),
-                  Column(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.stay_primary_landscape),
-                        onPressed: () => _setOrientation(false),
-                      ),
-                      const Text('Landscape'),
-                    ],
+                  ListTile(
+                    leading: const Icon(Icons.stay_primary_landscape),
+                    title: const Text('Landscape'),
+                    trailing: Radio<bool>(
+                      value: false,
+                      groupValue: _isPortrait,
+                      onChanged: (value) {
+                        if (value != null) {
+                          _setOrientation(value);
+                        }
+                      },
+                    ),
                   ),
                 ],
               ),
-
           ],
         ),
       ),
