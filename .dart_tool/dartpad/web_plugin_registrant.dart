@@ -9,7 +9,6 @@
 import 'package:cloud_firestore_web/cloud_firestore_web.dart';
 import 'package:firebase_auth_web/firebase_auth_web.dart';
 import 'package:firebase_core_web/firebase_core_web.dart';
-import 'package:firebase_messaging_web/firebase_messaging_web.dart';
 import 'package:flutter_keyboard_visibility_web/flutter_keyboard_visibility_web.dart';
 import 'package:flutter_native_splash/flutter_native_splash_web.dart';
 import 'package:geolocator_web/geolocator_web.dart';
@@ -24,7 +23,6 @@ void registerPlugins([final Registrar? pluginRegistrar]) {
   FirebaseFirestoreWeb.registerWith(registrar);
   FirebaseAuthWeb.registerWith(registrar);
   FirebaseCoreWeb.registerWith(registrar);
-  FirebaseMessagingWeb.registerWith(registrar);
   FlutterKeyboardVisibilityPlugin.registerWith(registrar);
   FlutterNativeSplashWeb.registerWith(registrar);
   GeolocatorPlugin.registerWith(registrar);
