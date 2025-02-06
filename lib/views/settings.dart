@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 import '../main.dart';
 
 // Definizione dei colori
@@ -24,10 +25,10 @@ class SettingsViewState extends State<SettingsView> {
   @override
   void initState() {
     super.initState();
-    _loadThemeSettings();
+    _loadSettings();
   }
 
-  Future<void> _loadThemeSettings() async {
+  Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _followSystem = prefs.getBool('followSystem') ?? true;
@@ -48,30 +49,10 @@ class SettingsViewState extends State<SettingsView> {
     }
   }
 
-  void _saveNotificationSetting(bool value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('notifications', value);
-  }
-
   void _toggleFollowSystem(bool value) {
     setState(() {
       _followSystem = value;
       _selectedTheme = value ? ThemeMode.system : ThemeMode.light;
-    });
-    _saveThemeSettings();
-    MarappState.themeNotifier.value = _selectedTheme;
-  }
-
-  void _toggleNotifications(bool value) {
-    setState(() {
-      _notifications = value;
-    });
-    _saveNotificationSetting(value);
-  }
-
-  void _setThemeMode(ThemeMode theme) {
-    setState(() {
-      _selectedTheme = theme;
     });
     _saveThemeSettings();
     MarappState.themeNotifier.value = _selectedTheme;
@@ -114,29 +95,25 @@ class SettingsViewState extends State<SettingsView> {
             ),
             const Divider(),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Notifications'),
-                defaultTargetPlatform == TargetPlatform.iOS ||
-                    defaultTargetPlatform == TargetPlatform.macOS
-                    ? CupertinoSwitch(
-                  value: _notifications,
-                  onChanged: _toggleNotifications,
-                )
-                    : Switch(
-                  value: _notifications,
-                  onChanged: _toggleNotifications,
-                ),
-              ],
+            ListTile(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const ScreenOrientationView()),
+                );
+              },
+              title: const Text('Screen Orientation'),
+              leading: const Icon(Icons.screen_rotation),
+              trailing: const Icon(Icons.arrow_forward_ios),
             ),
-            const SizedBox(height: 20),
+            const Divider(),
           ],
         ),
       ),
     );
   }
 }
+
+// ---------------------- THEME SETTINGS ----------------------
 
 class ThemeSettingsView extends StatefulWidget {
   const ThemeSettingsView({super.key});
@@ -202,7 +179,6 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -214,33 +190,109 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------- SCREEN ORIENTATION SETTINGS ----------------------
+
+class ScreenOrientationView extends StatefulWidget {
+  const ScreenOrientationView({super.key});
+
+  @override
+  State<ScreenOrientationView> createState() => _ScreenOrientationViewState();
+}
+
+class _ScreenOrientationViewState extends State<ScreenOrientationView> {
+  bool _followSystem = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOrientationSettings();
+  }
+
+  Future<void> _loadOrientationSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _followSystem = prefs.getBool('followSystemOrientation') ?? true;
+    });
+  }
+
+  Future<void> _saveOrientationSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('followSystemOrientation', _followSystem);
+  }
+
+  void _toggleFollowSystem(bool value) {
+    setState(() {
+      _followSystem = value;
+    });
+    _saveOrientationSettings();
+    if (value) {
+      SystemChrome.setPreferredOrientations([]); // Sistema gestisce l'orientamento
+    }
+  }
+
+  void _setOrientation(bool isPortrait) {
+    if (!mounted) return;
+    setState(() {
+      _followSystem = false;
+    });
+    _saveOrientationSettings();
+    SystemChrome.setPreferredOrientations(
+      isPortrait
+          ? [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]
+          : [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Screen Orientation')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Follow the system'),
+                CupertinoSwitch(
+                  value: _followSystem,
+                  onChanged: _toggleFollowSystem,
+                ),
+              ],
+            ),
             if (!_followSystem)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  ElevatedButton.icon(
-                    onPressed: () => _setThemeMode(ThemeMode.light),
-                    icon: const Icon(Icons.wb_sunny),
-                    label: const Text('Light Mode'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _selectedTheme == ThemeMode.light
-                          ? pink
-                          : grey,
-                    ),
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.stay_primary_portrait),
+                        onPressed: () => _setOrientation(true),
+                      ),
+                      const Text('Portrait'),
+                    ],
                   ),
-                  ElevatedButton.icon(
-                    onPressed: () => _setThemeMode(ThemeMode.dark),
-                    icon: const Icon(Icons.nightlight_round),
-                    label: const Text('Dark Mode'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _selectedTheme == ThemeMode.dark
-                          ? blue
-                          : grey,
-                    ),
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.stay_primary_landscape),
+                        onPressed: () => _setOrientation(false),
+                      ),
+                      const Text('Landscape'),
+                    ],
                   ),
                 ],
               ),
+
           ],
         ),
       ),
