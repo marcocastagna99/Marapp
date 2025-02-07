@@ -34,7 +34,9 @@ dependencies:
   intl: any
   emailjs: ^4.0.0
   flutter_dotenv: ^5.0.2
-  
+  #flutter_local_notifications: ^16.3.0
+  #permission_handler: ^11.0.1
+  onesignal_flutter: ^3.0.0
 
 
 

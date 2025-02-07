@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';  // Aggiungi l'import di OneSignal
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -15,6 +17,8 @@ class AuthService {
         email: email,
         password: password,
       );
+      // Registra il playerId su OneSignal e salvalo in Firestore
+      await _registerForPushNotifications(userCredential.user?.uid);
       return userCredential.user;
     } catch (e) {
       logger.e('Authentication error:', error: e);
@@ -47,6 +51,9 @@ class AuthService {
       }).catchError((error) {
         logger.e("Errore durante la registrazione in Firestore:", error: error);
       });
+
+      // Registra il playerId su OneSignal e salvalo in Firestore
+      await _registerForPushNotifications(userCredential.user?.uid);
 
       return userCredential.user;
     } catch (e) {
@@ -105,6 +112,9 @@ class AuthService {
         logger.d("Documento già esistente.");
       }
 
+      // Registra il playerId su OneSignal e salvalo in Firestore
+      await _registerForPushNotifications(user.uid);
+
       return user;
     } catch (e, stack) {
       logger.e('Authentication error:', error: e, stackTrace: stack);
@@ -112,7 +122,28 @@ class AuthService {
     }
   }
 
+  // Metodo per registrarsi su OneSignal e salvare il playerId in Firestore
+  Future<void> _registerForPushNotifications(String? userId) async {
+    if (userId == null) return;
 
+    // Inizializza OneSignal
+    await OneSignal.shared.setAppId(dotenv.env['ONE_SIGNAL_APP_ID']!);
+
+    // Ottieni il playerId di OneSignal
+    OneSignal.shared.getDeviceState().then((deviceState) {
+      String? playerId = deviceState?.userId;
+      if (playerId != null) {
+        // Salva il playerId nel database Firebase
+        FirebaseFirestore.instance.collection('users').doc(userId).update({
+          'oneSignalPlayerId': playerId,
+        }).then((_) {
+          logger.d("PlayerId di OneSignal salvato con successo!");
+        }).catchError((error) {
+          logger.e("Errore durante il salvataggio del playerId:", error: error);
+        });
+      }
+    });
+  }
 
   // Logout
   Future<void> logout() async {

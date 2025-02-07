@@ -9,6 +9,8 @@ import 'package:marapp/providers/auth_provider.dart' as auth;
 import 'package:marapp/views/home.dart';
 import 'package:marapp/views/login_view.dart';
 
+import '../utils/push_notification_service.dart';
+
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
 
@@ -65,6 +67,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Registration successful!')),
           );
+          PushNotificationService pushNotificationService = PushNotificationService();
+          pushNotificationService.monitorOrderStatusChanges(context);
+          PushNotificationService.initializeOneSignal();
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => HomeScreen()),
@@ -111,7 +116,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         return;
       }
 
-      // If the login is successful, navigate to home
+      PushNotificationService pushNotificationService = PushNotificationService();
+      pushNotificationService.monitorOrderStatusChanges(context);
+      PushNotificationService.initializeOneSignal();
       Navigator.pushReplacementNamed(context, '/home');
     } catch (error) {
       // Handle any errors

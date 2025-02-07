@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart'; // Per kIsWeb
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:marapp/utils/push_notification_service.dart';
 import 'package:marapp/utils/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:marapp/views/splash.dart';
@@ -12,6 +13,11 @@ import 'package:marapp/views/home.dart';
 import 'package:marapp/views/registration_view.dart';
 import 'firebase_options.dart'; // Importa il file di configurazione
 import  'package:marapp/views/passwordReset.dart';
+//import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+//import 'package:permission_handler/permission_handler.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
+
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,6 +25,28 @@ void main() async {
   // Inizializzazione Firebase
   await initializeFirebase();
   await dotenv.load();
+
+
+  // Impostazione della gestione notifiche
+  await OneSignal.shared.setAppId(dotenv.env['ONE_SIGNAL_APP_ID']!);  // Sostituisci con il tuo App ID
+
+  OneSignal.shared.setNotificationWillShowInForegroundHandler((OSNotificationReceivedEvent event) {
+    // Mostra la notifica, invia null per non mostrarla, invia la notifica per mostrarla
+    event.complete(event.notification);
+  });
+
+  // Gestione delle notifiche aperte
+  OneSignal.shared.setNotificationOpenedHandler((OSNotificationOpenedResult result) {
+    // Utilizza i metodi disponibili nella nuova API
+    OSNotification notification = result.notification;
+    String? title = notification.title;
+    String? body = notification.body;
+
+    print('OneSignal: notification opened: $title - $body');
+  });
+
+
+
   // Avvio dell'app con tema iniziale
   runApp(Marapp(initialThemeMode: await getInitialThemeMode()));
 }

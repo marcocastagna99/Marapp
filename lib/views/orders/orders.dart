@@ -49,7 +49,7 @@ class OrdersViewState extends State<OrdersView> {
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('No orders found.'));
+            return const Center(child: Text('No orders yet. Start shopping now!'));
           }
 
           return ListView.builder(
@@ -81,13 +81,21 @@ class OrdersViewState extends State<OrdersView> {
                 case 'paid':
                   statusColor = Colors.green;
                   break;
+                case 'confirmed':
+                  statusColor = Colors.green;
+                  break;
                 case 'pending':
                   statusColor = Colors.orange;
                   break;
                 case 'canceled':
                   statusColor = Colors.red;
                   break;
-                case 'inPreparation':
+                case 'preparing':
+                  statusColor = Colors.pink;
+                  break;
+                case "ready":
+                  statusColor = Colors.blue;
+                 break;
                 case 'outForDelivery':
                   statusColor = Colors.blue;
                   break;
@@ -96,6 +104,7 @@ class OrdersViewState extends State<OrdersView> {
                   break;
                 default:
                   statusColor = Colors.grey;
+
               }
 
               return FutureBuilder<List<String>>(
