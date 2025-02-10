@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 import 'products/products.dart';
 import 'settings.dart';
 import 'orders/orders.dart';
@@ -14,7 +13,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
+  final PageController _pageController = PageController();
+  int _currentIndex = 0; // Indice per tenere traccia della pagina corrente
 
   final List<Widget> _screens = [
     const ProductsView(),
@@ -23,7 +23,8 @@ class HomeScreenState extends State<HomeScreen> {
     const SettingsView(),
   ];
 
-  void _onTabTapped(int index) {
+  // Metodo chiamato ogni volta che la pagina cambia tramite swipe
+  void _onPageChanged(int index) {
     setState(() {
       _currentIndex = index;
     });
@@ -32,10 +33,19 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_currentIndex],
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: _onPageChanged,
+        children: _screens,
+      ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: _onTabTapped,
+        currentIndex: _currentIndex, // Usa l'indice della pagina corrente
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index; // Aggiorna l'indice quando viene cliccata un'icona
+          });
+          _pageController.jumpToPage(index); // Vai alla pagina selezionata
+        },
         items: [
           BottomNavigationBarItem(
             icon: const Icon(Icons.cookie),
