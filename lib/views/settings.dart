@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
+import 'package:marapp/utils/push_notification_service.dart';
 import '../main.dart';
 
 // Definizione dei colori
@@ -18,15 +21,19 @@ class SettingsView extends StatefulWidget {
 }
 
 class SettingsViewState extends State<SettingsView> {
+  static final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool _followSystem = true; // Default: follow the system
   bool _notifications = false;
   ThemeMode _selectedTheme = ThemeMode.system;
+
 
   @override
   void initState() {
     super.initState();
     _loadSettings();
   }
+
 
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
@@ -40,6 +47,7 @@ class SettingsViewState extends State<SettingsView> {
       }
     });
   }
+
 
   Future<void> _saveThemeSettings() async {
     final prefs = await SharedPreferences.getInstance();
@@ -58,13 +66,32 @@ class SettingsViewState extends State<SettingsView> {
     MarappState.themeNotifier.value = _selectedTheme;
   }
 
-  void _sendTestNotification() {
+  void _sendTestNotification() async {  // Aggiungi 'async' qui
+    String playerId = await _getPlayerId();  // Usa 'await' per ottenere il valore reale
+
+    if (playerId == 'empty') return;
+
     if (kDebugMode) {
       print('Test push notification sent');
+      PushNotificationService.sendTestPushNotification(playerId);
     }
   }
 
-  @override
+
+  Future<String> _getPlayerId() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc =
+      await _firestore.collection('users').doc(user.uid).get();
+      return userDoc['oneSignalPlayerId'] as String;
+    }
+    return 'empty';
+  }
+
+
+
+
+@override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

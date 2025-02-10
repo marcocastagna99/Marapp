@@ -35,7 +35,7 @@ class PushNotificationService {
               String oneSignalPlayerId = userDoc.data()!['oneSignalPlayerId'];
 
               // Invia la notifica push tramite OneSignal
-              sendPushNotification(oneSignalPlayerId, orderId, orderStatus);
+              sendStatusPushNotification(oneSignalPlayerId, orderId, orderStatus);
             });
           }
         }
@@ -47,7 +47,7 @@ class PushNotificationService {
   }
 
   // Metodo per inviare una notifica push
-  void sendPushNotification(String playerId, String orderId, String status) async {
+  void sendStatusPushNotification(String playerId, String orderId, String status) async {
     String heading = "Order Update";
     String content = "";
 
@@ -122,4 +122,39 @@ class PushNotificationService {
       print("Player ID: $playerId"); // Salva questo ID per inviare notifiche
     });
   }
+
+  static sendTestPushNotification(String playerId) async {
+    String heading = "Test Notification";
+    String content = "Ciao, this is a test notification from Marapp.";
+
+    var headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Basic ${dotenv.env['ONE_SIGNAL_API_KEY']!}" // API Key sicura
+    };
+
+    var body = jsonEncode({
+      "app_id": dotenv.env['ONE_SIGNAL_APP_ID']!,
+      "include_player_ids": [playerId],
+      "headings": {"en": heading},
+      "contents": {"en": content}
+    });
+
+    var response = await http.post(
+      Uri.parse("https://onesignal.com/api/v1/notifications"),
+      headers: headers,
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      print("✅ Notifica inviata con successo: ${response.body}");
+    } else {
+      print("❌ Errore nell'invio della notifica: ${response.body}");
+    }
+  }
+
+
+
+
+
+
 }
