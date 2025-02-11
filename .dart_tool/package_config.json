@@ -663,13 +663,13 @@
     },
     {
       "name": "shared_preferences",
-      "rootUri": "file:///C:/Users/acer/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences-2.5.1",
+      "rootUri": "file:///C:/Users/acer/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences-2.5.2",
       "packageUri": "lib/",
       "languageVersion": "3.5"
     },
     {
       "name": "shared_preferences_android",
-      "rootUri": "file:///C:/Users/acer/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences_android-2.4.4",
+      "rootUri": "file:///C:/Users/acer/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences_android-2.4.5",
       "packageUri": "lib/",
       "languageVersion": "3.5"
     },
@@ -848,7 +848,7 @@
       "languageVersion": "3.5"
     }
   ],
-  "generated": "2025-02-07T12:53:19.387087Z",
+  "generated": "2025-02-11T15:09:06.103882Z",
   "generator": "pub",
   "generatorVersion": "3.6.1",
   "flutterRoot": "file:///C:/Users/marco/UNIGE/MAGISTRALE/I%20ANNO/MOBILE%20DEVELOPMENT/flutter",
