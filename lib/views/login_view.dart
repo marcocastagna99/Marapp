@@ -6,6 +6,8 @@ import 'package:marapp/views/passwordReset.dart';
 import 'package:provider/provider.dart';
 import 'package:marapp/providers/auth_provider.dart' as auth;
 
+import '../utils/push_notification_service.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -35,6 +37,8 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (authProvider.isAuthenticated) {
+        PushNotificationService pushNotificationService = PushNotificationService();
+        pushNotificationService.monitorOrderStatusChanges(context);
         Navigator.pushReplacementNamed(context, '/home');
       } else {
         setState(() {

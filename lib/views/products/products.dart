@@ -65,7 +65,7 @@ class ProductsViewState extends State<ProductsView> {
         final product = doc.data() as Map<String, dynamic>;
         product['id'] = doc.id;  // Aggiungi l'ID del prodotto
         return product;
-      }).toList();
+      }).where((product) => product['available'] == true).toList(); // Filtra solo quelli disponibili
 
       setState(() {
         _allProducts = products;
@@ -76,6 +76,8 @@ class ProductsViewState extends State<ProductsView> {
       print("Error loading products: $e");
     }
   }
+
+
   void _extractCategories() {
     _categories = {'All', ..._allProducts.map((product) => product['category'] as String).toSet()};
     setState(() {}); // Aggiorna la UI con le categorie disponibili

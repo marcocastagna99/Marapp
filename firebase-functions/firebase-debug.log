@@ -1,0 +1,28 @@
+[debug] [2025-02-11T10:53:46.282Z] ----------------------------------------------------------------------
+[debug] [2025-02-11T10:53:46.287Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\acer\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2025-02-11T10:53:46.287Z] CLI Version:   13.30.0
+[debug] [2025-02-11T10:53:46.288Z] Platform:      win32
+[debug] [2025-02-11T10:53:46.288Z] Node Version:  v20.17.0
+[debug] [2025-02-11T10:53:46.288Z] Time:          Tue Feb 11 2025 11:53:46 GMT+0100 (Ora standard dell’Europa centrale)
+[debug] [2025-02-11T10:53:46.288Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-02-11T10:53:46.593Z] Object "" in "firebase.json" has unknown property: {"additionalProperty":"flutter"}
+[debug] [2025-02-11T10:53:46.599Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-02-11T10:53:46.600Z] > authorizing via signed-in user (marappcloud@gmail.com)
+[debug] [2025-02-11T10:53:46.602Z] Object "" in "firebase.json" has unknown property: {"additionalProperty":"flutter"}
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\marco\UNIGE\MAGISTRALE\I ANNO\MOBILE DEVELOPMENT\Marapp
+
+Before we get started, keep in mind:
+
+  * You are currently outside your home directory
+  * You are initializing within an existing Firebase project directory
+

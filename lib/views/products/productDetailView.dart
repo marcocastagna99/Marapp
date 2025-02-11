@@ -70,8 +70,6 @@ class _ProductDetailViewState extends State<ProductDetailView> {
     }
   }
 
-
-
   Future<void> _toggleFavorite() async {
     try {
       final userId = FirebaseAuth.instance.currentUser?.uid; // Recupera l'ID utente autenticato
@@ -123,113 +121,115 @@ class _ProductDetailViewState extends State<ProductDetailView> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.name),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Image.asset(
-              'assets/${widget.imageUrl}',
-              width: double.infinity,
-              height: 300,
-              fit: BoxFit.cover,
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: PageView(
+        scrollDirection: Axis.horizontal, // Imposta la direzione orizzontale
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Image.asset(
+                  'assets/${widget.imageUrl}',
+                  width: double.infinity,
+                  height: 300,
+                  fit: BoxFit.cover,
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      widget.name,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    IconButton(
+                      onPressed: _toggleFavorite,
+                      icon: Icon(
+                        _isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: _isFavorite ? Theme.of(context).primaryColor : Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
                 Text(
-                  widget.name,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                IconButton(
-                  onPressed: _toggleFavorite,
-                  icon: Icon(
-                    _isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: _isFavorite ? Theme.of(context).primaryColor : Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Text(
-              '€${widget.price.toStringAsFixed(2)}',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            const SizedBox(height: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start, // Allinea il testo a sinistra
-              children: [
-                Text(
-                  widget.description,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                SizedBox(height: 4),
-                Text(
-                  "max quantity: ${widget.maxQuantity}",
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.remove),
-                  onPressed: () {
-                    setState(() {
-                      if (_quantity > 1) _quantity--;
-                    });
-                  },
-                ),
-                Text(
-                  _quantity.toString(),
+                  '€${widget.price.toStringAsFixed(2)}',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                IconButton(
-                  icon: const Icon(Icons.add),
+                const SizedBox(height: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start, // Allinea il testo a sinistra
+                  children: [
+                    Text(
+                      widget.description,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      "max quantity: ${widget.maxQuantity}",
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.remove),
+                      onPressed: () {
+                        setState(() {
+                          if (_quantity > 1) _quantity--;
+                        });
+                      },
+                    ),
+                    Text(
+                      _quantity.toString(),
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.add),
+                      onPressed: () {
+                        setState(() {
+                          _quantity++;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
                   onPressed: () {
-                    setState(() {
-                      _quantity++;
-                    });
+                    if (_quantity >= 1) {
+                      widget.addToCart(
+                        widget.productId,
+                        widget.price,
+                        widget.name,
+                        _quantity,
+                      );
+                      ScaffoldMessenger.of(context).clearSnackBars();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Product added to cart successfully!'),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                      Navigator.pop(context);
+                    }
                   },
+                  child: const Text('Add to Cart'),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                if (_quantity >= 1) {
-                  widget.addToCart(
-                    widget.productId,
-                    widget.price,
-                    widget.name,
-                    _quantity,
-                  );
-                  ScaffoldMessenger.of(context).clearSnackBars();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Product added to cart successfully!'),
-                      duration: const Duration(seconds: 2),
-                    ),
-                  );
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text('Add to Cart'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
