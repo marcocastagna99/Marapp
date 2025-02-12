@@ -50,7 +50,10 @@ Future<bool> updateDailyLimit(DateTime selectedDate, List<Map<String, dynamic>> 
 
   // Riferimento alla collezione Firestore
   CollectionReference dailyLimits = FirebaseFirestore.instance.collection('dailyLimits');
-
+  CollectionReference limitsCollection = FirebaseFirestore.instance.collection('limits');
+  DocumentSnapshot limitsDoc = await limitsCollection.doc('limits').get();
+  int maxOrdersPerDay = limitsDoc['maxOrdersPerDay'] ?? 5;
+  int maxTimePerDay = limitsDoc['maxTimePerDay'] ?? 500;
   // Riferimento al documento della data scelta
   DocumentReference dateDocRef = dailyLimits.doc(formattedDate);
 
@@ -68,10 +71,11 @@ Future<bool> updateDailyLimit(DateTime selectedDate, List<Map<String, dynamic>> 
         'date': formattedDate,
         'currentOrders': 1, // Prima prenotazione del giorno
         'currentPrepTime': newPrepTimeSum,
-        'maxOrders': 5, // Valore predefinito
-        'maxPrepTime': 500, // Valore predefinito
+        'maxOrders': maxOrdersPerDay,
+        'maxPrepTime': maxTimePerDay,
         'prodPrepTime': cartItems.map((item) => {'productId': item['productId'], 'prepTime': item['prepTime']}).toList(),
       });
+
 
       print("✅ Nuovo documento creato.");
       return true; // Aggiornamento avvenuto

@@ -138,9 +138,27 @@ class ProductsViewState extends State<ProductsView> {
     try {
       final cartRef = FirebaseFirestore.instance.collection('cart').doc(userId);
       final cartDoc = await cartRef.get();
+      CollectionReference limitsCollection = FirebaseFirestore.instance.collection('limits');
+      DocumentSnapshot limitsDoc = await limitsCollection.doc('limits').get();
+
+      // Recupera il valore di maxTimePerDay dalla collection 'limits'
+      int maxTimePerDay = limitsDoc['maxTimePerDay'] ?? 500;
 
       if (cartDoc.exists) {
         List cartItemsList = List.from(cartDoc['cartItems']);
+
+        // Somma i prepTime dei prodotti nel carrello (senza considerare la quantità)
+        int totalPrepTime = cartItemsList.fold(0, (sum, item) => sum + item['prepTime'] as int);
+
+        // Controlla se il nuovo prodotto supera il limite di prepTime
+        if (totalPrepTime + prepTime > maxTimePerDay) {
+          // Se il limite è superato, mostra uno snackbar
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Product limit reached"))
+          );
+          return; // Non aggiungere il prodotto al carrello
+        }
+
         var existingProduct = cartItemsList.firstWhere(
               (item) => item['productId'] == productId,
           orElse: () => null,
@@ -150,38 +168,43 @@ class ProductsViewState extends State<ProductsView> {
           // Se il prodotto esiste, aggiorna la quantità
           existingProduct['quantity'] += quantity;
         } else {
-          // Se il prodotto non esiste, aggiungi un nuovo elemento con la quantità
+          // Se il prodotto non esiste, aggiungi un nuovo prodotto
           cartItemsList.add({
             'productId': productId,
-            'quantity': quantity, // Usa la quantità passata
-            'price': price, // Salva il prezzo per ogni prodotto
-            'name': name, // Salva il nome del prodotto
+            'quantity': quantity,
+            'price': price,
+            'name': name,
             'prepTime': prepTime,
           });
         }
 
+        // Aggiorna il carrello nel Firestore
         await cartRef.update({'cartItems': cartItemsList});
       } else {
-        // Se il carrello non esiste, crealo con il prodotto, il suo prezzo e nome
+        // Se il carrello non esiste, crealo con il nuovo prodotto
         await cartRef.set({
           'cartItems': [
             {
               'productId': productId,
-              'quantity': quantity, // Usa la quantità passata
-              'price': price, // Aggiungi il prezzo
-              'name': name, // Aggiungi il nome
+              'quantity': quantity,
+              'price': price,
+              'name': name,
               'prepTime': prepTime,
             }
           ]
         });
       }
-
-      _loadCart(); // Ricarica i dati del carrello
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Product added to cart successfully!'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      _loadCart(); // Ricarica il carrello dopo l'aggiunta
     } catch (e) {
       print("Error adding to cart: $e");
     }
   }
-
   void _navigateToProductDetail(String productId, double price,
       String description, String imageUrl, String name, int prepTime, int limit) {
     Navigator.push(
@@ -519,12 +542,6 @@ class ProductsViewState extends State<ProductsView> {
                                     _addToCart(product['id'], price, name, quantity, prepTime);
 
                                     ScaffoldMessenger.of(context).clearSnackBars();
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Product added to cart successfully!'),
-                                        duration: const Duration(seconds: 2),
-                                      ),
-                                    );
                                   },
                                   child: Container(
                                     padding: const EdgeInsets.all(8.0),
