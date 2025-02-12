@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'home.dart';
+
 class PresentationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -52,7 +54,11 @@ class PresentationPage extends StatelessWidget {
             SizedBox(height: 30),
             ElevatedButton.icon(
               onPressed: () {
-                // Azione per visualizzare gli allergeni
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomeScreen()), // Torna alla schermata prodotti
+                      (Route<dynamic> route) => false, // Rimuove tutte le schermate precedenti
+                );
               },
               icon: Icon(Icons.info_outline),
               label: Text("View Allergens"),

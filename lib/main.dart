@@ -26,17 +26,20 @@ void main() async {
   await initializeFirebase();
   await dotenv.load();
 
-
+if(!kIsWeb) {
   // Impostazione della gestione notifiche
-  await OneSignal.shared.setAppId(dotenv.env['ONE_SIGNAL_APP_ID']!);  // Sostituisci con il tuo App ID
+  await OneSignal.shared.setAppId(
+      dotenv.env['ONE_SIGNAL_APP_ID']!); // Sostituisci con il tuo App ID
 
-  OneSignal.shared.setNotificationWillShowInForegroundHandler((OSNotificationReceivedEvent event) {
+  OneSignal.shared.setNotificationWillShowInForegroundHandler((
+      OSNotificationReceivedEvent event) {
     // Mostra la notifica, invia null per non mostrarla, invia la notifica per mostrarla
     event.complete(event.notification);
   });
 
   // Gestione delle notifiche aperte
-  OneSignal.shared.setNotificationOpenedHandler((OSNotificationOpenedResult result) {
+  OneSignal.shared.setNotificationOpenedHandler((
+      OSNotificationOpenedResult result) {
     // Utilizza i metodi disponibili nella nuova API
     OSNotification notification = result.notification;
     String? title = notification.title;
@@ -44,7 +47,7 @@ void main() async {
 
     print('OneSignal: notification opened: $title - $body');
   });
-
+}
 
 
   // Avvio dell'app con tema iniziale

@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:universal_io/io.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
@@ -67,9 +68,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Registration successful!')),
           );
-          PushNotificationService pushNotificationService = PushNotificationService();
-          pushNotificationService.monitorOrderStatusChanges(context);
-          PushNotificationService.initializeOneSignal();
+          if(!kIsWeb){
+            PushNotificationService pushNotificationService = PushNotificationService();
+            pushNotificationService.monitorOrderStatusChanges(context);
+            PushNotificationService.initializeOneSignal();
+          }
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => HomeScreen()),
@@ -115,10 +118,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         );
         return;
       }
-
-      PushNotificationService pushNotificationService = PushNotificationService();
-      pushNotificationService.monitorOrderStatusChanges(context);
-      PushNotificationService.initializeOneSignal();
+      if(!kIsWeb){
+        PushNotificationService pushNotificationService = PushNotificationService();
+        pushNotificationService.monitorOrderStatusChanges(context);
+        PushNotificationService.initializeOneSignal();
+      }
       Navigator.pushReplacementNamed(context, '/home');
     } catch (error) {
       // Handle any errors
