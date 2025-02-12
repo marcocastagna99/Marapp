@@ -151,6 +151,73 @@ class _AddressPaymentScreenState extends State<AddressPaymentScreen> {
     return total;
   }
 
+
+
+  void _showSummaryDialog(BuildContext context) {
+    String formattedDate = DateFormat('yyyy-MM-dd').format(widget.selectedDate);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Order Summary',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 20),
+
+                Text(
+                  'Delivery Date: $formattedDate',
+                  style: TextStyle(fontSize: 20),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 10),
+
+                ...widget.cartItems.map((item) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: Text(
+                      '${item['name']} x${item['quantity']} - €${(item['price'] * item['quantity']).toStringAsFixed(2)}',
+                      style: TextStyle(fontSize: 18),
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                }).toList(),
+
+                SizedBox(height: 10),
+                Text('Delivery Cost: €1.00', style: TextStyle(fontSize: 18), textAlign: TextAlign.center),
+                Text('Total: €${getTotalPrice().toStringAsFixed(2)}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Close', style: TextStyle(fontSize: 18)),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
     // Formatta la data senza l'ora
@@ -258,67 +325,47 @@ class _AddressPaymentScreenState extends State<AddressPaymentScreen> {
               ),
 
               // Pulsante per il riepilogo
+              SizedBox(height: 30), // Spazio extra sopra i pulsanti
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      // Mostra o nasconde il riepilogo al clic del pulsante
-                      setState(() {
-                        showSummary = !showSummary;
-                      });
-                    },
-                    child: Text(showSummary ? 'Hide Summary' : 'Show Summary'),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        _showSummaryDialog(context);
+                      },
+                      icon: Icon(Icons.receipt_long, color: Colors.white), // Icona per il riepilogo
+                      label: Text('Show Summary'),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                        textStyle: TextStyle(fontSize: 16),
+                      ),
+                    ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (selectedPaymentMethod != null && widget.selectedDate != null) {
-                        _saveOrder();
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Please, fill all fields')),
-                        );
-                      }
-                    },
-                    child: Text('Confirm the Order'),
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                      textStyle: TextStyle(fontSize: 16),
+                  SizedBox(width: 20), // Distanza tra i pulsanti
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        if (selectedPaymentMethod != null && widget.selectedDate != null) {
+                          _saveOrder();
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Please, fill all fields')),
+                          );
+                        }
+                      },
+                      icon: Icon(Icons.check_circle, color: Colors.white), // Icona per confermare
+                      label: Text('Confirm Order'),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                        textStyle: TextStyle(fontSize: 16),
+                      ),
                     ),
                   ),
                 ],
               ),
+              SizedBox(height: 20), // Spazio extra sotto i pulsanti
 
-              // Mostra il riepilogo solo se showSummary è true
-              if (showSummary)
-                Padding(
-                  padding: const EdgeInsets.only(top: 20.0),
-                  child: AlertDialog(
-                    title: Text('Order Summary'),
-                    content: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text('Delivery Date: $formattedDate'),
-                        ...widget.cartItems.map((item) {
-                          return Text('${item['name']} x${item['quantity']} - €${(item['price'] * item['quantity']).toStringAsFixed(2)}');
-                        }).toList(),
-                        Text('Delivery Cost: €1.00'),
-                        Text('Total: €${getTotalPrice().toStringAsFixed(2)}'),
-                      ],
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            showSummary = false;
-                          });
-                        },
-                        child: Text('Close'),
-                      ),
-                    ],
-                  ),
-                ),
             ],
           ),
         ),
