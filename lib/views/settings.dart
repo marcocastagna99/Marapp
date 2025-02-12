@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 import 'package:marapp/utils/push_notification_service.dart';
+import 'package:marapp/views/presentation.dart';
 import '../main.dart';
 
 // Definizione dei colori
@@ -130,6 +131,19 @@ class SettingsViewState extends State<SettingsView> {
               },
               title: const Text('Screen Orientation'),
               leading: const Icon(Icons.screen_rotation),
+              trailing: const Icon(Icons.arrow_forward_ios),
+            ),
+
+            const Divider(),
+
+            ListTile(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => PresentationPage()),
+                );
+              },
+              title: const Text('Who am I?'),
+              leading: Icon(Icons.person_outline),
               trailing: const Icon(Icons.arrow_forward_ios),
             ),
             const Divider(),
