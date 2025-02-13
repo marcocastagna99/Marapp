@@ -35,7 +35,7 @@ Mara’s sweets and savory -> flutter app for a pastry e-commerce developed for 
 - [ ] add products such as "wedding menu" or "bachelor/birthdate menu"
 - [ ] implement admin account for mara herself (maybe just 2 buttons in the bottom bar (for editing foods offers and for managing her incoming orders))
 - [x] GUI with "homemade" feelings ??
-- [ ] push notifications system for both clients and Mara
+- [x]  push notifications system for both clients and Mara
 - [ ] add "change status for order" for mara, on the side for managing orders
 - [ ] add reviews implementation
 - [x] add product info (such as days of preparation, ingredients, etc)
