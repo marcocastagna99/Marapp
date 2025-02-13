@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../utils/push_notification_service.dart';
@@ -27,8 +28,10 @@ class Splash extends State<SplashScreen> {
         print("Is user authenticated: ${authProvider.isAuthenticated}");
 
         if (authProvider.isAuthenticated) {
-          PushNotificationService pushNotificationService = PushNotificationService();
-          pushNotificationService.monitorOrderStatusChanges(context);
+          if(!kIsWeb) {
+            PushNotificationService pushNotificationService = PushNotificationService();
+            pushNotificationService.monitorOrderStatusChanges(context);
+          }
           print("User is authenticated, navigating to Home");
           Navigator.pushReplacementNamed(context, '/home');
         } else {
