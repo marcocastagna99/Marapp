@@ -205,6 +205,7 @@ class ProductsViewState extends State<ProductsView> {
       print("Error adding to cart: $e");
     }
   }
+
   void _navigateToProductDetail(String productId, double price,
       String description, String imageUrl, String name, int prepTime, int limit) {
     Navigator.push(

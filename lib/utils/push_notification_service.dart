@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
@@ -105,22 +106,27 @@ class PushNotificationService {
 
   // Metodo statico per inizializzare OneSignal
   static void initializeOneSignal() {
-    OneSignal.shared.setAppId(dotenv.env['ONE_SIGNAL_APP_ID']!);
+    if (!kIsWeb) {
+      OneSignal.shared.setAppId(dotenv.env['ONE_SIGNAL_APP_ID']!);
 
-    // Richiedi il permesso per le notifiche push
-    OneSignal.shared.promptUserForPushNotificationPermission().then((accepted) {
-      if (accepted) {
-        print("User accepted push notifications");
-      } else {
-        print("User declined push notifications");
-      }
-    });
+      // Richiedi il permesso per le notifiche push
+      OneSignal.shared.promptUserForPushNotificationPermission().then((
+          accepted) {
+        if (accepted) {
+          print("User accepted push notifications");
+        } else {
+          print("User declined push notifications");
+        }
+      });
 
-    // Puoi anche recuperare il Player ID dopo che l'utente ha accettato
-    OneSignal.shared.getDeviceState().then((deviceState) {
-      String? playerId = deviceState?.userId;
-      print("Player ID: $playerId"); // Salva questo ID per inviare notifiche
-    });
+      // Puoi anche recuperare il Player ID dopo che l'utente ha accettato
+      OneSignal.shared.getDeviceState().then((deviceState) {
+        String? playerId = deviceState?.userId;
+        print("Player ID: $playerId"); // Salva questo ID per inviare notifiche
+      });
+    }
+    else
+      print("OneSignal non supportato su Web, bypassing...");
   }
 
   static sendTestPushNotification(String playerId) async {

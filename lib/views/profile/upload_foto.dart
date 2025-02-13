@@ -59,9 +59,8 @@ class ProfilePictureUploader {
     return 'No image selected';
   }
 
+
   // Funzione per caricare l'immagine su Imgur e salvarla su Firestore
-
-
   Future<String> uploadImage(BuildContext context) async {
     if (_image == null && _webImage == null) return 'No image selected';
 
@@ -109,48 +108,5 @@ class ProfilePictureUploader {
     }
   }
 
-
-
-
-
-
-
-
-
-  Future<String> uploadImageToVercel(BuildContext context) async {
-    if (_image == null && _webImage == null) return 'No image selected';
-
-    try {
-      Uint8List bytes = kIsWeb ? _webImage! : await _image!.readAsBytes();
-      bytes = compressImage(bytes); // Comprimi l'immagine
-
-      // Fai una richiesta POST al backend su Vercel
-      final url = Uri.parse('https://marapp-backend.vercel.app/api/upload');
-      final request = http.MultipartRequest('POST', url)
-        ..fields['image'] = base64Encode(bytes); // Invia l'immagine in base64
-
-      final response = await request.send();
-
-      if (response.statusCode == 200) {
-        final responseBody = await response.stream.bytesToString();
-        final responseData = jsonDecode(responseBody);
-        final uploadedImageUrl = responseData['imageUrl'];
-
-        // Salva l'URL su Firestore
-        User? user = _auth.currentUser;
-        if (user != null) {
-          await _firestore.collection('users').doc(user.uid).update({
-            'profilePicture': uploadedImageUrl,
-          });
-        }
-
-        return 'Image uploaded successfully!';
-      } else {
-        return 'Failed to upload image: ${response.statusCode}';
-      }
-    } catch (e) {
-      return 'Error uploading image: $e';
-    }
-  }
 }
 
