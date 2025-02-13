@@ -647,9 +647,7 @@ Navigator.pushReplacement(
 If the update is successful and the date is still available for the order, `checkAndUpdateAvailability(DateTime date)` is called immediately to check if the number of orders for that day has reached the `maxOrders`. If it has, the day is added to the `notAvailable` collection, making that day unavailable for future orders (effectively making it unselectable on the calendar).  
 This functionality is essential for handling concurrency when two users try to place orders for the same day at closely timed moments. Only one can be added, while the other will be blocked.
 
-Here’s the translation of your text into English:
 
----
 
 ## 📂 **Firebase Structure**
 
