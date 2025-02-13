@@ -887,9 +887,6 @@ These rules ensure that only users with appropriate permissions can access and m
 
 ---
 
-Ecco la versione corretta in **Markdown** con una traduzione più fluida:  
-
----
 
 ### **Conclusions**  
 
