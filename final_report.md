@@ -656,7 +656,7 @@ Here’s the translation of your text into English:
 
 ## 📂 **Firebase Structure**
 
-### **Products Collection Structure**
+### 📂 **`Products` Collection Structure**
 
 Each document in the **`products`** collection represents a product available for ordering and contains the following fields:
 
@@ -691,7 +691,7 @@ Each product has these fields:
 
 ---
 
-### **Cart Collection Structure**
+### 📂 **`Cart` Collection Structure**
 
 Each document in the **`cart`** collection represents a user's shopping cart and contains the following fields:
 
@@ -722,7 +722,7 @@ Very useful due to Firebase's dynamic nature and flexible documents, it will be 
 
 ---
 
-### **Users Collection Structure**
+### 📂 **`Users` Collection Structure**
 
 Each document in the **`users`** collection represents a user and contains the following fields:
 
@@ -744,40 +744,36 @@ Each document in the **`users`** collection represents a user and contains the f
 
 ---
 
-### **Orders Collection Structure**
+
+### 📂 **`orders` Collection Structure**
 
 Each document in the **`orders`** collection represents an order placed by a user and contains the following fields:
 
 | **Field**                     | **Type**      | **Description** |
-|--------------------------------|--------------|----------------|
-| **`userId`**                  | `string`     | ID of the user who placed the order. |
+|--------------------------------|--------------|-----------------|
+| **`userId`**                  | `string`     | The user ID of the person who placed the order. |
 | **`orderDate`**               | `timestamp`  | Date and time when the order was placed. |
-| **`DeliveryPreparationDate`**  | `timestamp`  | Estimated date for the order preparation and delivery. |
-| **`items`**                    | `array`      | List of items in the order. Each element is an object containing details of the product purchased. |
+| **`DeliveryPreparationDate`**  | `timestamp`  | Expected date for order preparation and delivery. |
+| **`items`**                    | `array`      | List of items included in the order. Each element is an object containing details of the purchased product. |
 | **`status`**                   | `string`     | Order status (e.g., `paid`, `pending`, `delivered`). |
-| **`total`**                    | `number`     | Total order amount in euros. |
+| **`total`**                    | `number`     | Total amount of the order in euros. |
 | **`address`**                  | `string`     | Delivery address for the order. |
 
----
 
-### 📌 **Structure of Elements in `items`**
-Each item in the order has the following structure:
+### 📌 **Structure of Items in `items`**  
+Each item in the order has the following structure:  
 
 | **Field**      | **Type**    | **Description** |
-|---------------|------------|----------------|
-| **`prodId`**  | `
-
-string`    | Product ID. |
-| **`price`**   | `number`    | Unit price of the product. |
-| **`quantity`**| `number`    | Number of units ordered. |
-| **`name`**    | `string`    | Product name. |
-
-
-
----
+|--------------|------------|-----------------|
+| **`prodId`**   | `string`  | ID of the product. |
+| **`quantity`** | `number`  | Quantity of the product. |
+| **`price`**    | `number`  | Price of the product. |
+| **`name`**     | `string`  | Name of the product. |
+| **`prepTime`** | `number`  | Product's preparation time. |  
 
 This structured approach ensures an efficient and scalable management of products, carts, users, and orders.
-## 📂 **Structure of the `dailyLimits` Collection**
+
+### 📂 **Structure of the `dailyLimits` Collection**
 
 Each document in the **dailyLimits** collection represents the daily limits for orders and preparation times for a specific date.
 
@@ -810,7 +806,7 @@ Each element in the **prodPrepTime** array has the following structure:
 - The **prodPrepTime** array keeps track of the preparation time for each product ordered on that date.
 
 
-## 📂 **Structure of the `limits` Collection**
+### 📂 **Structure of the `limits` Collection**
 
 The **limits** collection contains a single document called **limits**, which defines the global limits for daily orders and total preparation time.
 
@@ -827,7 +823,7 @@ The **limits** collection contains a single document called **limits**, which de
 - These values are compared with those in the **dailyLimits** collection documents to determine if new orders can be accepted.
 
 
-## 📂 **Structure of the `notAvailable` Collection (Days with Order Limit Reached)**
+### 📂 **Structure of the `notAvailable` Collection (Days with Order Limit Reached)**
 
 The **notAvailable** collection contains the dates when daily limits (e.g., maximum number of orders) have been reached. When the system monitors **dailyLimits** and detects that a day is complete (i.e., `currentOrders == maxOrders`), it adds only the date to this collection.
 
@@ -843,7 +839,7 @@ The **notAvailable** collection contains the dates when daily limits (e.g., maxi
 - Only the date is stored, with no additional data, to prevent further bookings for that day. Alternatively, it can be populated by an administrator to mark days as unavailable.
 
 
-## 📂 **Structure of the `favorites` Collection**
+### 📂 **Structure of the `favorites` Collection**
 
 | **Field**    | **Type**   | **Description** |
 |--------------|------------|-----------------|
@@ -852,19 +848,6 @@ The **notAvailable** collection contains the dates when daily limits (e.g., maxi
 | **prodID**      | string   | Unique product ID. |
 | **userId**      | string   | ID of the user who marked the product as a favorite. |
 
----
-
-### 📌 **Example `favorites` Document**  
-```json
-{
-  "isFavorite": true,
-  "name": "Donuts",
-  "prodID": "XYz3Xo9BkSgRHMV1MjIb",
-  "userId": "GV9LWogU6BXSkj86uKRSVPEKZOz2"
-}
-```
-
----
 
 🔹 **Note:**  
 - The **favorites** collection is used to store products that a user has marked as favorites, associating a product with a specific user via **userId**.  
@@ -907,6 +890,17 @@ These rules ensure that only users with appropriate permissions can access and m
 
 ---
 
-### **Conclusions**
+Ecco la versione corretta in **Markdown** con una traduzione più fluida:  
 
-If we had the Blaze plan, many features such as the management of `notAvailable`, dailyLimits, Notification system, maps, triggers, functions, etc. would have been much easier, and development would have been much faster, as the Spark plan is very limited. We had to adapt our code and security management to work around these restrictions. Firebase offers many ready-to-use features, but if the app wasn't monetized, it would have been a better choice to explore other free alternatives. However, we are satisfied with what we've learned from working with these technologies and the challenges they presented.
+---
+
+### **Conclusions**  
+
+The app has been developed to fully manage the e-commerce system. If an admin panel were to be created, Firebase already stores everything needed for it to function. For example, it would be enough to display orders, apply filters (such as selecting a specific day), modify order statuses, view products, and update fields like `available` to mark items as unavailable. Additionally, work availability for a specific day could be disabled simply by adding the date to the `notAvailable` collection.  
+
+Another possible improvement could be the implementation of a payment system and a delivery management system, defining the delivery zones. Overall, the app is complete.  
+
+If we had the **Blaze plan**, many features—such as managing `notAvailable`, `dailyLimits`, notifications, maps, triggers, and functions—would have been much easier to implement, and development would have been much faster. The **Spark plan** is very limited, forcing us to adapt our code and security management to work around these restrictions.  
+
+Firebase provides many ready-to-use features, but if the app wasn't monetized, exploring other free alternatives might have been a better choice. However, we are satisfied with what we've learned from working with these technologies and the challenges they presented.  
+
