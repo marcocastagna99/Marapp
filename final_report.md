@@ -303,9 +303,6 @@ Each order is displayed as a **Card with an ExpansionTile**.
 
 It is the main page of this app, located in the `ProductsView` class in `lib/views/products.dart`. Here’s a detailed description:
 
----
-
-### **Complete Description of the `ProductsView` Screen**
 
 #### **Objective**
 The `ProductsView` screen allows users to view available products, filter them by category, sort them based on different criteria, and add them to the cart. It uses **Firebase Firestore** to manage products and the cart, and is integrated with **Firebase Authentication** to identify the user.
@@ -890,9 +887,6 @@ These rules ensure that only users with appropriate permissions can access and m
 
 ---
 
-Ecco la versione corretta in **Markdown** con una traduzione più fluida:  
-
----
 
 ### **Conclusions**  
 
