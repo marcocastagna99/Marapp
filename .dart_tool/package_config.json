@@ -339,7 +339,7 @@
     },
     {
       "name": "geolocator_apple",
-      "rootUri": "file:///C:/Users/acer/AppData/Local/Pub/Cache/hosted/pub.dev/geolocator_apple-2.3.8+1",
+      "rootUri": "file:///C:/Users/acer/AppData/Local/Pub/Cache/hosted/pub.dev/geolocator_apple-2.3.9",
       "packageUri": "lib/",
       "languageVersion": "2.15"
     },
@@ -381,9 +381,9 @@
     },
     {
       "name": "google_sign_in_ios",
-      "rootUri": "file:///C:/Users/acer/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in_ios-5.7.8",
+      "rootUri": "file:///C:/Users/acer/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in_ios-5.8.0",
       "packageUri": "lib/",
-      "languageVersion": "3.3"
+      "languageVersion": "3.4"
     },
     {
       "name": "google_sign_in_platform_interface",
@@ -848,7 +848,7 @@
       "languageVersion": "3.5"
     }
   ],
-  "generated": "2025-02-12T15:11:13.286819Z",
+  "generated": "2025-02-13T23:41:52.458598Z",
   "generator": "pub",
   "generatorVersion": "3.6.1",
   "flutterRoot": "file:///C:/Users/marco/UNIGE/MAGISTRALE/I%20ANNO/MOBILE%20DEVELOPMENT/flutter",

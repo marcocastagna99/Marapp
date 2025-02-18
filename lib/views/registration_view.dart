@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:marapp/providers/auth_provider.dart' as auth;
 import 'package:marapp/views/home.dart';
 import 'package:marapp/views/login_view.dart';
+import 'package:marapp/views/presentation.dart';
 
 import '../utils/push_notification_service.dart';
 
@@ -73,10 +74,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             pushNotificationService.monitorOrderStatusChanges(context);
             PushNotificationService.initializeOneSignal();
           }
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-          );
+          Navigator.pushReplacementNamed(context, '/presentation');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Registration error')),
@@ -123,7 +121,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         pushNotificationService.monitorOrderStatusChanges(context);
         PushNotificationService.initializeOneSignal();
       }
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacementNamed(context, '/presentation');
     } catch (error) {
       // Handle any errors
       ScaffoldMessenger.of(context).showSnackBar(

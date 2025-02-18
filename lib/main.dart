@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:marapp/utils/push_notification_service.dart';
 import 'package:marapp/utils/theme.dart';
+import 'package:marapp/views/presentation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:marapp/views/splash.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,7 @@ import  'package:marapp/views/passwordReset.dart';
 //import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 //import 'package:permission_handler/permission_handler.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:marapp/views/presentation.dart';
 
 
 
@@ -114,6 +116,7 @@ class MarappState extends State<Marapp> {
                 themeMode: themeMode, // Gestisce il tema basato su `themeNotifier`
                 initialRoute: '/splash',
                 routes: {
+                  '/presentation': (context) => PresentationPage(),
                   '/splash': (context) => SplashScreen(),
                   '/register': (context) => RegistrationScreen(),
                   '/home': (context) => HomeScreen(),
